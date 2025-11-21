@@ -21,4 +21,12 @@ class Department extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+    public function getAverageRatingAttribute()
+    {
+        return round($this->reviews()->avg('rating'), 2);
+    }
 }

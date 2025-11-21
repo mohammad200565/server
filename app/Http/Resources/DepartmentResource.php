@@ -20,6 +20,7 @@ class DepartmentResource extends JsonResource
             'status' => $this->resource->status,
             'created_at' => $this->resource->created_at,
             'updated_at' => $this->resource->updated_at,
+            'average_rating' => $this->average_rating,
         ];
         return $data;
     }
