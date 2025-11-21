@@ -18,6 +18,7 @@ class User extends Authenticatable
         'profileImage',
         'birthdate',
         'password',
+        'user_id',
     ];
     protected $hidden = [
         'password',
@@ -28,24 +29,8 @@ class User extends Authenticatable
         'last_login_at' => 'datetime',
         'password' => 'hashed',
     ];
-
-    protected static function booted()
+    public function departments()
     {
-        static::deleting(function ($user) {
-            if ($user->cart) {
-                $user->cart->items()->delete();
-                $user->cart()->delete();
-            }
-            if ($user->stores) {
-                foreach ($user->stores as $store) {
-                    $store->products()->detach();
-                    $store->delete();
-                }
-            }
-            if (method_exists($user, 'tokens')) {
-                $user->tokens()->delete();
-            }
-            $user->orders()->delete();
-        });
+        return $this->hasMany(Department::class);
     }
 }
