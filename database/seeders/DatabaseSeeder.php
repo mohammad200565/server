@@ -17,5 +17,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ReviewSeeder::class);
         $this->call(NotificationSeeder::class);
         $this->call(FavoriteSeeder::class);
+        $this->call(RentSeeder::class);
     }
 }
