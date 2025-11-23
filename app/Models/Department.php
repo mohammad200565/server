@@ -33,4 +33,8 @@ class Department extends Model
     {
         return round($this->reviews()->avg('rating'), 2);
     }
+    public function scopeFilter($query, $filters)
+    {
+        return $filters->apply($query);
+    }
 }

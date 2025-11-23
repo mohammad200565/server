@@ -32,12 +32,14 @@ class RentController extends BaseApiController
     }
     public function show(Rent $rent)
     {
+        $this->authorize('view', $rent);
         return $this->successResponse("Rent fetched successfully", [
             'rent' => new RentResource($rent),
         ]);
     }
     public function update(UpdateRentRequest $request, Rent $rent)
     {
+        $this->authorize('update', $rent);
         $rent->update($request->validated());
         return $this->successResponse("Rent updated successfully", [
             'rent' => new RentResource($rent),
@@ -45,6 +47,7 @@ class RentController extends BaseApiController
     }
     public function destroy(Rent $rent)
     {
+        $this->authorize('delete', $rent);
         $rent->delete();
         return $this->successResponse("Rent deleted successfully");
     }
