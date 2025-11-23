@@ -11,10 +11,12 @@ use Illuminate\Http\Request;
 
 class ReviewController extends BaseApiController
 {
+    private $relations = ['user'];
     public function index(Request $request, Department $department)
     {
         $filter = new ReviewFilter($request);
-        $reviews = $department->reviews()->with('user')->filter($filter)->paginate(20);
+        $query = $department->reviews();
+        $reviews = $this->loadRelations($request, $query, $this->relations)->filter($filter)->paginate(20);
         return $this->successResponse('Reviews retrieved successfully', $reviews);
     }
     public function store(StoreReviewRequest $request, Department $department)
@@ -23,11 +25,13 @@ class ReviewController extends BaseApiController
         $data['user_id'] = request()->user()->id;
         $review = new Review($data);
         $review->department()->associate($department);
+        $review->load('user');
         $review->save();
         return $this->successResponse('Review created successfully', $review, 201);
     }
-    public function show(Department $department, Review $review)
+    public function show(Request $request, Department $department, Review $review)
     {
+        $this->loadRelations($request, $review, $this->relations);
         return $this->successResponse('Review retrieved successfully', $review);
     }
     public function update(UpdateReviewRequest $request, Department $department, Review $review)
@@ -35,6 +39,7 @@ class ReviewController extends BaseApiController
         $this->authorize('update', $review);
         $data = $request->validated();
         $review->update($data);
+        $review->load('user');
         return $this->successResponse('Review updated successfully', $review);
     }
     public function destroy(Department $department, Review $review)

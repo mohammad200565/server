@@ -6,13 +6,17 @@ use App\Http\Requests\StoreRentRequest;
 use App\Http\Requests\UpdateRentRequest;
 use App\Http\Resources\RentResource;
 use App\Models\Rent;
+use Illuminate\Http\Request;
 
 class RentController extends BaseApiController
 {
-    public function index()
+    private $relations = ['user', 'department'];
+    public function index(Request $request)
     {
         $user = request()->user();
-        $rents = request()->user()->rents()->latest()->paginate(15);
+        $query = request()->user()->rents();
+        $rents = $this->loadRelations($request, $query, $this->relations)
+            ->latest()->paginate(15);
         return $this->successResponse("Rents fetched successfully", [
             'rents' => RentResource::collection($rents),
         ]);
@@ -22,13 +26,15 @@ class RentController extends BaseApiController
         $data = $request->validated();
         $data['user_id'] = request()->user()->id;
         $rent = Rent::create($data);
+        $rent->load('department', 'user');
         return $this->successResponse("Rent created successfully", [
             'rent' => new RentResource($rent),
         ]);
     }
-    public function show(Rent $rent)
+    public function show(Request $request, Rent $rent)
     {
         $this->authorize('view', $rent);
+        $this->loadRelations($request, $rent, $this->relations);
         return $this->successResponse("Rent fetched successfully", [
             'rent' => new RentResource($rent),
         ]);
@@ -37,6 +43,7 @@ class RentController extends BaseApiController
     {
         $this->authorize('update', $rent);
         $rent->update($request->validated());
+        $rent->load('department', 'user');
         return $this->successResponse("Rent updated successfully", [
             'rent' => new RentResource($rent),
         ]);

@@ -9,7 +9,7 @@ class ReviewResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        return [
+        $data = [
             'id' => $this->resource->id,
             'user' => new UserResource($this->whenLoaded('user')),
             'rating' => $this->resource->rating,
@@ -17,5 +17,6 @@ class ReviewResource extends JsonResource
             'created_at' => $this->resource->created_at,
             'updated_at' => $this->resource->updated_at,
         ];
+        return $data;
     }
 }

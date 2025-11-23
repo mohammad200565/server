@@ -14,13 +14,16 @@ trait ApiResponseTrait
         ], $status);
     }
 
-    protected function errorResponse($message, $status = 400)
+    protected function errorResponse(string $message, int $status = 400, array $errors = null)
     {
-        return response()->json([
-            'status'  => 'error',
+        $response = [
+            'status' => 'error',
             'message' => $message,
-        ], $status);
+        ];
+        if ($errors) $response['errors'] = $errors;
+        return response()->json($response, $status);
     }
+
 
     private function countResults($data)
     {

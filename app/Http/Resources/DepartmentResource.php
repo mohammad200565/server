@@ -11,7 +11,6 @@ class DepartmentResource extends JsonResource
     {
         $data = [
             'id' => $this->resource->id,
-            'user_id' => $this->resource->user_id,
             'description' => $this->resource->description,
             'size' => $this->resource->size,
             'rentFee' => $this->resource->rentFee,
@@ -21,14 +20,23 @@ class DepartmentResource extends JsonResource
             'updated_at' => $this->resource->updated_at,
             'average_rating' => $this->resource->average_rating,
             'review_count' => $this->resource->review_count,
-            'images' => $this->resource->images->map(fn($img) => $img->path),
             'location' => [
                 'province' => $this->resource->location['province'] ?? null,
                 'city' => $this->resource->location['city'] ?? null,
                 'district' => $this->resource->location['district'] ?? null,
                 'street' => $this->resource->location['street'] ?? null,
             ],
+
         ];
+        if ($this->relationLoaded('images')) {
+            $data['images'] = $this->resource->images->map(fn($img) => $img->path);
+        }
+        if ($this->relationLoaded('user')) {
+            $data['user'] = new UserResource($this->resource->user);
+        }
+        if ($this->relationLoaded('reviews')) {
+            $data['reviews'] = ReviewResource::collection($this->resource->reviews);
+        }
         return $data;
     }
 }

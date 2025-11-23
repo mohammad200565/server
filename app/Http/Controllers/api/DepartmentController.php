@@ -12,12 +12,14 @@ use Illuminate\Http\Request;
 
 class DepartmentController extends BaseApiController
 {
-
+    private $relations = ['images', 'reviews', 'user'];
     public function index(Request $request)
     {
         $filters = new DepartmentFilter($request);
-        $departments = Department::with('images')->filter($filters)
-            ->paginate(20);;
+        $query = Department::query();
+        $departments = $this->loadRelations($request, $query, $this->relations)
+            ->filter($filters)
+            ->paginate(20);
         return $this->successResponse('Departments retrieved successfully', DepartmentResource::collection($departments));
     }
     public function store(StoreDepartmentRequest $request)
@@ -26,12 +28,12 @@ class DepartmentController extends BaseApiController
         $data['user_id'] = request()->user()->id;
         $department = Department::create($data);
         // i still didnt do the logic of image uploading
-        $department->load('images');
+        $department->load('images', 'user');
         return $this->successResponse('Department created successfully', new DepartmentResource($department), 201);
     }
-    public function show(Department $department)
+    public function show(Request $request, Department $department)
     {
-        $department->load('images');
+        $this->loadRelations($request, $department, $this->relations);
         return $this->successResponse('Department retrieved successfully', new DepartmentResource($department));
     }
     public function update(UpdateDepartmentRequest $request, Department $department)
@@ -40,7 +42,7 @@ class DepartmentController extends BaseApiController
         $data = $request->validated();
         $department->update($data);
         // i still didnt do the logic of image uploading
-        $department->load('images');
+        $department->load('images', 'user');
         return $this->successResponse('Department updated successfully', new DepartmentResource($department));
     }
     public function destroy(Department $department)
