@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 
 class RentController extends BaseApiController
 {
-
     private $relations = ['user', 'department'];
     public function index(Request $request)
     {
@@ -27,6 +26,16 @@ class RentController extends BaseApiController
     public function store(StoreRentRequest $request)
     {
         $data = $request->validated();
+        $overlap = Rent::where('department_id', $data['department_id'])
+            ->where(function ($query) use ($data) {
+                $query->where('startRent', '<=', $data['endRent'])
+                    ->where('endRent', '>=', $data['startRent']);
+            })
+            ->exists();
+
+        if ($overlap) {
+            return $this->errorResponse("This house is rented during this period, please choose another time.", 422);
+        }
         $data['user_id'] = request()->user()->id;
         $rent = Rent::create($data);
         $rent->load('department', 'user');
