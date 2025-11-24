@@ -24,6 +24,10 @@ class Department extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function rents()
+    {
+        return $this->hasMany(Rent::class);
+    }
     public function reviews()
     {
         return $this->hasMany(Review::class);
