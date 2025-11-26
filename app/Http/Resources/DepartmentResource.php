@@ -21,7 +21,7 @@ class DepartmentResource extends JsonResource
             'average_rating' => $this->resource->average_rating,
             'review_count' => $this->resource->review_count,
             'location' => [
-                'province' => $this->resource->location['province'] ?? null,
+                'governorate' => $this->resource->location['governorate'] ?? null,
                 'city' => $this->resource->location['city'] ?? null,
                 'district' => $this->resource->location['district'] ?? null,
                 'street' => $this->resource->location['street'] ?? null,

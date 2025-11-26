@@ -17,7 +17,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('departments', DepartmentController::class);
         Route::apiResource('rents', RentController::class);
         Route::apiResource('departments.reviews', ReviewController::class)->scoped();
-        Route::post('departments/${department}/favorite/toggle', [FavoriteController::class, 'toggle']);
-        Route::get('favorites/me', [FavoriteController::class, 'index']);
+        Route::post('departments/{department}/favorite/toggle', [FavoriteController::class, 'toggle']);
+        Route::get('favorites/me', [FavoriteController::class, 'userFavorites']);
     });
 });

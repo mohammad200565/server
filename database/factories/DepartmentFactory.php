@@ -16,11 +16,12 @@ class DepartmentFactory extends Factory
             'size' => $this->faker->randomFloat(2, 30, 200),
             'location' => [
                 'country' => 'Syria',
-                'province' => $this->faker->randomElement(['Damascus', 'Aleppo', 'Homs', 'Latakia']),
+                'governorate' => $this->faker->randomElement(['Damascus', 'Aleppo', 'Homs', 'Latakia']),
                 'city' => $this->faker->city,
                 'district' => $this->faker->word,
                 'street' => $this->faker->streetName,
             ],
+            'favoritesCount' => 0,
             'rentFee' => $this->faker->randomFloat(2, 100, 2000),
             'isAvailable' => $this->faker->boolean,
             'status' => $this->faker->randomElement(['furnished', 'unfurnished', 'partially furnished']),

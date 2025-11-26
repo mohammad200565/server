@@ -18,7 +18,7 @@ class StoreDepartmentRequest extends FormRequest
             'isAvailable' => 'required|boolean',
             'status' => 'required|string',
             'size' => 'required|integer',
-            'location.province' => 'required|string',
+            'location.governorate' => 'required|string',
             'location.city' => 'required|string',
             'location.district' => 'nullable|string',
             'location.street' => 'nullable|string',

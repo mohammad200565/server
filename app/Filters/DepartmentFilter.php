@@ -10,7 +10,7 @@ class DepartmentFilter
     protected $builder;
 
     protected $filters = [
-        'province',
+        'governorate',
         'city',
         'min_price',
         'max_price',
@@ -39,9 +39,9 @@ class DepartmentFilter
         return $this->builder;
     }
 
-    private function filterProvince($value)
+    private function filterGovernorate($value)
     {
-        return $this->builder->where('location->province', $value);
+        return $this->builder->where('location->governorate', $value);
     }
 
     private function filterCity($value)

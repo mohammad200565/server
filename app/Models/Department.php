@@ -24,34 +24,48 @@ class Department extends Model
     {
         return $this->belongsTo(User::class);
     }
+
     public function rents()
     {
         return $this->hasMany(Rent::class);
     }
+
     public function reviews()
     {
         return $this->hasMany(Review::class);
     }
+
     public function images()
     {
         return $this->hasMany(DepartmentImage::class);
     }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(User::class, 'favorits');
+    }
+
     public function getAverageRatingAttribute()
     {
         return round($this->reviews()->avg('rating'), 2);
     }
+
     public function getReviewCountAttribute()
     {
         return $this->reviews()->count();
     }
+
     public function scopeFilter($query, $filters)
     {
         return $filters->apply($query);
     }
+
+
+
     public function setLocationAttribute($value)
     {
         $this->attributes['location'] = json_encode([
-            'province' => $value['province'] ?? null,
+            'governorate' => $value['governorate'] ?? null,
             'city' => $value['city'] ?? null,
             'district' => $value['district'] ?? null,
             'street' => $value['street'] ?? null,
