@@ -11,11 +11,14 @@ class Department extends Model
     protected $fillable = [
         'user_id',
         'description',
-        'size',
+        'area',
         'location',
         'rentFee',
         'isAvailable',
         'status',
+        'bedrooms',
+        'bathrooms',
+        'floor',
     ];
     protected $casts = [
         'location' => 'array',

@@ -13,7 +13,7 @@ class DepartmentFactory extends Factory
         return [
             'user_id' => User::inRandomOrder()->first()?->id ?? 1,
             'description' => $this->faker->sentence(6),
-            'size' => $this->faker->randomFloat(2, 30, 200),
+            'area' => $this->faker->randomFloat(2, 30, 200),
             'location' => [
                 'country' => 'Syria',
                 'governorate' => $this->faker->randomElement(['Damascus', 'Aleppo', 'Homs', 'Latakia']),
@@ -21,6 +21,9 @@ class DepartmentFactory extends Factory
                 'district' => $this->faker->word,
                 'street' => $this->faker->streetName,
             ],
+            'bedrooms' => $this->faker->numberBetween(1, 5),
+            'bathrooms' => $this->faker->numberBetween(1, 3),
+            'floor' => $this->faker->numberBetween(0, 20),
             'favoritesCount' => 0,
             'rentFee' => $this->faker->randomFloat(2, 100, 2000),
             'isAvailable' => $this->faker->boolean,
