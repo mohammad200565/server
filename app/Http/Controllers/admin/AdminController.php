@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
+
     public function indexUsers()
     {
         $users = User::orderBy('verification_state', 'asc')->get();
@@ -43,9 +44,11 @@ class AdminController extends Controller
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
+
         $email = $request->input('email');
         $password = $request->input('password');
         $user = User::where('email', $email)->first();
+
         if ($user && Hash::check($password, $user->password)) {
             Auth::login($user);
             return redirect('/')->with('success', 'Login successful');
