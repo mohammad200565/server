@@ -7,9 +7,10 @@ Route::get('/', function () {
     return view('home');
 });
 
-Route::get('/users', function () {
-    return view('users');
-});
+Route::get('/users', [AdminController::class, 'indexUsers']);
+Route::get('/users/{user}', [AdminController::class, 'showUser'])->name('users.show');
+Route::put('/users/{user}/verify', [AdminController::class, 'verify'])->name('users.verify');
+Route::put('/users/{user}/reject', [AdminController::class, 'reject'])->name('users.reject');
 
 Route::get('/departments', function () {
     return view('departments');
@@ -29,3 +30,4 @@ Route::get('/login', function() {
 
 Route::post('login', [AdminController::class, 'login']);
 Route::post('logout', [AdminController::class, 'logout']);
+

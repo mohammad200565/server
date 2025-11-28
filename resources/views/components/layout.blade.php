@@ -113,6 +113,31 @@
             font-weight: 500;
         }
 
+        .user-card-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .user-card-link:hover .user-card {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(93, 64, 55, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .user-initials {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #a8a78d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: #5d4037;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
         /* Color Utility Classes */
         .text-brown { color: var(--brown); }
         .text-light-brown { color: var(--light-brown); }

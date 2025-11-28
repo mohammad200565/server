@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('phone')->unique();
             $table->string('email')->unique()->nullable();
             $table->date('birthdate')->nullable();
+            $table->enum('verification_state', ['verified', 'pending', 'rejected'])->default('pending');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

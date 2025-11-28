@@ -10,6 +10,32 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
+    public function indexUsers()
+    {
+        $users = User::all();
+        return view('users', compact('users'));
+    }
+    
+    public function showUser(User $user){
+        return view('user-details', compact('user'));
+    }
+
+    public function verify(User $user)
+    {
+        $user->update(['verification_state' => 'verified']);
+        
+        return redirect()->route('users.show', $user)
+            ->with('success', 'User has been verified successfully!');
+    }
+
+    public function reject(User $user)
+    {
+        $user->update(['verification_state' => 'rejected']);
+        
+        return redirect()->route('users.show', $user)
+            ->with('success', 'User verification has been rejected!');
+    }
+
     public function login(Request $request){
         $request->validate([
             'email' => 'required|email',
