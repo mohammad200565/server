@@ -167,8 +167,8 @@
                 
                 <div class="user-info">
                     <h1 class="user-detail-name">{{ $user->first_name }} {{ $user->last_name }}</h1>
-                    <div class="user-detail-badge {{ $user->verification_state ? 'verified' : 'not-verified' }}">
-                        {{ $user->verification_state ? '✓ Verified User' : '✗ Not Verified' }}
+                    <div class="user-detail-badge {{ $user->verification_state=="verified" ? 'verified' : 'not-verified' }}">
+                        {{ $user->verification_state=="verified" ? '✓ Verified User' : '✗ Not Verified' }}
                     </div>
                 </div>
             </div>
@@ -205,7 +205,7 @@
                 </div>
             </div>
 
-            @if(!$user->verification_state)
+            @if(!($user->verification_state=="verified"))
                 <div class="verification-actions">
                     <form action="{{ route('users.verify', $user) }}" method="POST" style="display: inline;">
                         @csrf

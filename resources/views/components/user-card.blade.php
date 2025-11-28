@@ -14,8 +14,8 @@
             {{ $user->first_name }} {{ $user->last_name }}
         </div>
         
-        <div class="verification-badge {{ $user->verification_state ? 'verified' : 'not-verified' }}">
-            {{ $user->verification_state ? 'Verified' : 'Not Verified' }}
+        <div class="verification-badge {{ $user->verification_state=="verified" ? 'verified' : 'not-verified' }}">
+            {{ $user->verification_state=="verified" ? 'Verified' : 'Not Verified' }}
         </div>
     </div>
 </a>
