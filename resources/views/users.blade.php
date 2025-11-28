@@ -51,7 +51,11 @@
             color: white;
         }
 
-        .not-verified {
+        .pending {
+            background-color: #b505f5;
+            color: white;
+        }
+        .rejected {
             background-color: #f44336;
             color: white;
         }

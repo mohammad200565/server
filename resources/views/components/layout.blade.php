@@ -138,7 +138,6 @@
             font-size: 24px;
         }
 
-        /* Color Utility Classes */
         .text-brown { color: var(--brown); }
         .text-light-brown { color: var(--light-brown); }
         .text-dark-brown { color: var(--dark-brown); }
@@ -155,7 +154,6 @@
         .border-light-brown { border-color: var(--light-brown); }
         .border-hazel { border-color: var(--hazel); }
 
-        /* Text utility classes */
         .text-center { text-align: center; }
         .text-left { text-align: left; }
         .text-right { text-align: right; }
@@ -165,7 +163,6 @@
         .text-2xl { font-size: 2rem; }
         .text-3xl { font-size: 2.5rem; }
 
-        /* Spacing utility classes */
         .p-4 { padding: 2rem; }
         .p-6 { padding: 3rem; }
         .py-4 { padding-top: 2rem; padding-bottom: 2rem; }
@@ -196,7 +193,6 @@
     </style>
 </head>
 <body>
-    <!-- Header with centered navigation and login -->
     <header class="header">
         <a href="/" class="logo">Daleel Admins</a>
         
@@ -221,12 +217,10 @@
 
     </header>
 
-    <!-- Content area - slot for any content -->
     <div class="content">
         {{ $slot }}
     </div>
 
-    <!-- Footer with company name -->
     <footer class="footer">
         <p>&copy; 2026 Daleel. All rights reserved.</p>
     </footer>

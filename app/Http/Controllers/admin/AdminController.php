@@ -12,18 +12,19 @@ class AdminController extends Controller
 {
     public function indexUsers()
     {
-        $users = User::all();
+        $users = User::orderBy('verification_state', 'asc')->get();
         return view('users', compact('users'));
     }
-    
-    public function showUser(User $user){
+
+    public function showUser(User $user)
+    {
         return view('user-details', compact('user'));
     }
 
     public function verify(User $user)
     {
         $user->update(['verification_state' => 'verified']);
-        
+
         return redirect()->route('users.show', $user)
             ->with('success', 'User has been verified successfully!');
     }
@@ -31,12 +32,13 @@ class AdminController extends Controller
     public function reject(User $user)
     {
         $user->update(['verification_state' => 'rejected']);
-        
+
         return redirect()->route('users.show', $user)
             ->with('success', 'User verification has been rejected!');
     }
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
@@ -47,15 +49,14 @@ class AdminController extends Controller
         if ($user && Hash::check($password, $user->password)) {
             Auth::login($user);
             return redirect('/')->with('success', 'Login successful');
-        } 
-        else {
+        } else {
             return redirect('/login')->withErrors(['Invalid credentials'])->withInput();
         }
     }
 
     public function logout(Request $request)
     {
-        Auth::logout(); 
+        Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
