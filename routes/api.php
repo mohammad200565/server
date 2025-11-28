@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\RentController;
@@ -17,6 +18,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('departments', DepartmentController::class);
         Route::apiResource('rents', RentController::class);
         Route::apiResource('departments.reviews', ReviewController::class)->scoped();
+        Route::apiResource('departments.comments', CommentController::class)->scoped();
         Route::post('departments/{department}/favorite/toggle', [FavoriteController::class, 'toggle']);
         Route::get('favorites/me', [FavoriteController::class, 'userFavorites']);
     });
