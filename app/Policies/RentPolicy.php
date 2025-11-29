@@ -9,23 +9,23 @@ class RentPolicy
 {
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->verification_state == "verified";
     }
     public function view(User $user, Rent $rent): bool
     {
-        return $user->id === $rent->user_id;
+        return $user->verification_state == "verified" && $user->id === $rent->user_id;
     }
     public function create(User $user): bool
     {
-        return true;
+        return $user->verification_state == "verified";
     }
     public function update(User $user, Rent $rent): bool
     {
-        return $user->id === $rent->user_id;
+        return $user->verification_state == "verified" && $user->id === $rent->user_id;
     }
     public function delete(User $user, Rent $rent): bool
     {
-        return $user->id === $rent->user_id;
+        return $user->verification_state == "verified" && $user->id === $rent->user_id;
     }
     public function restore(User $user, Rent $rent): bool
     {

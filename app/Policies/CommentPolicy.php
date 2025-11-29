@@ -9,23 +9,23 @@ class CommentPolicy
 {
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->verification_state == "verified";
     }
     public function view(User $user): bool
     {
-        return true;
+        return $user->verification_state == "verified";
     }
     public function create(User $user): bool
     {
-        return true;
+        return $user->verification_state == "verified";
     }
     public function update(User $user, Comment $comment): bool
     {
-        return $user->id === $comment->user_id;
+        return $user->verification_state == "verified" && $user->id == $comment->user_id;
     }
     public function delete(User $user, Comment $comment): bool
     {
-        return $user->id === $comment->user_id;
+        return  $user->verification_state == "verified" && $user->id == $comment->user_id;
     }
     public function restore(User $user, Comment $comment): bool
     {

@@ -9,23 +9,23 @@ class ReviewPolicy
 {
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->verification_state == "verified";
     }
     public function view(User $user): bool
     {
-        return true;
+        return $user->verification_state == "verified";
     }
     public function create(User $user): bool
     {
-        return true;
+        return $user->verification_state == "verified";
     }
     public function update(User $user, Review $review): bool
     {
-        return $user->id === $review->user_id;
+        return $user->verification_state == "verified" && $user->id === $review->user_id;
     }
     public function delete(User $user, Review $review): bool
     {
-        return $user->id === $review->user_id;
+        return $user->verification_state == "verified" && $user->id === $review->user_id;
     }
     public function restore(User $user, Review $review): bool
     {

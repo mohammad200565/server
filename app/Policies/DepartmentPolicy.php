@@ -18,15 +18,15 @@ class DepartmentPolicy
     }
     public function create(User $user): bool
     {
-        return true;
+        return $user->verification_state == "verified";
     }
     public function update(User $user, Department $department): bool
     {
-        return $user->id === $department->user_id;
+        return $user->verification_state == "verified" && $user->id === $department->user_id;
     }
     public function delete(User $user, Department $department): bool
     {
-        return $user->id === $department->user_id;
+        return $user->verification_state == "verified" && $user->id === $department->user_id;
     }
     public function restore(User $user, Department $department): bool
     {
