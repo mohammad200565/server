@@ -18,12 +18,12 @@ return new class extends Migration
             $table->integer('bedrooms');
             $table->integer('bathrooms');
             $table->integer('floor');
-            $table->json('location');
             $table->decimal('rentFee', 10, 2);
             $table->boolean('isAvailable')->default(true);
             $table->integer('favoritesCount');
             $table->enum('status', ['furnished', 'unfurnished', 'partially furnished']);
             $table->timestamps();
+            $table->json('location');
         });
 
         Schema::create('favorits', function (Blueprint $table) {
