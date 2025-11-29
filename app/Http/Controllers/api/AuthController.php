@@ -71,4 +71,9 @@ class AuthController extends BaseApiController
         $request->user()->tokens()->delete();
         return $this->successResponse("Logged out successfully");
     }
+
+    public function me(Request $request)
+    {
+        return $this->successResponse("User retrieved successfully", new UserResource($request->user()));
+    }
 }

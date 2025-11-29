@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
-        Route::post('/register', [AuthController::class, 'register'])->name('v1.auth.register');
-        Route::post('/login', [AuthController::class, 'login'])->name('v1.auth.login');
+        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/login', [AuthController::class, 'login']);
     });
     Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('v1.auth.logout');
@@ -21,5 +21,6 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('departments.comments', CommentController::class)->scoped();
         Route::post('departments/{department}/favorite/toggle', [FavoriteController::class, 'toggle']);
         Route::get('favorites/me', [FavoriteController::class, 'userFavorites']);
+        Route::get('/me', [AuthController::class, 'me']);
     });
 });
