@@ -14,24 +14,22 @@ class AdminController extends Controller
     public function indexUsers(Request $request)
     {
         $query = User::where('id', '!=', 1);
-        
-        // Search by name (first name or last name)
+
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
-            
-            $query->where(function($q) use ($searchTerm) {
+
+            $query->where(function ($q) use ($searchTerm) {
                 $q->where('first_name', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('last_name', 'LIKE', "%{$searchTerm}%");
+                    ->orWhere('last_name', 'LIKE', "%{$searchTerm}%");
             });
         }
-        
-        // Filter by pending status
+
         if ($request->has('filter') && $request->filter === 'pending') {
             $query->where('verification_state', 'pending');
         }
-        
+
         $users = $query->get();
-        
+
         return view('users', compact('users'));
     }
 
