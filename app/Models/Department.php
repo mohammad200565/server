@@ -63,11 +63,10 @@ class Department extends Model
         return $filters->apply($query);
     }
 
-
-
     public function setLocationAttribute($value)
     {
         $this->attributes['location'] = json_encode([
+            'country' => $value['country'] ?? null,
             'governorate' => $value['governorate'] ?? null,
             'city' => $value['city'] ?? null,
             'district' => $value['district'] ?? null,

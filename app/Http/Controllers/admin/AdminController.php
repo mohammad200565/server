@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Department;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,7 +41,7 @@ class AdminController extends Controller
         return view('user-details', compact('user'));
     }
 
-    public function verify(User $user)
+    public function verifyUser(User $user)
     {
         $user->update(['verification_state' => 'verified']);
 
@@ -48,12 +49,21 @@ class AdminController extends Controller
             ->with('success', 'User has been verified successfully!');
     }
 
-    public function reject(User $user)
+    public function rejectUser(User $user)
     {
         $user->update(['verification_state' => 'rejected']);
 
         return redirect()->route('users.show', $user)
             ->with('success', 'User verification has been rejected!');
+    }
+
+    public function indexDepartment(){
+        $departments = Department::all();
+        return view('departments', compact('departments'));
+    }
+
+    public function showDepartment(Department $department){
+        return view('department-details', compact('department'));
     }
 
     public function login(Request $request)

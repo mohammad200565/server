@@ -261,7 +261,7 @@
                 
                 <div class="detail-item">
                     <div class="detail-label">Phone Number</div>
-                    <div class="detail-value">{{ $user->phone_number ?? 'N/A' }}</div>
+                    <div class="detail-value">{{ $user->phone ?? 'N/A' }}</div>
                 </div>
                 
                 <div class="detail-item">
