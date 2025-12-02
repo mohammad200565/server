@@ -25,5 +25,19 @@
         <div class="department-status {{ $department->status }}">
             {{ ucfirst($department->status) }}
         </div>
+        
+        <!-- Verification Badge -->
+        <div class="verification-badge 
+            @if($department->verification_state === 'verified') verified
+            @elseif($department->verification_state === 'rejected') rejected
+            @else pending @endif">
+            @if($department->verification_state === 'verified')
+                Verified
+            @elseif($department->verification_state === 'rejected')
+                Rejected
+            @else
+                Pending
+            @endif
+        </div>
     </div>
 </a>

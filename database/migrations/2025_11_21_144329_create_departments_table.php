@@ -22,6 +22,7 @@ return new class extends Migration
             $table->boolean('isAvailable')->default(true);
             $table->integer('favoritesCount')->default(0);
             $table->enum('status', ['furnished', 'unfurnished', 'partially furnished']);
+            $table->enum('verification_state', ['verified', 'pending', 'rejected'])->default('pending');
             $table->timestamps();
             $table->json('location');
         });

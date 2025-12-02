@@ -109,7 +109,7 @@
 
         .user-card {
             background-color: #f5f5f5;
-            border: 2px solid #a8a78d;
+            border: 2px solid #c8a87a;
             border-radius: 8px;
             padding: 20px;
             text-align: center;
@@ -253,6 +253,12 @@
                     @endif
                 </div>
             @endforelse
+            
+            @if($users->hasPages())
+                <div class="pagination-container" style="margin-top: 30px; display: flex; justify-content: center;">
+                    {{ $users->withQueryString()->links('vendor.pagination.default') }}
+                </div>
+            @endif
         </div>
     </div>
 </x-layout>

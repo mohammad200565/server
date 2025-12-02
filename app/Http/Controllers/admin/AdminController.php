@@ -29,7 +29,7 @@ class AdminController extends Controller
             $query->where('verification_state', 'pending');
         }
 
-        $users = $query->get();
+        $users = $query->paginate(15);
 
         return view('users', compact('users'));
     }
@@ -55,13 +55,45 @@ class AdminController extends Controller
             ->with('success', 'User verification has been rejected!');
     }
 
-    public function indexDepartment(){
-        $departments = Department::all();
-        return view('departments', compact('departments'));
+    public function indexDepartment(Request $request){
+        $query = Department::with('images');
+        
+        if ($request->has('filter') && $request->filter === 'pending') {
+            $query->where('verification_state', 'pending');
+        }
+        
+        $departments = $query->paginate(15);
+        
+        return view('/departments', compact('departments'));
     }
 
     public function showDepartment(Department $department){
         return view('department-details', compact('department'));
+    }
+
+    public function verifyDepartment(Department $department)
+    {
+        // It's not working I don't know why.
+        //$department->update(['verification_state' => 'verified']);
+
+        $department->verification_state = 'verified';
+        $department->save();
+
+        return redirect('/departments/' . $department->id)
+            ->with('success', 'Department has been verified successfully!');
+    }
+
+    public function rejectDepartment(Department $department)
+    {
+        //$department->update(['verification_state' => 'rejected']);
+
+        $department->verification_state = 'rejected';
+        $department->save();
+
+        logger($department->verification_state);
+
+        return redirect('/departments/' . $department->id)
+            ->with('success', 'Department verification has been rejected!');
     }
 
     public function login(Request $request)

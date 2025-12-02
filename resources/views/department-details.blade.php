@@ -132,9 +132,147 @@
             border-radius: 8px;
             border: 1px solid #c8a87a;
         }
+        .images-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #c8a87a;
+        }
+
+        .images-title {
+            color: #5d4037;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .image-item {
+            height: 200px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #c8a87a;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .image-item:hover {
+            transform: scale(1.05);
+        }
+
+        .department-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Image Modal Styles */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(130, 126, 124, 0.9);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border: 3px solid #c8a87a;
+            border-radius: 8px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-modal:hover {
+            color: #c8a87a;
+        }
+
+        .verification-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #c8a87a;
+        }
+
+        .btn-verify {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .btn-reject {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .btn-pending {
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .verification-badge-detail {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .verification-badge-detail.verified {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .verification-badge-detail.rejected {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .verification-badge-detail.pending {
+            background-color: #ff9800;
+            color: white;
+        }
     </style>
     <div class="department-detail-container">
-        <a href="{{ route('departments.index') }}" class="btn-back">← Back to Departments</a>
+        <a href="/departments" class="btn-back">← Back to Departments</a>
 
         <div class="department-detail-card">
             <div class="department-header">
@@ -145,6 +283,19 @@
                 <div class="department-info">
                     <h1 class="department-title">Department Details</h1>
                     
+                    <div class="verification-badge-detail 
+                        @if($department->verification_state === 'verified') verified
+                        @elseif($department->verification_state === 'rejected') rejected
+                        @else pending @endif">
+                        @if($department->verification_state === 'verified')
+                            ✓ Verified Department
+                        @elseif($department->verification_state === 'rejected')
+                            ✗ Rejected
+                        @else
+                            ⏳ Pending Verification
+                        @endif
+                    </div>
+
                     <div class="department-full-location">
                         <strong>Location:</strong><br>
                         {{ $department->location['country'] ?? 'N/A' }},<br>
@@ -202,6 +353,80 @@
                     {{ $department->description }}
                 </div>
             </div>
+            @if($department->images && $department->images->count() > 0)
+                <div class="images-section">
+                    <div class="images-title">
+                        Department Images ({{ $department->images->count() }})
+                    </div>
+                    <div class="images-grid">
+                        @foreach($department->images as $image)
+                            <div class="image-item">
+                                <img src="{{ asset('departments_images/' . $image->path) }}" 
+                                    alt="Department Image {{ $loop->iteration }}"
+                                    class="department-image"
+                                    onclick="openImageModal(this)">
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+            <div class="verification-actions">
+                @if($department->verification_state === 'pending')
+                    <form action="{{ route('departments.verify', $department) }}" method="POST" style="display: inline;">
+                        @csrf
+                        @method('PUT')
+                        <button type="submit" class="btn-verify">✓ Verify Department</button>
+                    </form>
+                    
+                    <form action="{{ route('departments.reject', $department) }}" method="POST" style="display: inline;">
+                        @csrf
+                        @method('PUT')
+                        <button type="submit" class="btn-reject">✗ Reject Verification</button>
+                    </form>
+                @elseif($department->verification_state === 'rejected')
+                    <form action="{{ route('departments.verify', $department) }}" method="POST" style="display: inline;">
+                        @csrf
+                        @method('PUT')
+                        <button type="submit" class="btn-verify">✓ Verify Department</button>
+                    </form>
+                @else
+                    <form action="{{ route('departments.reject', $department) }}" method="POST" style="display: inline;">
+                        @csrf
+                        @method('PUT')
+                        <button type="submit" class="btn-reject">✗ Reject Verification</button>
+                    </form>            
+                    @endif
+            </div>
         </div>
+        <div id="imageModal" class="image-modal" onclick="closeImageModal()">
+            <span class="close-modal" onclick="closeImageModal()">&times;</span>
+            <img class="modal-content" id="modalImage">
+        </div>
+
     </div>
+    <script>
+        function openImageModal(imgElement) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'flex';
+            modalImg.src = imgElement.src;
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target === modal) {
+                closeImageModal();
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeImageModal();
+            }
+        });
+    </script>
 </x-layout>
