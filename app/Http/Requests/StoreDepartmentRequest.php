@@ -16,6 +16,7 @@ class StoreDepartmentRequest extends FormRequest
         return [
             'description' => 'string',
             'area' => 'required|numeric',
+            'headDescription' => 'nullable|string',
             'rentFee' => 'required|numeric',
             'isAvailable' => 'required|boolean',
             'status' => 'required|in:furnished,unfurnished,partially furnished',

@@ -16,6 +16,7 @@ class UpdateDepartmentRequest extends FormRequest
             'description' => 'sometimes|string',
             'area' => 'sometimes|numeric',
             'rentFee' => 'sometimes|numeric',
+            'headDescription' => 'sometimes|nullable|string',
             'isAvailable' => 'sometimes|boolean',
             'status' => 'sometimes|in:furnished,unfurnished,partially furnished',
             'bedrooms' => 'sometimes|integer|min:0',

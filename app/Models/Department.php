@@ -19,6 +19,7 @@ class Department extends Model
         'bedrooms',
         'bathrooms',
         'floor',
+        'headDescription'
     ];
     protected $casts = [
         'location' => 'array',

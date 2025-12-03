@@ -12,6 +12,7 @@ class DepartmentResource extends JsonResource
         $data = [
             'id' => $this->resource->id,
             'description' => $this->resource->description,
+            'headDescription' => $this->resource->headDescription,
             'area' => $this->resource->area,
             'bedrooms' => $this->resource->bedrooms,
             'bathrooms' => $this->resource->bathrooms,
