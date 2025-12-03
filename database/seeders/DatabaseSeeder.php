@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             'personIdImage' => 'https://www.pngall.com/wp-content/uploads/5/Admin-Profile-PNG-Image.png',
             'birthdate' => '1990-01-01',
             'verification_state' => 'verified',
-            'phone' => '0096395718434',
+            'phone' => '0933995477',
             'email' => 'daleel@admin.com',
             'password' => Hash::make('Daleel2025@DaleelAdmin'),
         ]);

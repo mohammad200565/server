@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\DepartmentResource;
 use App\Models\Department;
 use Illuminate\Support\Facades\Request;
 
@@ -12,9 +13,9 @@ class FavoriteController extends BaseApiController
     {
         $user = Request()->user();
         $favorites = $user->favorites()
-            ->with('images')
+            ->with('images', 'user')
             ->paginate(20);
-        return $this->successResponse('Favorite list loaded', $favorites);
+        return $this->successResponse('Favorite list loaded', DepartmentResource::collection($favorites));
     }
 
 
