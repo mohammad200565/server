@@ -12,8 +12,9 @@ class DepartmentFactory extends Factory
     {
         return [
             'user_id' => User::inRandomOrder()->first()?->id ?? 1,
+            'headDescription' => $this->faker->sentence(6),
             'description' => $this->faker->sentence(6),
-            'area' => $this->faker->randomFloat(2, 30, 200),
+            'area' => $this->faker->numberBetween(70, 200),
             'location' => [
                 'country' => 'Syria',
                 'governorate' => $this->faker->randomElement(['Damascus', 'Aleppo', 'Homs', 'Latakia']),

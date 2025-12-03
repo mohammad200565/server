@@ -11,9 +11,13 @@ class FavoriteController extends BaseApiController
     public function userFavorites()
     {
         $user = Request()->user();
-        $favorites = $user->favorites()->paginate(20);
+        $favorites = $user->favorites()
+            ->with('images')
+            ->paginate(20);
         return $this->successResponse('Favorite list loaded', $favorites);
     }
+
+
     public function toggle(Request $request, Department $department)
     {
         $user = request()->user();
