@@ -11,27 +11,28 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
-{   
-    public function showRecent(){
+{
+    public function showRecent()
+    {
         $recentUsers = User::where('id', '!=', 1)
             ->latest()
             ->take(6)
             ->get();
-        
+
         $recentDepartments = Department::with('user:id,first_name,last_name')
             ->latest()
             ->take(5)
             ->get();
-        
+
         $recentContracts = Rent::with([
-                'user:id,first_name,last_name',
-                'department:id,area,bedrooms,bathrooms,floor,location',
-                'department.user:id,first_name,last_name'
-            ])
+            'user:id,first_name,last_name',
+            'department:id,area,bedrooms,bathrooms,floor,location',
+            'department.user:id,first_name,last_name'
+        ])
             ->latest()
             ->take(6)
             ->get();
-        
+
         return view('recent', compact('recentUsers', 'recentDepartments', 'recentContracts'));
     }
 
@@ -78,70 +79,74 @@ class AdminController extends Controller
             ->with('success', 'User verification has been rejected!');
     }
 
-    public function indexDepartment(Request $request){
+    public function indexDepartment(Request $request)
+    {
         $query = Department::with('images');
-        
+
         if ($request->has('filter') && $request->filter === 'pending') {
             $query->where('verification_state', 'pending');
         }
-        
+
         $departments = $query->paginate(15);
-        
+
         return view('/departments', compact('departments'));
     }
 
-    public function showDepartment(Department $department){
+    public function showDepartment(Department $department)
+    {
         return view('department-details', compact('department'));
     }
 
-    public function indexContract(Request $request){
+    public function indexContract(Request $request)
+    {
         $query = Rent::with([
             'user:id,first_name,last_name,phone,verification_state',
             'department:id,area,bedrooms,bathrooms,floor,status,location,description,verification_state,user_id',
             'department.user:id,first_name,last_name,phone,verification_state'
         ]);
-        
+
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
-            
-            $query->where(function($q) use ($searchTerm) {
-                $q->whereHas('user', function($tenantQuery) use ($searchTerm) {
+
+            $query->where(function ($q) use ($searchTerm) {
+                $q->whereHas('user', function ($tenantQuery) use ($searchTerm) {
                     $tenantQuery->where('first_name', 'LIKE', "%{$searchTerm}%")
-                                ->orWhere('last_name', 'LIKE', "%{$searchTerm}%");
+                        ->orWhere('last_name', 'LIKE', "%{$searchTerm}%");
                 })
-                ->orWhereHas('department.user', function($ownerQuery) use ($searchTerm) {
-                    $ownerQuery->where('first_name', 'LIKE', "%{$searchTerm}%")
-                               ->orWhere('last_name', 'LIKE', "%{$searchTerm}%");
-                })
-                ->orWhereHas('department', function($deptQuery) use ($searchTerm) {
-                    $deptQuery->where('location->city', 'LIKE', "%{$searchTerm}%")
-                              ->orWhere('location->district', 'LIKE', "%{$searchTerm}%")
-                              ->orWhere('location->street', 'LIKE', "%{$searchTerm}%");
-                });
+                    ->orWhereHas('department.user', function ($ownerQuery) use ($searchTerm) {
+                        $ownerQuery->where('first_name', 'LIKE', "%{$searchTerm}%")
+                            ->orWhere('last_name', 'LIKE', "%{$searchTerm}%");
+                    })
+                    ->orWhereHas('department', function ($deptQuery) use ($searchTerm) {
+                        $deptQuery->where('location->city', 'LIKE', "%{$searchTerm}%")
+                            ->orWhere('location->district', 'LIKE', "%{$searchTerm}%")
+                            ->orWhere('location->street', 'LIKE', "%{$searchTerm}%");
+                    });
             });
         }
-        
+
         if ($request->has('filter') && !empty($request->filter)) {
             $query->where('status', $request->filter);
         }
-        
+
         $query->orderBy('created_at', 'desc');
-        
+
         $rents = $query->paginate(10);
-        
+
         $rents->appends($request->query());
-        
+
         return view('contracts', compact('rents'));
     }
 
-    public function showContract(Rent $rent){
+    public function showContract(Rent $rent)
+    {
         $rent->load([
             'user:id,first_name,last_name,phone,verification_state',
             'department.user:id,first_name,last_name,phone,verification_state',
             'department:id,area,bedrooms,bathrooms,floor,status,location,description,verification_state,user_id',
             'department.images:id,path'
         ]);
-        
+
         return view('contract-details', compact('rent'));
     }
 
@@ -196,5 +201,9 @@ class AdminController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+    public function showLogin(Request $request)
+    {
+        return view('auth.login');
     }
 }

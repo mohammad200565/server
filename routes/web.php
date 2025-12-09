@@ -21,7 +21,8 @@ Route::prefix('departments')->name('departments.')->group(function () {
     Route::put('/{department}/reject', [AdminController::class, 'rejectDepartment'])->name('reject')->middleware(['auth']);
 });
 
-Route::prefix('contracts')->name('contracts.')->group(function(){
+Route::prefix('contracts')->name('contracts.')->group(function () {
     Route::get('/', [AdminController::class, 'indexContract'])->name('index');
     Route::get('/{rent}', [AdminController::class, 'showContract'])->name('show')->middleware(['auth']);
 });
+Route::get('/login', [AdminController::class, 'showLogin'])->name('login');;
