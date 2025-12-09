@@ -10,6 +10,7 @@ class UpdateDepartmentRequest extends FormRequest
     {
         return true;
     }
+
     public function rules(): array
     {
         return [
@@ -27,7 +28,7 @@ class UpdateDepartmentRequest extends FormRequest
             'location.district' => 'sometimes|nullable|string',
             'location.street' => 'sometimes|nullable|string',
             'images' => 'sometimes|array',
-            'images.*' => 'string',
+            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
         ];
     }
 }

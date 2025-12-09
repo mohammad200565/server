@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class DepartmentResource extends JsonResource
 {
@@ -30,17 +31,23 @@ class DepartmentResource extends JsonResource
                 'district' => $this->resource->location['district'] ?? null,
                 'street' => $this->resource->location['street'] ?? null,
             ],
-
         ];
-        if ($this->relationLoaded('images')) {
-            $data['images'] = $this->resource->images->map(fn($img) => $img->path);
+
+        if ($this->resource->relationLoaded('images')) {
+            $data['images'] = $this->resource->images->map(
+                fn($img) =>
+                $img->path ? Storage::url($img->path) : null
+            );
         }
-        if ($this->relationLoaded('user')) {
+
+        if ($this->resource->relationLoaded('user')) {
             $data['user'] = new UserResource($this->resource->user);
         }
-        if ($this->relationLoaded('reviews')) {
+
+        if ($this->resource->relationLoaded('reviews')) {
             $data['reviews'] = ReviewResource::collection($this->resource->reviews);
         }
+
         return $data;
     }
 }
