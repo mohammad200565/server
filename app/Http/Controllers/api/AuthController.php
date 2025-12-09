@@ -47,25 +47,40 @@ class AuthController extends BaseApiController
     public function register(RegisterRequest $request)
     {
         $data = $request->validated();
+
         $key = $this->hitRateLimiter($request);
         RateLimiter::hit($key, 60);
+
+        $profilePath = null;
+        $personIdPath = null;
+        if ($request->hasFile('profileImage')) {
+            $profilePath = $request->file('profileImage')->store('users/profile', 'public');
+        }
+        if ($request->hasFile('personIdImage')) {
+            $personIdPath = $request->file('personIdImage')->store('users/personId', 'public');
+        }
+
         $user = User::create([
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
-            'profileImage' => $data['profileImage'],
-            'personIdImage' => $data['personIdImage'],
-            'birthdate' => $data['birthdate'],
-            'location' => $data['location'],
-            'phone' => $data['phone'],
-            'password' => Hash::make($data['password']),
+            'first_name'     => $data['first_name'],
+            'last_name'      => $data['last_name'],
+            'profileImage'   => $profilePath,
+            'personIdImage'  => $personIdPath,
+            'birthdate'      => $data['birthdate'],
+            'location'       => $data['location'],
+            'phone'          => $data['phone'],
+            'password'       => Hash::make($data['password']),
         ]);
+
         RateLimiter::clear($key);
+
         $token = $user->createToken('api-token')->plainTextToken;
+
         return $this->successResponse("Register successful", [
             'user'  => new UserResource($user),
             'token' => $token,
         ]);
     }
+
 
     public function logout(Request $request)
     {
