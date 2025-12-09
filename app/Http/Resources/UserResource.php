@@ -16,7 +16,7 @@ class UserResource extends JsonResource
             'last_name' => $this->resource->last_name,
             'location' => $this->resource->location,
             'phone' => $this->resource->phone,
-            'personIdImage' => $this->resource->personIdImage ? Storage::url($this->resource->personIdImage) : null,,
+            'personIdImage' => $this->resource->personIdImage ? Storage::url($this->resource->personIdImage) : null,
             'profileImage' => $this->resource->profileImage ? Storage::url($this->resource->profileImage) : null,
             'birthdate' => $this->resource->birthdate,
         ];
