@@ -152,8 +152,6 @@ class AdminController extends Controller
 
     public function verifyDepartment(Department $department)
     {
-        // It's not working I don't know why.
-        //$department->update(['verification_state' => 'verified']);
 
         $department->verification_state = 'verified';
         $department->save();
@@ -164,7 +162,6 @@ class AdminController extends Controller
 
     public function rejectDepartment(Department $department)
     {
-        //$department->update(['verification_state' => 'rejected']);
 
         $department->verification_state = 'rejected';
         $department->save();
