@@ -338,7 +338,6 @@
             <a href="/users" class="nav-link {{ request()->is('users') ? 'active' : '' }}">Users</a>
             <a href="/departments" class="nav-link {{ request()->is('departments') ? 'active' : '' }}">Departments</a>
             <a href="/contracts" class="nav-link {{ request()->is('contracts') ? 'active' : '' }}">Contracts</a>
-            <a href="/history" class="nav-link {{ request()->is('history') ? 'active' : '' }}">History</a>
         </div>
         
         @guest
