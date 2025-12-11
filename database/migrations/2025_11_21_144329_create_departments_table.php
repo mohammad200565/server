@@ -14,7 +14,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
             $table->string('headDescription')->nullable();
-            $table->string('description');
+            $table->string('description')->nullable();
             $table->integer('area');
             $table->integer('bedrooms');
             $table->integer('bathrooms');
