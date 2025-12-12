@@ -24,6 +24,7 @@ class DepartmentController extends BaseApiController
     }
     public function store(StoreDepartmentRequest $request)
     {
+        $this->authorize('create');
         $validated = $request->validated();
 
         $validated['user_id'] = $request->user()->id;
