@@ -16,7 +16,7 @@ class CommentController extends BaseApiController
     public function index(Request $request, Department $department)
     {
         $filter = new CommentFilter($request);
-        $query = $department->reviews()->getQuery();
+        $query = $department->comments()->getQuery();
         $comments = $this->loadRelations($request, $query, $this->relations)->filter($filter)->paginate(20);
         return $this->successResponse('Comments retrieved successfully', CommentResource::collection($comments));
     }
