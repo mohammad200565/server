@@ -16,7 +16,7 @@ class RentController extends BaseApiController
     {
         $filters = new RentFilter($request);
         $user = request()->user();
-        $query = $user->rents();
+        $query = $user->rents()->getQuery();
         $rents = $this->loadRelations($request, $query, $this->relations)
             ->filter($filters)->paginate(15);
         return $this->successResponse("Rents fetched successfully", [
