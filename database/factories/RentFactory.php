@@ -13,8 +13,8 @@ class RentFactory extends Factory
         return [
             'user_id' => User::inRandomOrder()->first()->id ?? User::factory(),
             'department_id' => Department::inRandomOrder()->first()->id,
-            'startRent' => fake()->dateTimeBetween('-3 month', 'now'),
-            'endRent' => fake()->dateTimeBetween('now', '+3 month'),
+            'startRent' => fake()->dateTimeBetween('now', '+3 month'),
+            'endRent' => fake()->dateTimeBetween('+3 month', '+12 month'),
             'status' => fake()->randomElement(['cancelled', 'pending', 'completed', 'onRent']),
             'rentFee' => fake()->randomFloat(2, 300, 2000),
         ];

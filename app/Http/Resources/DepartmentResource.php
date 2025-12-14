@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -52,9 +53,47 @@ class DepartmentResource extends JsonResource
             $data['comments'] = CommentResource::collection($this->resource->comments);
         }
         if ($this->resource->relationLoaded('rents')) {
-            $data['rents'] = RentResource::collection($this->resource->rents);
+            $rents = $this->resource->rents;
+            $data['rents'] = RentResource::collection($rents);
+            $rents = $rents->where('status', 'onRent')->sortBy('startRent');
+            $data['free_times'] = $this->calculateFreeTimes($rents);
         }
-
         return $data;
+    }
+    protected function calculateFreeTimes($rents)
+    {
+        $now = now();
+        if ($rents->isEmpty()) {
+            return [[
+                'start_time' => $now->toDateTimeString(),
+                'end_time' => null,
+            ]];
+        }
+        $freeTimes = [];
+        $firstRentStart = Carbon::parse($rents->first()->startRent);
+        if ($now->lt($firstRentStart)) {
+            $freeTimes[] = [
+                'start_time' => $now->toDateTimeString(),
+                'end_time' => $firstRentStart->toDateTimeString(),
+            ];
+        }
+        $previousEnd = Carbon::parse($rents->first()->endRent);
+        foreach ($rents->skip(1) as $rent) {
+            $start = Carbon::parse($rent->startRent);
+            $end   = Carbon::parse($rent->endRent);
+
+            if ($start->gt($previousEnd)) {
+                $freeTimes[] = [
+                    'start_time' => $previousEnd->toDateTimeString(),
+                    'end_time'   => $start->toDateTimeString(),
+                ];
+            }
+            if ($end->gt($previousEnd)) $previousEnd = $end;
+        }
+        $freeTimes[] = [
+            'start_time' => $previousEnd->toDateTimeString(),
+            'end_time' => null,
+        ];
+        return $freeTimes;
     }
 }
