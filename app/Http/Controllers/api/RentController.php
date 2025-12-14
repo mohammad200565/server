@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class RentController extends BaseApiController
 {
-    private $relations = ['user', 'department'];
+    private $relations = ['user', 'department', 'department.user'];
     public function index(Request $request)
     {
         $filters = new RentFilter($request);
