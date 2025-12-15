@@ -21,7 +21,8 @@ class DepartmentFilter
         'bathrooms',
         'floor',
         'min_area',
-        'max_area'
+        'max_area',
+        'user'
     ];
 
     public function __construct(Request $request)
@@ -46,6 +47,10 @@ class DepartmentFilter
         return $this->builder;
     }
 
+    private function filterUser($value)
+    {
+        return $this->builder->where('user_id', $value);
+    }
     private function filterBedrooms($value)
     {
         return $this->builder->where('bedrooms', $value);

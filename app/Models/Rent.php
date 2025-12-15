@@ -16,7 +16,9 @@ class Rent extends Model
         'status',
         'rentFee',
     ];
-
+    protected $attributes = [
+        'status' => 'pending',
+    ];
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -14,7 +14,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
     });
     Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
-        Route::post('/logout', [AuthController::class, 'logout'])->name('v1.auth.logout');
+        Route::post('/logout', [AuthController::class, 'logout']);
         Route::apiResource('departments', DepartmentController::class);
         Route::apiResource('rents', RentController::class);
         Route::apiResource('departments.reviews', ReviewController::class)->scoped();
