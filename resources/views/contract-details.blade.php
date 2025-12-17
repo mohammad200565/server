@@ -1,486 +1,424 @@
 @php
     use Carbon\Carbon;
-
     $today = now();
     $startDate = Carbon::parse($rent->startRent);
     $endDate = Carbon::parse($rent->endRent);
+    
+    // Calculate progress for timeline
+    $totalDays = $startDate->diffInDays($endDate);
+    $daysPassed = $startDate->diffInDays(min($today, $endDate));
+    $progress = $totalDays > 0 ? min(100, max(0, ($daysPassed / $totalDays) * 100)) : 0;
+    
+    $daysRemaining = round($today->diffInDays($endDate, false));
 @endphp
 
 <x-layout title="Contract #{{ $rent->id }} Details">
+
     <style>
+        /* --- Shared Theme Variables --- */
+        :root {
+            --primary: #5d4037;
+            --primary-soft: #8d6e63;
+            --gold: #c8a87a;
+            --gold-light: #f0e6d2;
+            --bg-body: #f9f8f6;
+            --bg-card: #ffffff;
+            --shadow-soft: 0 10px 40px -10px rgba(93, 64, 55, 0.08);
+            --radius-xl: 24px;
+            --radius-md: 16px;
+            --radius-pill: 50px;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        }
+
         .contract-detail-container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 30px;
+            padding: 40px;
         }
 
+        /* --- Back Button --- */
         .btn-back {
-            background-color: #c8a87a;
-            color: #5d4037;
-            border: 2px solid #c8a87a;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-soft);
             text-decoration: none;
-            display: inline-block;
-            font-weight: bold;
-            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 24px;
+            transition: color 0.2s ease;
         }
+        .btn-back:hover { color: var(--primary); }
 
-        .btn-back:hover {
-            background-color: #b89a6a;
-            border-color: #b89a6a;
-            transform: translateY(-2px);
-        }
-
+        /* --- Main Card --- */
         .contract-detail-card {
-            background-color: #f5f5f5;
-            border: 2px solid #c8a87a;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 4px 8px rgba(93, 64, 55, 0.1);
+            background-color: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(255,255,255,0.6);
         }
 
+        /* --- Header --- */
         .contract-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
+            align-items: flex-start;
+            margin-bottom: 40px;
             padding-bottom: 20px;
-            border-bottom: 2px solid #c8a87a;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .contract-title {
-            color: #5d4037;
-            font-size: 28px;
-            font-weight: bold;
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0;
+            letter-spacing: -1px;
+        }
+        .contract-subtitle {
+            color: #999;
+            font-size: 14px;
+            margin-top: 5px;
         }
 
-        .contract-status-large {
-            display: inline-block;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 16px;
-            font-weight: bold;
+        /* --- Status Badge --- */
+        .status-badge-lg {
+            padding: 8px 20px;
+            border-radius: var(--radius-pill);
+            font-size: 14px;
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+        
+        .st-onRent { background: #e3f2fd; color: #1565c0; }
+        .st-pending { background: #fff8e1; color: #f57f17; }
+        .st-completed { background: #e8f5e9; color: #2e7d32; }
+        .st-cancelled { background: #ffebee; color: #c62828; }
 
-        .contract-status-large.cancelled {
-            background-color: #f44336;
-            color: white;
-        }
-
-        .contract-status-large.pending {
-            background-color: #ff9800;
-            color: white;
-        }
-
-        .contract-status-large.completed {
-            background-color: #4caf50;
-            color: white;
-        }
-
-        .contract-status-large.onRent {
-            background-color: #2196f3;
-            color: white;
-        }
-
+        /* --- Parties Section (Tenant -> Owner) --- */
         .parties-section {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fdfdfd;
+            border: 1px solid #f0f0f0;
+            border-radius: var(--radius-md);
+            padding: 30px;
             margin-bottom: 40px;
-            padding: 25px;
-            background: linear-gradient(135deg, #f9f7f2 0%, #f5f5f5 100%);
-            border-radius: 12px;
-            border: 1px solid #e8e8e8;
+            position: relative;
         }
 
         .party-card {
+            flex: 1;
             text-align: center;
         }
 
         .party-role {
-            color: #7d6b5a;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 10px;
+            font-size: 11px;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #aaa;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
 
         .party-name {
-            color: #5d4037;
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 4px;
+            text-decoration: none;
+            display: block;
         }
-
-        .party-details {
-            text-align: left;
-            margin-top: 15px;
-        }
+        .party-name:hover { color: var(--gold); }
 
         .party-detail {
-            margin-bottom: 8px;
-            color: #5d4037;
-        }
-
-        .party-detail strong {
-            color: #7d6b5a;
+            font-size: 13px;
+            color: var(--primary-soft);
         }
 
         .contract-arrow {
+            font-size: 24px;
+            color: var(--gold);
+            padding: 0 40px;
+            opacity: 0.5;
+        }
+
+        /* --- Section Titles --- */
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: #c8a87a;
-            font-size: 40px;
-            font-weight: bold;
+            gap: 10px;
+        }
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--gold);
+            border-radius: 2px;
         }
 
-        .department-section {
+        /* --- Terms Grid --- */
+        .terms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
             margin-bottom: 40px;
-            padding: 25px;
-            background: white;
-            border-radius: 12px;
-            border: 1px solid #e8e8e8;
-        }
-
-        .section-title {
-            color: #5d4037;
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .department-info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .info-item {
-            margin-bottom: 15px;
-        }
-
-        .info-label {
-            color: #7d6b5a;
-            font-weight: 600;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-
-        .info-value {
-            color: #5d4037;
-            font-size: 16px;
-            padding: 8px 12px;
-            background-color: #f9f9f9;
-            border-radius: 6px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .rent-terms-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
         }
 
         .term-card {
+            background: #fcfcfc;
             padding: 20px;
-            background: white;
-            border-radius: 8px;
-            border: 1px solid #e8e8e8;
+            border-radius: 12px;
+            border: 1px solid #f0f0f0;
             text-align: center;
         }
 
-        .term-value {
-            color: #5d4037;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
         .term-label {
-            color: #7d6b5a;
-            font-size: 14px;
+            font-size: 12px;
+            color: #aaa;
             font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
         }
 
-        .contract-timeline {
-            margin: 40px 0;
-            padding: 25px;
-            background: white;
-            border-radius: 12px;
-            border: 1px solid #e8e8e8;
+        .term-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
         }
 
-        .timeline-info {
-            margin-bottom: 20px;
+        /* Value Colors */
+        .val-money { color: var(--primary); }
+        .val-good { color: #2e7d32; }
+        .val-warn { color: #f57f17; }
+        .val-bad { color: #c62828; }
+
+        /* --- Timeline --- */
+        .timeline-container {
+            background: #fcfcfc;
+            padding: 30px;
+            border-radius: var(--radius-md);
+            border: 1px solid #f0f0f0;
+            margin-bottom: 40px;
         }
 
         .timeline-dates {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            color: #7d6b5a;
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-soft);
+            margin-bottom: 12px;
         }
 
-        .progress-container {
-            height: 8px;
-            background-color: #e0e0e0;
-            border-radius: 4px;
+        .progress-track {
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
             overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold) 0%, var(--primary) 100%);
+            border-radius: 5px;
+            transition: width 1s ease;
+        }
+
+        .timeline-status {
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* --- Property Details --- */
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            background: #fdfaf5; /* Subtle gold tint bg */
+            padding: 25px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(200, 168, 122, 0.2);
+        }
+
+        .prop-item {
             margin-bottom: 10px;
         }
+        .prop-label { font-size: 12px; color: #999; font-weight: 600; }
+        .prop-val { font-size: 15px; font-weight: 700; color: var(--primary); }
 
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #c8a87a 0%, #5d4037 100%);
-            border-radius: 4px;
-        }
-
-        .timeline-stats {
-            text-align: center;
-            color: #7d6b5a;
-            font-size: 14px;
-        }
-
-        .notes-section {
+        /* --- Footer Meta --- */
+        .contract-footer {
             margin-top: 40px;
             padding-top: 20px;
-            border-top: 2px solid #c8a87a;
-        }
-
-        .notes-content {
-            color: #5d4037;
-            font-size: 16px;
-            line-height: 1.6;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            border: 1px solid #e8e8e8;
-            min-height: 100px;
-        }
-
-        .no-notes {
-            color: #9e9e9e;
-            font-style: italic;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .contract-meta {
+            border-top: 1px solid #f0f0f0;
             display: flex;
             justify-content: space-between;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-            color: #7d6b5a;
-            font-size: 14px;
-        }
-        
-        .user-link {
-            color: #5d4037;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            border-bottom: 2px solid transparent;
-            padding-bottom: 2px;
+            color: #aaa;
+            font-size: 12px;
         }
 
-        .user-link:hover {
-            color: #c8a87a;
-            border-bottom-color: #c8a87a;
+        @media (max-width: 600px) {
+            .parties-section { flex-direction: column; gap: 20px; }
+            .contract-arrow { transform: rotate(90deg); padding: 10px 0; }
         }
     </style>
 
     <div class="contract-detail-container">
-        <a href="{{ route('contracts.index') }}" class="btn-back">← Back to Contracts</a>
+        
+        <!-- Back Link -->
+        <a href="{{ route('contracts.index') }}" class="btn-back">
+            ← Back to Contracts
+        </a>
 
         <div class="contract-detail-card">
+            
+            <!-- Header -->
             <div class="contract-header">
-                <h1 class="contract-title">Contract #{{ $rent->id }}</h1>
-                <div class="contract-status-large {{ $rent->status }}">
+                <div>
+                    <h1 class="contract-title">Contract #{{ $rent->id }}</h1>
+                    <div class="contract-subtitle">Rental Agreement View</div>
+                </div>
+                
+                <div class="status-badge-lg st-{{ $rent->status }}">
                     {{ ucfirst($rent->status) }}
                 </div>
             </div>
 
+            <!-- Parties (Tenant -> Owner) -->
             <div class="parties-section">
+                <!-- Tenant -->
                 <div class="party-card">
                     <div class="party-role">Tenant</div>
-                    <div class="party-name">
-                        <a href="{{ route('users.show', $rent->user) }}" class="user-link">
-                            {{ $rent->user->first_name }} {{ $rent->user->last_name }}
-                        </a>
-                    </div>
-                    <div class="party-details">
-                        <div class="party-detail">
-                            <strong>Phone:</strong> {{ $rent->user->phone ?? 'N/A' }}
-                        </div>
+                    <a href="{{ route('users.show', $rent->user) }}" class="party-name">
+                        {{ $rent->user->first_name }} {{ $rent->user->last_name }}
+                    </a>
+                    <div class="party-detail">
+                        {{ $rent->user->phone ?? 'No Phone' }}
                     </div>
                 </div>
 
-                <div class="contract-arrow">→</div>
+                <!-- Divider -->
+                <div class="contract-arrow">➜</div>
 
+                <!-- Owner -->
                 <div class="party-card">
-                    <div class="party-role">Owner</div>
-                    <div class="party-name">
-                        <a href="{{ route('users.show', $rent->department->user) }}" class="user-link">
-                            {{ $rent->department->user->first_name }} {{ $rent->department->user->last_name }}
-                        </a>
-                    </div>
-                    <div class="party-details">
-                        <div class="party-detail">
-                            <strong>Phone:</strong> {{ $rent->department->user->phone ?? 'N/A' }}
-                        </div>
+                    <div class="party-role">Department Owner</div>
+                    <a href="{{ route('users.show', $rent->department->user) }}" class="party-name">
+                        {{ $rent->department->user->first_name }} {{ $rent->department->user->last_name }}
+                    </a>
+                    <div class="party-detail">
+                        {{ $rent->department->user->phone ?? 'No Phone' }}
                     </div>
                 </div>
             </div>
 
-            <div class="department-section">
-                <div class="section-title">Department Details</div>
+            <!-- Financial & Date Terms -->
+            <div class="section-title">Terms & Conditions</div>
+            <div class="terms-grid">
                 
-                <div class="department-info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Location</div>
-                        <div class="info-value">
-                            {{ $rent->department->location['street'] ?? 'N/A' }}, 
-                            {{ $rent->department->location['district'] ?? 'N/A' }}, 
-                            {{ $rent->department->location['city'] ?? 'N/A' }}
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-label">Area</div>
-                        <div class="info-value">{{ $rent->department->area }} m²</div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-label">Bedrooms</div>
-                        <div class="info-value">{{ $rent->department->bedrooms }}</div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-label">Bathrooms</div>
-                        <div class="info-value">{{ $rent->department->bathrooms }}</div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-label">Floor</div>
-                        <div class="info-value">{{ $rent->department->floor }}</div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-label">Department Status</div>
-                        <div class="info-value">{{ ucfirst($rent->department->status) }}</div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-label">Verification</div>
-                        <div class="info-value">
-                            <span>
-                                @if($rent->department->verification_state === 'verified')
-                                    Verified
-                                @elseif($rent->department->verification_state === 'rejected')
-                                    Rejected
-                                @else
-                                    Pending
-                                @endif
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="info-item">
-                    <div class="info-label">Description</div>
-                    <div class="info-value" style="min-height: 60px;">
-                        {{ $rent->department->description }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="section-title">Rental Terms</div>
-            <div class="rent-terms-grid">
                 <div class="term-card">
-                    <div class="term-value">${{ number_format($rent->rentFee, 2) }}</div>
                     <div class="term-label">Monthly Rent</div>
+                    <div class="term-value val-money">${{ number_format($rent->rentFee, 2) }}</div>
                 </div>
-                
+
                 <div class="term-card">
-                    <div class="term-value">{{ $rent->startRent }}</div>
                     <div class="term-label">Start Date</div>
+                    <div class="term-value">{{ $startDate->format('M d, Y') }}</div>
                 </div>
-                
+
                 <div class="term-card">
-                    <div class="term-value">{{ $rent->endRent }}</div>
                     <div class="term-label">End Date</div>
+                    <div class="term-value">{{ $endDate->format('M d, Y') }}</div>
                 </div>
-                
+
                 <div class="term-card">
-                    @php
-                        $daysRemaining = round($today->diffInDays($endDate, false));
-                    @endphp
-                    <div class="term-value {{ $daysRemaining < 0 ? 'expired' : ($daysRemaining < 30 ? 'warning' : 'normal') }}"
-                         style="{{ $daysRemaining < 0 ? 'color: #f44336;' : ($daysRemaining < 30 ? 'color: #ff9800;' : 'color: #4caf50;') }}">
-                        {{ $daysRemaining > 0 ? $daysRemaining : 'Expired' }}
+                    <div class="term-label">Status</div>
+                    <div class="term-value 
+                        {{ $daysRemaining < 0 ? 'val-bad' : ($daysRemaining < 30 ? 'val-warn' : 'val-good') }}">
+                        @if($daysRemaining < 0)
+                            Expired
+                        @else
+                            {{ $daysRemaining }} Days Left
+                        @endif
                     </div>
-                    <div class="term-label">Days Remaining</div>
                 </div>
             </div>
 
+            <!-- Timeline -->
             @if($rent->status === 'onRent' || $rent->status === 'pending')
-                <div class="contract-timeline">
-                    <div class="section-title">Contract Timeline</div>
+                <div class="section-title">Timeline Progress</div>
+                <div class="timeline-container">
+                    <div class="timeline-dates">
+                        <span>{{ $startDate->format('d M') }}</span>
+                        <span>Today</span>
+                        <span>{{ $endDate->format('d M') }}</span>
+                    </div>
                     
-                    <div class="timeline-info">
-                        @php
-                            $totalDays = $startDate->diffInDays($endDate);
-                            $daysPassed = round($startDate->diffInDays(min($today, $endDate)));
-                            $progress = min(100, max(0, ($daysPassed / $totalDays) * 100));
-                            
-                            $isFuture = $today < $startDate;
-                            $isActive = $today >= $startDate && $today <= $endDate;
-                            $isCompleted = $today > $endDate;
-                        @endphp
-                        
-                        <div class="timeline-dates">
-                            <span>Start: {{ $startDate->format('M d, Y') }}</span>
-                            <span>Today: {{ $today->format('M d, Y') }}</span>
-                            <span>End: {{ $endDate->format('M d, Y') }}</span>
-                        </div>
-                        
-                        <div class="progress-container">
-                            <div class="progress-bar" style="width: {{ $progress }}%;"></div>
-                        </div>
-                        
-                        <div class="timeline-stats">
-                            @if($isFuture)
-                                <span style="color: #ff9800;">Starts in {{ $today->diffInDays($startDate) }} days</span>
-                            @elseif($isActive)
-                                <span style="color: #4caf50;">{{ number_format($progress, 1) }}% completed ({{ $daysPassed }}/{{ $totalDays }} days)</span>
-                            @else
-                                <span style="color: #9e9e9e;">Contract completed</span>
-                            @endif
-                        </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: {{ $progress }}%;"></div>
+                    </div>
+
+                    <div class="timeline-status">
+                        @if($today < $startDate)
+                            <span class="val-warn">Future Contract: Starts in {{ $today->diffInDays($startDate) }} days</span>
+                        @elseif($today > $endDate)
+                            <span class="val-bad">Contract Ended</span>
+                        @else
+                            <span class="val-good">{{ number_format($progress, 0) }}% Completed</span>
+                        @endif
                     </div>
                 </div>
             @endif
 
-            <div class="contract-meta">
-                <div>
-                    <strong>Contract Created:</strong> {{ $rent->created_at->format('M d, Y H:i') }}
+            <!-- Property Details Summary -->
+            <div class="section-title">Department Information</div>
+            <div class="property-grid">
+                <div class="prop-item">
+                    <div class="prop-label">Address</div>
+                    <div class="prop-val">
+                        {{ $rent->department->location['city'] ?? '' }}, 
+                        {{ $rent->department->location['district'] ?? '' }}
+                    </div>
                 </div>
-                <div>
-                    <strong>Last Updated:</strong> {{ $rent->updated_at->format('M d, Y H:i') }}
+                <div class="prop-item">
+                    <div class="prop-label">Specs</div>
+                    <div class="prop-val">
+                        {{ $rent->department->bedrooms }} Bed • {{ $rent->department->bathrooms }} Bath • {{ $rent->department->area }}m²
+                    </div>
+                </div>
+                <div class="prop-item">
+                    <div class="prop-label">Floor</div>
+                    <div class="prop-val">{{ $rent->department->floor }}</div>
+                </div>
+                <div class="prop-item">
+                    <div class="prop-label">Description</div>
+                    <div class="prop-val" style="font-weight: 500; font-size: 13px;">
+                        {{ Str::limit($rent->department->description, 60) }}
+                    </div>
                 </div>
             </div>
+
+            <!-- Footer Meta -->
+            <div class="contract-footer">
+                <div>Created: {{ $rent->created_at->format('M d, Y H:i') }}</div>
+                <div>Last Updated: {{ $rent->updated_at->format('M d, Y H:i') }}</div>
+            </div>
+
         </div>
     </div>
+
 </x-layout>

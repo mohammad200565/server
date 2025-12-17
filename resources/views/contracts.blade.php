@@ -442,7 +442,7 @@
                             </div>
                             <div class="arrow-divider">→</div>
                             <div class="party-block" style="text-align: right;">
-                                <span class="party-label">Property</span>
+                                <span class="party-label">Department</span>
                                 <span class="party-name">{{ $rent->department->location['city'] ?? 'City' }}</span>
                             </div>
                         </div>

@@ -21,7 +21,7 @@
 
         body {
             background-color: var(--bg-body);
-            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; /* Presuming a modern font is loaded, falls back gracefully */
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
         }
 
         .dashboard-container {
@@ -278,8 +278,9 @@
                 <div class="stat-label">Total Users</div>
                 <div class="stat-value">{{ $totalUsers ?? User::count()-1 }}</div>
             </div>
+            <!-- FIXED LABEL: Departments -->
             <div class="stat-card">
-                <div class="stat-label">Properties</div>
+                <div class="stat-label">Departments</div>
                 <div class="stat-value">{{ $totalDepartments ?? Department::count() }}</div>
             </div>
             <div class="stat-card">
@@ -325,10 +326,11 @@
                 @endforelse
             </div>
 
-            <!-- Properties Column -->
+            <!-- Departments Column -->
             <div class="section-column">
                 <div class="section-header">
-                    <div class="section-title"><span>🏠</span> Properties</div>
+                    <!-- FIXED TITLE: Departments -->
+                    <div class="section-title"><span>🏠</span> Departments</div>
                     <a href="/departments" class="view-all">View All</a>
                 </div>
 
@@ -349,7 +351,7 @@
                         </div>
                     </div>
                 @empty
-                    <div style="text-align:center; padding: 20px; color: #aaa;">No new properties</div>
+                    <div style="text-align:center; padding: 20px; color: #aaa;">No new departments</div>
                 @endforelse
             </div>
 

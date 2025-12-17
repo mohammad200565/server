@@ -1,324 +1,341 @@
 <x-layout title="{{ $user->first_name }} {{ $user->last_name }} - User Details">
+
     <style>
+        /* --- Shared Theme Variables --- */
+        :root {
+            --primary: #5d4037;
+            --primary-soft: #8d6e63;
+            --gold: #c8a87a;
+            --gold-light: #f0e6d2;
+            --bg-body: #f9f8f6;
+            --bg-card: #ffffff;
+            --shadow-soft: 0 10px 40px -10px rgba(93, 64, 55, 0.08);
+            --shadow-hover: 0 20px 40px -5px rgba(93, 64, 55, 0.15);
+            --radius-xl: 24px;
+            --radius-md: 16px;
+            --radius-pill: 50px;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        }
+
         .user-detail-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 30px;
+            padding: 40px;
         }
 
+        /* --- Back Button --- */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-soft);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 24px;
+            transition: color 0.2s ease;
+        }
+        .btn-back:hover { color: var(--primary); }
+
+        /* --- Main Card --- */
         .user-detail-card {
-            background-color: #f5f5f5;
-            border: 2px solid #c8a87a;
-            border-radius: 30px; /* Increased from 12px for smoother look */
-            padding: 30px;
-            box-shadow: 0 4px 8px rgba(93, 64, 55, 0.1);
+            background-color: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(255,255,255,0.6);
         }
 
+        /* --- Header Section --- */
         .user-header {
             display: flex;
             align-items: center;
             gap: 30px;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #a8a78d;
-            padding-bottom: 20px;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #f0f0f0;
         }
 
-        .user-detail-image {
-            width: 150px;
-            height: 150px;
+        .user-image-wrapper {
+            position: relative;
+        }
+
+        .user-detail-image, .user-detail-initials {
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             object-fit: cover;
-            border: 4px solid #c8a87a;
         }
 
         .user-detail-initials {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background-color: #c8a87a;
+            background-color: var(--gold-light);
+            color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #5d4037;
-            font-size: 48px;
-            font-weight: bold;
-            border: 4px solid #c8a87a;
+            font-size: 40px;
+            font-weight: 800;
         }
 
         .user-info {
             flex: 1;
         }
 
-        .user-detail-name {
-            color: #5d4037;
+        .user-name-large {
             font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            letter-spacing: -1px;
         }
 
-        .user-detail-badge {
-            display: inline-block;
+        /* --- Status Badge --- */
+        .status-badge-large {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 20px;
+            border-radius: var(--radius-pill);
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .verified {
-            background-color: #4caf50;
-            color: white;
-        }
+        .bg-verified { background: #e8f5e9; color: #2e7d32; }
+        .bg-pending { background: #fff8e1; color: #f57f17; }
+        .bg-rejected { background: #ffebee; color: #c62828; }
 
-        .rejected {
-            background-color: #f44336;
-            color: white;
-        }
-
-        .pending {
-            background-color: #ff9800;
-            color: white;
-        }
-
+        /* --- Details Grid --- */
         .user-details-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         .detail-item {
-            margin-bottom: 15px;
+            background: #fcfcfc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #f0f0f0;
         }
 
         .detail-label {
-            color: #5d4037;
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 14px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #aaa;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
         }
 
         .detail-value {
-            color: #5d4037;
             font-size: 16px;
-            padding: 10px 14px; /* Increased padding */
-            background-color: white;
-            border-radius: 8px; /* Increased from 4px for smoother look */
-            border: 1px solid #a8a78d;
+            font-weight: 700;
+            color: var(--primary);
         }
 
-        .id-image-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #a8a78d;
+        /* --- ID Document Section --- */
+        .id-section {
+            margin-top: 40px;
         }
 
-        .id-image-title {
-            color: #5d4037;
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-align: center;
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--gold);
+            border-radius: 2px;
         }
 
-        .id-image-container {
+        .id-image-wrapper {
+            background: #fdfdfd;
+            border: 2px dashed #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
             text-align: center;
         }
 
         .id-image {
             max-width: 100%;
             max-height: 400px;
-            border: 3px solid #a8a78d;
-            border-radius: 12px; /* Increased from 8px for smoother look */
-            box-shadow: 0 4px 8px rgba(93, 64, 55, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
-        .no-id-image {
-            text-align: center;
-            color: #5d4037;
+        .no-id-placeholder {
+            color: #ccc;
             font-style: italic;
-            padding: 20px;
-            background-color: white;
-            border: 1px solid #a8a78d;
-            border-radius: 8px; /* Increased from 4px for smoother look */
+            padding: 40px;
         }
 
+        /* --- Action Bar (Footer) --- */
         .verification-actions {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #f0f0f0;
             display: flex;
+            justify-content: flex-end;
             gap: 15px;
-            justify-content: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #a8a78d;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-pill);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-verify {
-            background-color: #4caf50;
+            background-color: #2e7d32;
             color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px; /* Increased from 6px for smoother look */
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
         }
+        .btn-verify:hover { background-color: #1b5e20; }
 
         .btn-reject {
-            background-color: #f44336;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px; /* Increased from 6px for smoother look */
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
+            background-color: white;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
         }
+        .btn-reject:hover { background-color: #ffebee; }
 
-        .btn-pending {
-            background-color: #ff9800;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px; /* Increased from 6px for smoother look */
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .btn-back {
-            background-color: #c8a87a; /* Hazel background */
-            color: #5d4037;
-            border: 2px solid #c8a87a;
-            padding: 12px 24px;
-            border-radius: 8px; /* Increased from 6px for smoother look */
-            cursor: pointer;
-            font-size: 14px;
-            margin-bottom: 20px;
-            text-decoration: none;
-            display: inline-block;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-
-        .btn-back:hover {
-            background-color: #c8a87a;
-            border-color: #c8a87a;
-            transform: translateY(-2px);
-        }
-
-        .user-card-link {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .user-card-link:hover .user-card {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(93, 64, 55, 0.15);
-            transition: all 0.3s ease;
-        }
     </style>
 
     <div class="user-detail-container">
-        <a href="{{ route('users.index') }}" class="btn-back">← Back to Users</a>
+        
+        <!-- Back Link -->
+        <a href="{{ route('users.index') }}" class="btn-back">
+            ← Back to Users
+        </a>
 
         <div class="user-detail-card">
+            
+            <!-- Header -->
             <div class="user-header">
-                @if($user->profile_image)
-                    <img src="{{$user->profile_image}}" alt="{{ $user->first_name }} {{ $user->last_name }}" class="user-detail-image">
-                @else
-                    <div class="user-detail-initials">
-                        {{ substr($user->first_name, 0, 1) }}{{ substr($user->last_name, 0, 1) }}
-                    </div>
-                @endif
+                <div class="user-image-wrapper">
+                    @if($user->profile_image)
+                        <img src="{{$user->profile_image}}" 
+                             alt="{{ $user->first_name }}" 
+                             class="user-detail-image">
+                    @else
+                        <div class="user-detail-initials">
+                            {{ substr($user->first_name, 0, 1) }}
+                        </div>
+                    @endif
+                </div>
                 
                 <div class="user-info">
-                    <h1 class="user-detail-name">{{ $user->first_name }} {{ $user->last_name }}</h1>
-                    <div class="user-detail-badge 
-                        @if($user->verification_state === 'verified') verified
-                        @elseif($user->verification_state === 'rejected') rejected
-                        @else pending @endif">
+                    <h1 class="user-name-large">{{ $user->first_name }} {{ $user->last_name }}</h1>
+                    
+                    <span class="status-badge-large 
+                        @if($user->verification_state === 'verified') bg-verified
+                        @elseif($user->verification_state === 'rejected') bg-rejected
+                        @else bg-pending @endif">
+                        
                         @if($user->verification_state === 'verified')
                             ✓ Verified User
                         @elseif($user->verification_state === 'rejected')
-                            ✗ Rejected
+                            ✗ Verification Rejected
                         @else
                             ⏳ Pending Verification
                         @endif
-                    </div>
+                    </span>
                 </div>
             </div>
 
+            <!-- Details Grid -->
             <div class="user-details-grid">
                 <div class="detail-item">
-                    <div class="detail-label">First Name</div>
-                    <div class="detail-value">{{ $user->first_name }}</div>
+                    <div class="detail-label">Full Name</div>
+                    <div class="detail-value">{{ $user->first_name }} {{ $user->last_name }}</div>
                 </div>
                 
                 <div class="detail-item">
-                    <div class="detail-label">Last Name</div>
-                    <div class="detail-value">{{ $user->last_name }}</div>
+                    <div class="detail-label">Contact Number</div>
+                    <div class="detail-value">{{ $user->phone ?? 'Not Provided' }}</div>
                 </div>
                 
                 <div class="detail-item">
-                    <div class="detail-label">Phone Number</div>
-                    <div class="detail-value">{{ $user->phone ?? 'N/A' }}</div>
-                </div>
-                
-                <div class="detail-item">
-                    <div class="detail-label">Registration Date</div>
+                    <div class="detail-label">Joined On</div>
                     <div class="detail-value">{{ $user->created_at->format('M d, Y') }}</div>
                 </div>
                 
                 <div class="detail-item">
-                    <div class="detail-label">Last Updated</div>
-                    <div class="detail-value">{{ $user->updated_at->format('M d, Y') }}</div>
+                    <div class="detail-label">Last Active</div>
+                    <div class="detail-value">{{ $user->updated_at->diffForHumans() }}</div>
                 </div>
             </div>
 
-            <!-- Person ID Image Section -->
-            <div class="id-image-section">
-                <div class="id-image-title">Person ID Document</div>
-                <div class="id-image-container">
+            <!-- ID Document Section -->
+            <div class="id-section">
+                <h3 class="section-title">Identity Document</h3>
+                
+                <div class="id-image-wrapper">
                     @if($user->person_id_image)
-                        <img src="{{$user->person_id_image}}" alt="Person ID Document" class="id-image">
+                        <img src="{{$user->person_id_image}}" 
+                             alt="ID Document" 
+                             class="id-image"
+                             onclick="window.open(this.src, '_blank')">
+                        <div style="font-size:12px; color:#aaa; margin-top:10px;">(Click to view full size)</div>
                     @else
-                        <div class="no-id-image">No ID document uploaded</div>
+                        <div class="no-id-placeholder">
+                            🚫 No identity document uploaded yet.
+                        </div>
                     @endif
                 </div>
             </div>
 
             <!-- Verification Actions -->
-            @if($user->verification_state === 'pending')
-                <div class="verification-actions">
-                    <form action="{{ route('users.verify', $user) }}" method="POST" style="display: inline;">
-                        @csrf
-                        @method('PUT')
-                        <button type="submit" class="btn-verify">✓ Verify User</button>
+            <div class="verification-actions">
+                @if($user->verification_state === 'pending')
+                    <form action="{{ route('users.reject', $user) }}" method="POST">
+                        @csrf @method('PUT')
+                        <button type="submit" class="action-btn btn-reject">✗ Reject</button>
                     </form>
                     
-                    <form action="{{ route('users.reject', $user) }}" method="POST" style="display: inline;">
-                        @csrf
-                        @method('PUT')
-                        <button type="submit" class="btn-reject">✗ Reject Verification</button>
+                    <form action="{{ route('users.verify', $user) }}" method="POST">
+                        @csrf @method('PUT')
+                        <button type="submit" class="action-btn btn-verify">✓ Verify User</button>
                     </form>
-                </div>
-            @elseif($user->verification_state === 'rejected')
-                <div class="verification-actions">
-                    <form action="{{ route('users.verify', $user) }}" method="POST" style="display: inline;">
-                        @csrf
-                        @method('PUT')
-                        <button type="submit" class="btn-verify">✓ Verify User</button>
+
+                @elseif($user->verification_state === 'rejected')
+                    <form action="{{ route('users.verify', $user) }}" method="POST">
+                        @csrf @method('PUT')
+                        <button type="submit" class="action-btn btn-verify">✓ Re-Verify User</button>
                     </form>
-                </div>
-            @else
-                <div class="verification-actions">
-                    <form action="{{ route('users.reject', $user) }}" method="POST" style="display: inline;">
-                        @csrf
-                        @method('PUT')
-                        <button type="submit" class="btn-reject">✗ Reject Verification</button>
+
+                @else
+                    <form action="{{ route('users.reject', $user) }}" method="POST">
+                        @csrf @method('PUT')
+                        <button type="submit" class="action-btn btn-reject">✗ Revoke Verification</button>
                     </form>
-                </div>
-            @endif
+                @endif
+            </div>
+
         </div>
     </div>
+
 </x-layout>
