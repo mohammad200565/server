@@ -19,9 +19,7 @@ class RentController extends BaseApiController
         $query = $user->rents()->getQuery();
         $rents = $this->loadRelations($request, $query, $this->relations)
             ->filter($filters)->paginate(15);
-        return $this->successResponse("Rents fetched successfully", [
-            'rents' => RentResource::collection($rents),
-        ]);
+        return $this->successResponse("Rents fetched successfully", RentResource::collection($rents),);
     }
     public function store(StoreRentRequest $request)
     {
@@ -39,26 +37,20 @@ class RentController extends BaseApiController
         $data['user_id'] = request()->user()->id;
         $rent = Rent::create($data);
         $rent->load('department', 'user');
-        return $this->successResponse("Rent created successfully", [
-            'rent' => new RentResource($rent),
-        ]);
+        return $this->successResponse("Rent created successfully", new RentResource($rent),);
     }
     public function show(Request $request, Rent $rent)
     {
         $this->authorize('view', $rent);
         $this->loadRelations($request, $rent, $this->relations);
-        return $this->successResponse("Rent fetched successfully", [
-            'rent' => new RentResource($rent),
-        ]);
+        return $this->successResponse("Rent fetched successfully", new RentResource($rent));
     }
     public function update(UpdateRentRequest $request, Rent $rent)
     {
         $this->authorize('update', $rent);
         $rent->update($request->validated());
         $rent->load('department', 'user');
-        return $this->successResponse("Rent updated successfully", [
-            'rent' => new RentResource($rent),
-        ]);
+        return $this->successResponse("Rent updated successfully", new RentResource($rent));
     }
     public function destroy(Rent $rent)
     {

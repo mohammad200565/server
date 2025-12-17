@@ -1,273 +1,397 @@
 <x-layout title="Departments">
+
     <style>
+        /* --- Shared Theme Variables --- */
+        :root {
+            --primary: #5d4037;
+            --primary-soft: #8d6e63;
+            --gold: #c8a87a;
+            --gold-light: #f0e6d2;
+            --bg-body: #f9f8f6;
+            --bg-card: #ffffff;
+            --shadow-soft: 0 10px 40px -10px rgba(93, 64, 55, 0.08);
+            --shadow-hover: 0 20px 40px -5px rgba(93, 64, 55, 0.15);
+            --radius-xl: 24px;
+            --radius-md: 16px;
+            --radius-pill: 50px;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        }
+
         .departments-container {
-            padding: 20px;
-            max-width: 1200px;
+            padding: 40px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
+        /* --- Header & Controls --- */
         .departments-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 24px;
         }
 
         .departments-title {
-            color: #5d4037;
-            text-align: center;
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
             margin: 0;
+            letter-spacing: -1px;
         }
 
-        .search-filter-container {
+        .controls-wrapper {
             display: flex;
-            gap: 15px;
             align-items: center;
+            gap: 16px;
             flex-wrap: wrap;
+            background: white;
+            padding: 8px;
+            border-radius: var(--radius-pill);
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        /* --- Search Input --- */
+        .search-group {
+            position: relative;
         }
 
         .search-box {
-            padding: 10px 15px;
-            border: 2px solid #c8a87a;
-            border-radius: 6px;
-            background-color: white;
-            color: #5d4037;
+            border: none;
+            background: transparent;
+            padding: 12px 20px;
             font-size: 14px;
+            color: var(--primary);
             width: 250px;
+            outline: none;
+            font-weight: 500;
         }
+        .search-box::placeholder { color: #b0bec5; }
 
-        .search-btn {
-            background-color: #c8a87a;
-            color: #5d4037;
-            border: 2px solid #c8a87a;
-            padding: 10px 15px;
-            border-radius: 6px;
+        /* --- Buttons --- */
+        .btn-action {
+            padding: 10px 24px;
+            border-radius: var(--radius-pill);
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
+            border: none;
             transition: all 0.3s ease;
-        }
-
-        .filter-btn {
-            background-color: #c8a87a;
-            color: #5d4037;
-            border: 2px solid #c8a87a;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-
-        .filter-btn:hover {
-            background-color: #e8ba78ff;
-            border-color: #e8ba78ff;
-        }
-
-        .filter-btn.active {
-            background-color: #5d4037;
-            color: #f5f5f5;
-            border-color: #5d4037;
-        }
-
-        .clear-filter {
-            background-color: transparent;
-            color: #5d4037;
-            border: 2px solid #c8a87a;
-            padding: 10px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
+        .btn-search {
+            background-color: var(--primary);
+            color: white;
+        }
+        .btn-search:hover { background-color: #4a332a; }
+
+        .btn-filter {
+            background-color: transparent;
+            color: var(--primary-soft);
+        }
+        .btn-filter:hover {
+            background-color: var(--bg-body);
+            color: var(--primary);
+        }
+        .btn-filter.active {
+            background-color: var(--gold-light);
+            color: var(--primary);
+        }
+
+        /* --- Active Filters --- */
+        .active-filters-bar {
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .filter-tag {
+            background: white;
+            border: 1px solid var(--gold);
+            color: var(--primary);
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .clear-link {
+            font-size: 12px;
+            color: #999;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* --- Grid --- */
         .departments-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        /* --- CARD STYLING (Applied to your component) --- */
+        .department-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
 
         .department-card {
-            background-color: #f5f5f5;
-            border: 2px solid #c8a87a;
-            border-radius: 12px;
-            padding: 20px;
+            background-color: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
             text-align: center;
-            box-shadow: 0 2px 4px rgba(93, 64, 55, 0.1);
-            transition: all 0.3s ease;
         }
 
-        .department-card-link:hover .department-card {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(93, 64, 55, 0.15);
+        .department-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
         }
 
         .department-image-placeholder {
-            font-size: 48px;
-            margin-bottom: 15px;
+            width: 80px;
+            height: 80px;
+            background: #fdfaf5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin: 0 auto 10px;
+            border: 1px solid var(--gold-light);
         }
 
         .department-location {
-            color: #5d4037;
             font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1.3;
         }
 
+        /* Specs Grid */
         .department-specs {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .spec-item {
-            background-color: #c8a87a;
-            color: #5d4037;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 8px 12px;
+            min-width: 60px;
+        }
+
+        .spec-value {
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--primary);
+        }
+
+        .spec-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #999;
+            font-weight: 600;
+            margin-top: 2px;
         }
 
         .department-rent {
-            color: #5d4037;
             font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 5px 0;
+        }
+
+        /* Status & Badges */
+        .department-status, .verification-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .department-status {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
+            background: #f0f0f0;
+            color: #666;
             margin-bottom: 8px;
         }
+        /* Color overrides for status */
+        .department-status.furnished { background: #e8f5e9; color: #2e7d32; }
+        .department-status.unfurnished { background: #ffebee; color: #c62828; }
+        .department-status.partially { background: #fff8e1; color: #f57f17; }
 
-        .department-status.furnished {
-            background-color: #4caf50;
-            color: white;
-        }
+        /* Verification Badge Colors */
+        .verification-badge.verified { background: #e3f2fd; color: #1565c0; }
+        .verification-badge.pending { background: #fff3e0; color: #e65100; }
+        .verification-badge.rejected { background: #ffebee; color: #b71c1c; }
 
-        .department-status.unfurnished {
-            background-color: #f44336;
-            color: white;
-        }
 
-        .department-status.partially furnished {
-            background-color: #ff9800;
-            color: white;
-        }
-
-        .verification-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .verification-badge.verified {
-            background-color: #4caf50;
-            color: white;
-        }
-
-        .verification-badge.rejected {
-            background-color: #f44336;
-            color: white;
-        }
-
-        .verification-badge.pending {
-            background-color: #ff9800;
-            color: white;
-        }
-
-        .no-departments {
-            text-align: center;
-            color: #5d4037;
-            font-size: 18px;
-            margin-top: 50px;
+        .no-data {
             grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px;
+            color: #b0bec5;
+            font-style: italic;
         }
 
-        .department-card-link {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .active-filters {
+        /* --- MANUAL PAGINATION STYLES --- */
+        .custom-paginator-wrapper {
+            margin-top: 50px;
             display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
-        .filter-info {
-            color: #5d4037;
+        .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            color: var(--primary);
+            font-weight: 700;
             font-size: 14px;
-            background-color: #c8a87a;
-            padding: 5px 10px;
-            border-radius: 4px;
+            text-decoration: none;
+            border: 1px solid #eee;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .page-link:hover:not(.disabled) {
+            background: var(--gold);
+            color: white;
+            border-color: var(--gold);
+            transform: translateY(-2px);
+        }
+
+        .page-link.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(93, 64, 55, 0.3);
+        }
+
+        .page-link.disabled {
+            opacity: 0.5;
+            cursor: default;
+            background: #fcfcfc;
+        }
+
+        .page-info-text {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #999;
+            font-size: 13px;
         }
     </style>
 
     <div class="departments-container">
+
+        <!-- Header -->
         <div class="departments-header">
-            <h1 class="departments-title">Departments</h1>
+            <h1 class="departments-title">Property Directory</h1>
             
-            <div class="search-filter-container">
-                <!-- Pending Filter Form -->
+            <div class="controls-wrapper">
                 <form method="GET" action="/departments" style="display: inline;">
                     @if(request('search'))
                         <input type="hidden" name="search" value="{{ request('search') }}">
                     @endif
+                    
                     <button 
                         type="submit" 
                         name="filter" 
                         value="{{ request('filter') === 'pending' ? '' : 'pending' }}" 
-                        class="filter-btn {{ request('filter') === 'pending' ? 'active' : '' }}"
+                        class="btn-action btn-filter {{ request('filter') === 'pending' ? 'active' : '' }}"
                     >
-                        {{ request('filter') === 'pending' ? 'Show All Departments' : 'Show Pending Only' }}
+                        {{ request('filter') === 'pending' ? 'Show All' : 'Pending Review Only' }}
                     </button>
                 </form>
             </div>
         </div>
 
+        <!-- Active Filters -->
         @if(request('filter') === 'pending')
-            <div class="active-filters">
-                <span class="filter-info">
-                    Active filter: Pending Departments Only
-                </span>
-                <a href="/departments" class="clear-filter">Clear Filter</a>
+            <div class="active-filters-bar">
+                <div class="filter-tag">⚠️ Pending Approval</div>
+                <a href="/departments" class="clear-link">Clear Filter</a>
             </div>
         @endif
-        
+
+        <!-- Grid -->
         <div class="departments-grid">
             @forelse($departments as $department)
                 <x-department-card :department="$department" />
             @empty
-                <div class="no-departments">
+                <div class="no-data">
+                    <div style="font-size: 40px; margin-bottom: 20px;">🏠</div>
                     @if(request('filter') === 'pending')
-                        No pending departments found.
+                        No pending properties found.
                     @else
-                        No departments found in the database.
+                        No properties found.
                     @endif
                 </div>
             @endforelse
-
         </div>
+
+        <!-- Manual Pagination -->
         @if($departments->hasPages())
-            <div class="pagination-container" style="margin-top: 30px; display: flex; justify-content: center;">
-                {{ $departments->withQueryString()->links('vendor.pagination.default') }}
+            <div style="margin-top: 50px;">
+                <div class="page-info-text">
+                    Showing {{ $departments->firstItem() }} to {{ $departments->lastItem() }} of {{ $departments->total() }} results
+                </div>
+
+                <div class="custom-paginator-wrapper">
+                    @if ($departments->onFirstPage())
+                        <span class="page-link disabled">‹</span>
+                    @else
+                        <a href="{{ $departments->previousPageUrl() }}" class="page-link">‹</a>
+                    @endif
+
+                    @foreach ($departments->getUrlRange(max(1, $departments->currentPage() - 2), min($departments->lastPage(), $departments->currentPage() + 2)) as $page => $url)
+                        @if ($page == $departments->currentPage())
+                            <span class="page-link active">{{ $page }}</span>
+                        @else
+                            <a href="{{ $url }}" class="page-link">{{ $page }}</a>
+                        @endif
+                    @endforeach
+
+                    @if ($departments->hasMorePages())
+                        <a href="{{ $departments->nextPageUrl() }}" class="page-link">›</a>
+                    @else
+                        <span class="page-link disabled">›</span>
+                    @endif
+                </div>
             </div>
         @endif
     </div>

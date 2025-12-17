@@ -4,361 +4,232 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Daleel Admin' }}</title>
+    
+    <!-- Premium Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --offwhite: #f8f4e9;
-            --hazel: #c8a87a;
-            --brown: #5d4037;
-            --light-brown: #8d6e63;
-            --dark-hazel: #b3956a;
-            --active-color: #7a5c3c;
-            --dark-brown: #3e2723;
+            /* Palette */
+            --primary: #5d4037;
+            --primary-hover: #4a332a;
+            --primary-soft: #8d6e63;
+            
+            --gold: #c8a87a;
+            --gold-light: #f5efe6; /* Lighter cream for hovers */
+            --gold-hover: #b89a6a;
+
+            --bg-body: #f9f8f6; /* Warm luxury gray */
+            --bg-card: #ffffff;
+            
+            /* Shadows & Radius */
+            --shadow-header: 0 4px 20px rgba(93, 64, 55, 0.06);
+            --shadow-card: 0 10px 40px -10px rgba(93, 64, 55, 0.08);
+            --radius-pill: 100px;
+            --radius-card: 24px;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: var(--offwhite);
-            color: var(--brown);
+            background-color: var(--bg-body);
+            color: var(--primary);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .header {
-            background-color: var(--hazel);
-            padding: 1rem 2rem;
+        /* --- Modern Header --- */
+        .navbar {
+            background-color: var(--bg-card);
+            padding: 1.2rem 3rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(93, 64, 55, 0.1);
+            box-shadow: var(--shadow-header);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .logo {
             font-size: 1.5rem;
-            font-weight: 600;
+            font-weight: 800;
             text-decoration: none;
-            color: var(--brown);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        /* Optional: Add a gold dot to logo */
+        .logo::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background-color: var(--gold);
+            border-radius: 50%;
+            display: inline-block;
         }
 
-        .nav-buttons {
+        /* --- Navigation Links --- */
+        .nav-menu {
             display: flex;
-            gap: 1.5rem;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
+            gap: 8px;
+            background: var(--bg-body);
+            padding: 6px;
+            border-radius: var(--radius-pill);
         }
 
         .nav-link {
-            background-color: var(--offwhite);
-            color: var(--brown);
-            border: none;
-            padding: 0.7rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(93, 64, 55, 0.1);
+            color: var(--primary-soft);
             text-decoration: none;
-            display: inline-block;
-            text-align: center;
+            padding: 10px 24px;
+            border-radius: var(--radius-pill);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .nav-link:hover {
-            background-color: var(--dark-hazel);
-            color: var(--offwhite);
-            transform: translateY(-2px);
+            color: var(--primary);
+            background-color: rgba(200, 168, 122, 0.1);
         }
 
         .nav-link.active {
-            background-color: var(--active-color);
-            color: var(--offwhite);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(93, 64, 55, 0.2);
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(93, 64, 55, 0.25);
         }
 
-        .login-btn {
-            background-color: var(--offwhite);
-            color: var(--brown);
-            border: 2px solid var(--brown);
-            padding: 0.5rem 1.5rem;
-            border-radius: 30px;
-            font-weight: 600;
+        /* --- Auth Buttons --- */
+        .auth-btn {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--bg-body);
+            padding: 10px 24px;
+            border-radius: var(--radius-pill);
+            font-weight: 700;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.3s ease;
             text-decoration: none;
-            display: inline-block;
+            transition: all 0.3s ease;
         }
 
-        .login-btn:hover {
-            background-color: var(--brown);
-            color: var(--offwhite);
+        .auth-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold-hover);
+            background-color: white;
+        }
+        
+        .logout-btn {
+            background-color: var(--bg-body);
+            border: none;
+            color: var(--primary);
+        }
+        .logout-btn:hover {
+            background-color: #eee;
+            color: #333;
         }
 
-        .content {
+        /* --- Main Content --- */
+        .main-content {
             flex: 1;
-            padding: 2rem;
+            width: 100%;
+            /* The specific page views will handle their own containers/max-widths 
+               to allow for full-width headers or contained grids */
         }
 
+        /* --- Footer --- */
         .footer {
-            background-color: var(--hazel);
-            padding: 1rem;
+            background-color: white;
+            padding: 2rem;
             text-align: center;
-            color: var(--brown);
+            color: var(--primary-soft);
+            font-size: 0.85rem;
             font-weight: 500;
+            border-top: 1px solid rgba(0,0,0,0.03);
+            margin-top: auto;
         }
 
-        .user-card-link {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .user-card-link:hover .user-card {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(93, 64, 55, 0.15);
-            transition: all 0.3s ease;
-        }
-
-        .user-initials {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: #c8a87a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            color: #5d4037;
-            font-weight: bold;
-            font-size: 24px;
-        }
-
-        .verification-badge.verified {
-            background-color: #84e387ff;
-            color: white;
-        }
-
-        .verification-badge.rejected {
-            background-color: #ec6359ff;
-            color: white;
-        }
-
-        .verification-badge.pending {
-            background-color: #ff9800;
-            color: white;
-        }
-
-        .verification-indicator {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .verification-indicator.verified {
-            background-color: #4caf50;
-            color: white;
-        }
-
-        .verification-indicator.rejected {
-            background-color: #f44336;
-            color: white;
-        }
-
-        .verification-indicator.pending {
-            background-color: #ff9800;
-            color: white;
-        }
-
-        .text-brown { color: var(--brown); }
-        .text-light-brown { color: var(--light-brown); }
-        .text-dark-brown { color: var(--dark-brown); }
-        .text-hazel { color: var(--hazel); }
-        .text-offwhite { color: var(--offwhite); }
-        
-        .bg-brown { background-color: var(--brown); }
-        .bg-light-brown { background-color: var(--light-brown); }
-        .bg-hazel { background-color: var(--hazel); }
-        .bg-offwhite { background-color: var(--offwhite); }
-        .bg-dark-hazel { background-color: var(--dark-hazel); }
-        
-        .border-brown { border-color: var(--brown); }
-        .border-light-brown { border-color: var(--light-brown); }
-        .border-hazel { border-color: var(--hazel); }
-
-        .text-center { text-align: center; }
-        .text-left { text-align: left; }
-        .text-right { text-align: right; }
-        
-        .text-lg { font-size: 1.25rem; }
-        .text-xl { font-size: 1.5rem; }
-        .text-2xl { font-size: 2rem; }
-        .text-3xl { font-size: 2.5rem; }
-
-        .p-4 { padding: 2rem; }
-        .p-6 { padding: 3rem; }
-        .py-4 { padding-top: 2rem; padding-bottom: 2rem; }
-        .px-4 { padding-left: 2rem; padding-right: 2rem; }
-        
-        .m-4 { margin: 2rem; }
-        .my-4 { margin-top: 2rem; margin-bottom: 2rem; }
-        .mx-auto { margin-left: auto; margin-right: auto; }
-        
-        .pagination-container {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .pagination-modern {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .pagination-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background-color: #f5f5f5;
-            color: #5d4037;
-            border: 2px solid #c8a87a;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 4px rgba(93, 64, 55, 0.1);
-        }
-
-        .pagination-btn:hover:not(.disabled) {
-            background-color: #c8a87a;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(93, 64, 55, 0.15);
-            border-color: #b89a6a;
-        }
-
-        .pagination-btn.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background-color: #f0f0f0;
-            color: #9e9e9e;
-            border-color: #e0e0e0;
-        }
-
-        .pagination-icon {
-            width: 16px;
-            height: 16px;
-        }
-
-        .pagination-numbers {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .pagination-number {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background-color: #f5f5f5;
-            color: #5d4037;
-            border: 2px solid #c8a87a;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .pagination-number:hover:not(.active) {
-            background-color: #e8e8e8;
-            border-color: #b89a6a;
-            transform: translateY(-1px);
-        }
-
-        .pagination-number.active {
-            background-color: #5d4037;
-            color: white;
-            border-color: #5d4037;
-            box-shadow: 0 2px 6px rgba(93, 64, 55, 0.2);
-        }
-
-        .pagination-ellipsis {
-            color: #9e9e9e;
-            padding: 0 10px;
-            font-weight: bold;
-        }
-
-        .pagination-info {
-            text-align: center;
-            color: #7d6b5a;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        @media (max-width: 768px) {
-            .header {
+        /* --- Responsive Design --- */
+        @media (max-width: 900px) {
+            .navbar {
                 flex-direction: column;
-                gap: 1rem;
                 padding: 1rem;
+                gap: 1.5rem;
             }
             
-            .nav-buttons {
-                position: static;
-                transform: none;
-                flex-wrap: wrap;
+            .nav-menu {
+                width: 100%;
                 justify-content: center;
+                overflow-x: auto; /* Allow scroll on small mobile */
             }
-            
-            .logo {
-                order: -1;
+
+            .nav-link {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+                white-space: nowrap;
             }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <a href="/" class="logo">Daleel Admins</a>
-        
-        <div class="nav-buttons">
-            <a href="/" class="nav-link {{ request()->is('/') ? 'active' : '' }}">Recent</a>
-            <a href="/users" class="nav-link {{ request()->is('users') ? 'active' : '' }}">Users</a>
-            <a href="/departments" class="nav-link {{ request()->is('departments') ? 'active' : '' }}">Departments</a>
-            <a href="/contracts" class="nav-link {{ request()->is('contracts') ? 'active' : '' }}">Contracts</a>
+
+    <nav class="navbar">
+        <!-- Logo -->
+        <a href="/" class="logo">
+            Daleel Admin
+        </a>
+
+        <!-- Center Navigation -->
+        <div class="nav-menu">
+            <a href="/" class="nav-link {{ request()->is('/') ? 'active' : '' }}">
+                Dashboard
+            </a>
+            <a href="/users" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+                Users
+            </a>
+            <!-- REVERTED LABEL HERE -->
+            <a href="/departments" class="nav-link {{ request()->is('departments*') ? 'active' : '' }}">
+                Departments
+            </a>
+            <a href="/contracts" class="nav-link {{ request()->is('contracts*') ? 'active' : '' }}">
+                Contracts
+            </a>
         </div>
-        
-        @guest
-            <a href="/login" class="login-btn">Log In</a>
-        @endguest
 
-        @auth
-            <form method="POST" action="/logout">
-                @csrf
-                <button class="login-btn" style="font-size: 16px;">Log Out</button>
-            </form>
-        @endauth
+        <!-- Auth Actions -->
+        <div>
+            @guest
+                <a href="/login" class="auth-btn">Log In</a>
+            @endguest
 
-    </header>
+            @auth
+                <form method="POST" action="/logout" style="display:inline;">
+                    @csrf
+                    <button class="auth-btn logout-btn">Log Out</button>
+                </form>
+            @endauth
+        </div>
+    </nav>
 
-    <div class="content">
+    <main class="main-content">
         {{ $slot }}
-    </div>
+    </main>
 
     <footer class="footer">
-        <p>&copy; 2026 Daleel. All rights reserved.</p>
+        <p>&copy; 2026 Daleel. Designed with elegance.</p>
     </footer>
+
 </body>
 </html>

@@ -3,293 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Daleel</title>
+    <title>Login - Daleel Admin</title>
+
+    <!-- Premium Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --offwhite: #f8f4e9;
-            --hazel: #c8a87a;
-            --brown: #5d4037;
-            --light-brown: #8d6e63;
-            --dark-hazel: #b3956a;
-            --active-color: #7a5c3c;
-            --dark-brown: #3e2323ff;
-            --light-red: #ff9b9bff
+            /* Palette */
+            --primary: #5d4037;
+            --primary-hover: #4a332a;
+            --primary-soft: #8d6e63;
+            
+            --gold: #c8a87a;
+            --gold-light: #f5efe6;
+            
+            --bg-body: #f9f8f6;
+            --bg-card: #ffffff;
+            
+            /* Shadows & Radius */
+            --shadow-soft: 0 10px 40px -10px rgba(93, 64, 55, 0.08);
+            --radius-xl: 24px;
+            --radius-md: 12px;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: var(--offwhite);
-            color: var(--brown);
+            background-color: var(--bg-body);
+            color: var(--primary);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
+        /* --- Login Card --- */
         .login-container {
-            max-width: 400px;
-            width: 90%;
-            background: var(--offwhite);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(93, 55, 55, 0.15);
-            border: 2px solid var(--hazel);
-            overflow: hidden;
+            width: 100%;
+            max-width: 440px;
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-soft);
+            padding: 40px;
+            border: 1px solid rgba(255,255,255,0.6);
+            margin: 20px;
         }
 
+        /* --- Header Section --- */
         .login-header {
-            background-color: var(--hazel);
-            padding: 2rem;
             text-align: center;
+            margin-bottom: 30px;
         }
 
         .logo {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--brown);
-            text-decoration: none;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
         }
 
-        .login-body {
-            padding: 2rem;
-        }
-
-        .welcome-text {
-            text-align: center;
-            margin-bottom: 2rem;
+        .logo::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 50%;
         }
 
         .welcome-text h2 {
-            color: var(--brown);
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
         }
 
         .welcome-text p {
-            color: var(--light-brown);
+            color: #999;
+            font-size: 14px;
         }
 
+        /* --- Form Elements --- */
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 20px;
         }
 
         .form-label {
             display: block;
-            color: var(--brown);
+            font-size: 13px;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            color: var(--primary);
+            margin-bottom: 8px;
         }
 
         .form-input {
             width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid var(--light-brown);
-            border-radius: 8px;
-            background: white;
-            color: var(--brown);
-            font-size: 1rem;
-            transition: all 0.3s ease;
+            padding: 12px 16px;
+            font-size: 14px;
+            border: 2px solid #eee;
+            border-radius: var(--radius-md);
+            background: #fcfcfc;
+            color: var(--primary);
+            font-family: inherit;
+            transition: all 0.2s ease;
         }
 
         .form-input:focus {
             outline: none;
-            border-color: var(--hazel);
-            box-shadow: 0 0 0 3px rgba(200, 168, 122, 0.2);
+            border-color: var(--gold);
+            background: white;
+            box-shadow: 0 0 0 4px var(--gold-light);
         }
 
         .form-input::placeholder {
-            color: var(--light-brown);
-            opacity: 0.7;
+            color: #ccc;
         }
 
+        /* --- Button --- */
         .login-btn {
             width: 100%;
-            background-color: var(--brown);
-            color: var(--offwhite);
+            background-color: var(--primary);
+            color: white;
             border: none;
-            padding: 0.75rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
+            padding: 14px;
+            border-radius: var(--radius-pill); /* Using pill shape for buttons */
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-bottom: 1rem;
+            margin-top: 10px;
         }
 
         .login-btn:hover {
-            background-color: var(--dark-brown);
+            background-color: var(--primary-hover);
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(93, 64, 55, 0.2);
         }
 
-        .forgot-password {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .forgot-link {
-            color: var(--light-brown);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
-
-        .forgot-link:hover {
-            color: var(--brown);
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 1.5rem 0;
-            color: var(--light-brown);
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid var(--light-brown);
-            opacity: 0.3;
-        }
-
-        .divider span {
-            padding: 0 1rem;
-            font-size: 0.9rem;
-        }
-
-        .social-login {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .social-btn {
-            flex: 1;
-            padding: 0.75rem;
-            border: 2px solid var(--light-brown);
-            border-radius: 8px;
-            background: white;
-            color: var(--brown);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .social-btn:hover {
-            border-color: var(--hazel);
-            background-color: var(--offwhite);
-        }
-
-        .signup-link {
-            text-align: center;
-            color: var(--light-brown);
-        }
-
-        .signup-link a {
-            color: var(--brown);
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
-
-        .signup-link a:hover {
-            color: var(--dark-brown);
-        }
-
+        /* --- Error Message --- */
         .error-message {
-            background-color: var(--light-red);
-            border: 1px solid var(--light-brown);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            color: var(--brown);
+            background-color: #fef2f2;
+            border: 1px solid #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 500;
             text-align: center;
-            font-size: 1.3rem;
-            font-weight: 600;
-            font-style: oblique;
+            margin-bottom: 20px;
         }
 
-        @media (max-width: 480px) {
-            .login-container {
-                width: 95%;
-            }
-            
-            .login-body {
-                padding: 1.5rem;
-            }
-            
-            .social-login {
-                flex-direction: column;
-            }
+        /* --- Footer Links --- */
+        .login-footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 13px;
+            color: #aaa;
         }
+        
+        .login-footer a {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .login-footer a:hover { text-decoration: underline; }
+
     </style>
 </head>
 <body>
+
     <div class="login-container">
-        <!-- Header -->
+        
         <div class="login-header">
             <div class="logo">Daleel Admin</div>
-        </div>
-
-        <!-- Login Form -->
-        <div class="login-body">
             <div class="welcome-text">
                 <h2>Welcome Back</h2>
-                <p>Sign in to your Daleel account</p>
+                <p>Please enter your details to sign in.</p>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        @if($errors->any())
+            <div class="error-message">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        <form action="/login" method="POST">
+            @csrf
+
+            <!-- Email Input -->
+            <div class="form-group">
+                <label for="email" class="form-label">Email Address</label>
+                <input 
+                    id="email" 
+                    name="email" 
+                    type="email" 
+                    required 
+                    class="form-input"
+                    placeholder="name@example.com"
+                    value="{{ old('email') }}"
+                >
             </div>
 
-            <!-- Error Message (optional) -->
-            @if($errors->any())
-                <div class="error-message text-3xl">
-                    {{ $errors->first() }}
-                </div>
-            @endif
+            <!-- Password Input -->
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input 
+                    id="password"
+                    name="password" 
+                    type="password" 
+                    required 
+                    class="form-input"
+                    placeholder="Enter your password"
+                >
+            </div>
 
-            <form action="/login" method="POST">
-                @csrf
-                
-                <!-- Email Input -->
-                <div class="form-group">
-                    <label for="email" class="form-label">Email Address</label>
-                    <input 
-                        id="email" 
-                        name="email" 
-                        type="email" 
-                        required 
-                        class="form-input"
-                        placeholder="Enter your email"
-                        value="{{ old('email') }}"
-                    >
-                </div>
+            <!-- Submit Button -->
+            <button type="submit" class="login-btn">
+                Sign In
+            </button>
+        </form>
 
-                <!-- Password Input -->
-                <div class="form-group">
-                    <label for="password" class="form-label">Password</label>
-                    <input 
-                        id="password"
-                        name="password" 
-                        type="password" 
-                        required 
-                        class="form-input"
-                        placeholder="Enter your password"
-                    >
-                </div>
-
-                <!-- Login Button -->
-                <button type="submit" class="login-btn">
-                    Sign In
-                </button>
-            </form>
+        <div class="login-footer">
+            &copy; 2026 Daleel. All rights reserved.
         </div>
+
     </div>
+
 </body>
 </html>

@@ -3,337 +3,389 @@
 @use('App\Models\Rent')
 
 <x-layout title="Recent Activities">
+
     <style>
+        /* Modern Reset & Variables */
+        :root {
+            --primary: #5d4037;
+            --primary-soft: #8d6e63;
+            --gold: #c8a87a;
+            --gold-light: #f0e6d2;
+            --bg-body: #f9f8f6; /* Warm creamy background */
+            --bg-card: #ffffff;
+            --shadow-soft: 0 10px 40px -10px rgba(93, 64, 55, 0.08);
+            --shadow-hover: 0 20px 40px -5px rgba(93, 64, 55, 0.15);
+            --radius-xl: 24px;
+            --radius-md: 16px;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        }
+
         .dashboard-container {
-            padding: 20px;
-            max-width: 1400px;
+            padding: 40px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
+        /* --- Header Section --- */
+        .dashboard-header {
+            margin-bottom: 50px;
+            position: relative;
+        }
+
         .dashboard-title {
-            color: #5d4037;
-            text-align: center;
-            margin-bottom: 40px;
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0;
+            letter-spacing: -1px;
         }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 30px;
-        }
-
-        .activity-card {
-            background-color: #f5f5f5;
-            border: 2px solid #c8a87a;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 4px 8px rgba(93, 64, 55, 0.1);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .card-title {
-            color: #5d4037;
-            font-size: 20px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-title-icon {
-            font-size: 24px;
-        }
-
-        .view-all-btn {
-            background-color: #c8a87a;
-            color: #5d4037;
-            border: 2px solid #c8a87a;
-            padding: 8px 16px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-
-        .view-all-btn:hover {
-            background-color: #b89a6a;
-            border-color: #b89a6a;
-        }
-
-        .activity-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background-color: white;
-            border-radius: 8px;
-            border: 1px solid #e8e8e8;
-            transition: all 0.3s ease;
-        }
-
-        .activity-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(93, 64, 55, 0.1);
-        }
-
-        .activity-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .user-icon { background-color: #e3f2fd; color: #1976d2; }
-        .department-icon { background-color: #f3e5f5; color: #7b1fa2; }
-        .contract-icon { background-color: #e8f5e8; color: #388e3c; }
-
-        .activity-content {
-            flex: 1;
-        }
-
-        .activity-title {
-            color: #5d4037;
-            font-weight: bold;
-            margin-bottom: 4px;
-            font-size: 15px;
-        }
-
-        .activity-details {
-            color: #7d6b5a;
-            font-size: 13px;
-            margin-bottom: 4px;
-        }
-
-        .activity-time {
-            color: #9e9e9e;
-            font-size: 12px;
+        .dashboard-subtitle {
+            color: var(--primary-soft);
+            font-size: 16px;
+            margin-top: 8px;
             font-weight: 500;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-            margin-left: 8px;
-        }
-
-        .verified { background-color: #4caf50; color: white; }
-        .pending { background-color: #ff9800; color: white; }
-        .rejected { background-color: #f44336; color: white; }
-        .onRent { background-color: #2196f3; color: white; }
-        .completed { background-color: #4caf50; color: white; }
-        .cancelled { background-color: #f44336; color: white; }
-
-        .user-link, .department-link, .contract-link {
-            color: #5d4037;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .user-link:hover, .department-link:hover, .contract-link:hover {
-            color: #c8a87a;
-            text-decoration: underline;
-        }
-
-        .empty-state {
-            text-align: center;
-            color: #9e9e9e;
-            font-style: italic;
-            padding: 30px;
-            font-size: 14px;
-        }
-
-        .dashboard-stats {
+        /* --- Stats Row (Hero) --- */
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #c8a87a 0%, #b89a6a 100%);
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            color: #5d4037;
-            box-shadow: 0 4px 8px rgba(93, 64, 55, 0.2);
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 160px;
         }
 
-        .stat-value {
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 5px;
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Subtle gradient decorative blob */
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--gold-light) 0%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0.6;
+            transition: transform 0.4s ease;
+        }
+        
+        .stat-card:hover::before {
+            transform: scale(1.5);
         }
 
         .stat-label {
             font-size: 14px;
-            font-weight: 600;
-            opacity: 0.9;
+            font-weight: 700;
+            color: var(--primary-soft);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 1;
         }
+
+        .stat-value {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            z-index: 1;
+            margin-top: auto; /* Push to bottom */
+            letter-spacing: -2px;
+        }
+
+        /* --- Main Content Grid --- */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        @media (max-width: 1200px) {
+            .content-grid { grid-template-columns: 1fr; }
+        }
+
+        .section-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 0 10px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title span {
+            background: var(--gold-light);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .view-all {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--gold);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.3s;
+        }
+        .view-all:hover { color: var(--primary); }
+
+        /* --- Modern List Cards --- */
+        .list-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .list-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 30px rgba(93, 64, 55, 0.08);
+            border-color: var(--gold-light);
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .icon-user { background: #e3f2fd; color: #1565c0; }
+        .icon-dept { background: #fce4ec; color: #c2185b; }
+        .icon-contract { background: #e8f5e9; color: #2e7d32; }
+
+        .card-info {
+            flex: 1;
+        }
+
+        .card-main-text {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 15px;
+            display: block;
+            margin-bottom: 4px;
+            text-decoration: none;
+        }
+
+        .card-sub-text {
+            font-size: 13px;
+            color: var(--primary-soft);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .card-meta {
+            font-size: 11px;
+            font-weight: 600;
+            color: #b0bec5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- Modern Status Pills --- */
+        .status-dot {
+            height: 8px;
+            width: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .status-text {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .st-verified, .st-completed { color: #2e7d32; } .dot-verified, .dot-completed { background: #2e7d32; }
+        .st-pending { color: #f57f17; } .dot-pending { background: #f57f17; }
+        .st-onRent { color: #1565c0; } .dot-onRent { background: #1565c0; }
+
+        .price-tag {
+            background: var(--gold);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
     </style>
 
     <div class="dashboard-container">
-        <h1 class="dashboard-title">Recent Activities Dashboard</h1>
         
-        <!-- Statistics Cards -->
-        <div class="dashboard-stats">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Dashboard</h1>
+            <div class="dashboard-subtitle">Welcome back, here's what's happening today.</div>
+        </div>
+
+        <!-- Hero Stats -->
+        <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-value">{{ $totalUsers ?? User::count()-1 }}</div>
                 <div class="stat-label">Total Users</div>
+                <div class="stat-value">{{ $totalUsers ?? User::count()-1 }}</div>
             </div>
+            <!-- FIXED LABEL: Departments -->
             <div class="stat-card">
+                <div class="stat-label">Departments</div>
                 <div class="stat-value">{{ $totalDepartments ?? Department::count() }}</div>
-                <div class="stat-label">Total Departments</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">{{ $totalContracts ?? Rent::where('status', 'onRent')->count() }}</div>
                 <div class="stat-label">Active Contracts</div>
+                <div class="stat-value">{{ $totalContracts ?? Rent::where('status', 'onRent')->count() }}</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">{{ $pendingUsers ?? User::where('verification_state', 'pending')->count() }}</div>
-                <div class="stat-label">Pending Verifications</div>
+                <div class="stat-label" style="color: #f57f17;">Pending Review</div>
+                <div class="stat-value" style="color: #f57f17;">{{ $pendingUsers ?? User::where('verification_state', 'pending')->count() }}</div>
             </div>
         </div>
-        
-        <div class="dashboard-grid">
-            <div class="activity-card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <span class="card-title-icon">👤</span>
-                        Recent Users
-                    </h2>
-                    <a href="/users" class="view-all-btn">All Users</a>
-                </div>
-                
-                <div class="activity-list">
-                    @forelse($recentUsers as $user)
-                        <div class="activity-item">
-                            <div class="activity-icon user-icon">👤</div>
-                            <div class="activity-content">
-                                <div class="activity-title">
-                                    <a href="/users/{{$user->id}}" class="user-link">
-                                        {{ $user->first_name }} {{ $user->last_name }}
-                                    </a>
-                                    <span class="status-badge {{ $user->verification_state }}">
-                                        {{ ucfirst($user->verification_state) }}
-                                    </span>
-                                </div>
-                                <div class="activity-details">
-                                    📞 {{ $user->phone ?? 'N/A' }}
-                                </div>
-                                <div class="activity-time">
-                                    Joined {{ $user->created_at->diffForHumans() }}
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="empty-state">No recent users found</div>
-                    @endforelse
-                </div>
-            </div>
+
+        <!-- 3 Column Layout -->
+        <div class="content-grid">
             
-            <!-- Recent Departments Card -->
-            <div class="activity-card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <span class="card-title-icon">🏠</span>
-                        Recent Departments
-                    </h2>
-                    <a href="/departments" class="view-all-btn">All Departments</a>
+            <!-- Users Column -->
+            <div class="section-column">
+                <div class="section-header">
+                    <div class="section-title"><span>👤</span> New Users</div>
+                    <a href="/users" class="view-all">View All</a>
                 </div>
                 
-                <div class="activity-list">
-                    @forelse($recentDepartments as $department)
-                        <div class="activity-item">
-                            <div class="activity-icon department-icon">🏠</div>
-                            <div class="activity-content">
-                                <div class="activity-title">
-                                    <a href="/departments/{{$department->id}}" class="department-link">
-                                        {{ $department->location['city'] ?? 'N/A' }}, {{ $department->location['district'] ?? 'N/A' }}
-                                    </a>
-                                    <span class="status-badge {{ $department->status }}">
-                                        {{ ucfirst($department->status) }}
-                                    </span>
-                                </div>
-                                <div class="activity-details">
-                                    📏 {{ $department->area }}m² • 🛏️ {{ $department->bedrooms }} Bed • 🚿 {{ $department->bathrooms }} Bath
-                                    @if($department->user)
-                                        • 👤 {{ $department->user->first_name }} {{ $department->user->last_name }}
-                                    @endif
-                                </div>
-                                <div class="activity-time">
-                                    Added {{ $department->created_at->diffForHumans() }}
-                                    • ${{ number_format($department->rent_fee) }}/month
-                                </div>
+                @forelse($recentUsers as $user)
+                    <div class="list-card">
+                        <div class="icon-box icon-user">
+                           {{ substr($user->first_name, 0, 1) }}
+                        </div>
+                        <div class="card-info">
+                            <a href="/users/{{$user->id}}" class="card-main-text">
+                                {{ $user->first_name }} {{ $user->last_name }}
+                            </a>
+                            <div class="card-meta">
+                                <span>
+                                    <span class="status-dot dot-{{ $user->verification_state }}"></span>
+                                    <span class="status-text st-{{ $user->verification_state }}">{{ $user->verification_state }}</span>
+                                </span>
+                                <span>{{ $user->created_at->diffForHumans(null, true) }}</span>
                             </div>
                         </div>
-                    @empty
-                        <div class="empty-state">No recent departments found</div>
-                    @endforelse
-                </div>
+                    </div>
+                @empty
+                    <div style="text-align:center; padding: 20px; color: #aaa;">No new users</div>
+                @endforelse
             </div>
-            
-            <div class="activity-card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <span class="card-title-icon">📄</span>
-                        Recent Contracts
-                    </h2>
-                    <a href="/contracts" class="view-all-btn">All Contracts</a>
+
+            <!-- Departments Column -->
+            <div class="section-column">
+                <div class="section-header">
+                    <!-- FIXED TITLE: Departments -->
+                    <div class="section-title"><span>🏠</span> Departments</div>
+                    <a href="/departments" class="view-all">View All</a>
                 </div>
-                
-                <div class="activity-list">
-                    @forelse($recentContracts as $contract)
-                        <div class="activity-item">
-                            <div class="activity-icon contract-icon">📄</div>
-                            <div class="activity-content">
-                                <div class="activity-title">
-                                    <a href="contracts/{{$contract->id}}" class="contract-link">
-                                        Contract #{{ $contract->id }}
-                                    </a>
-                                    <span class="status-badge {{ $contract->status }}">
-                                        {{ ucfirst($contract->status) }}
-                                    </span>
-                                </div>
-                                <div class="activity-details">
-                                    👤 {{ $contract->user->first_name ?? 'N/A' }} 
-                                    → 🏠 {{ $contract->department->location['city'] ?? 'N/A' }}
-                                    @if($contract->department->user)
-                                        • 👤 {{ $contract->department->user->first_name }}
-                                    @endif
-                                </div>
-                                <div class="activity-time">
-                                    Created {{ $contract->created_at->diffForHumans() }}
-                                    • ${{ number_format($contract->rent_fee) }}/month
-                                </div>
+
+                @forelse($recentDepartments as $department)
+                    <div class="list-card">
+                        <div class="icon-box icon-dept">🏠</div>
+                        <div class="card-info">
+                            <a href="/departments/{{$department->id}}" class="card-main-text">
+                                {{ $department->location['city'] ?? 'City' }}
+                            </a>
+                            <span class="card-sub-text">
+                                {{ $department->area }}m² • {{ $department->bedrooms }} Beds
+                            </span>
+                            <div class="card-meta">
+                                <span class="price-tag">${{ number_format($department->rent_fee) }}</span>
+                                <span>{{ $department->created_at->diffForHumans(null, true) }}</span>
                             </div>
                         </div>
-                    @empty
-                        <div class="empty-state">No recent contracts found</div>
-                    @endforelse
-                </div>
+                    </div>
+                @empty
+                    <div style="text-align:center; padding: 20px; color: #aaa;">No new departments</div>
+                @endforelse
             </div>
+
+            <!-- Contracts Column -->
+            <div class="section-column">
+                <div class="section-header">
+                    <div class="section-title"><span>📄</span> Contracts</div>
+                    <a href="/contracts" class="view-all">View All</a>
+                </div>
+
+                @forelse($recentContracts as $contract)
+                    <div class="list-card">
+                        <div class="icon-box icon-contract">✓</div>
+                        <div class="card-info">
+                            <a href="contracts/{{$contract->id}}" class="card-main-text">
+                                Contract #{{ $contract->id }}
+                            </a>
+                            <span class="card-sub-text">
+                                {{ $contract->user->first_name ?? 'Client' }} 
+                            </span>
+                            <div class="card-meta">
+                                <span>
+                                    <span class="status-dot dot-{{ $contract->status }}"></span>
+                                    <span class="status-text st-{{ $contract->status }}">{{ $contract->status }}</span>
+                                </span>
+                                <span style="font-weight: 700; color: var(--primary);">${{ number_format($contract->rent_fee) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div style="text-align:center; padding: 20px; color: #aaa;">No recent contracts</div>
+                @endforelse
+            </div>
+
         </div>
     </div>
 </x-layout>
