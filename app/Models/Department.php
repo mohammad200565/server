@@ -53,7 +53,7 @@ class Department extends Model
 
     public function favorites()
     {
-        return $this->belongsToMany(User::class, 'favorits');
+        return $this->belongsToMany(User::class, 'favorites');
     }
 
     public function getAverageRatingAttribute()

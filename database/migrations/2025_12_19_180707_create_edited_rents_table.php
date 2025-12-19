@@ -11,8 +11,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('rents', function (Blueprint $table) {
+        Schema::create('edited_rents', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Rent::class);
             $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
             $table->foreignIdFor(Department::class)->constrained()->onDelete('cascade');
             $table->date('startRent');
@@ -22,8 +23,9 @@ return new class extends Migration
             $table->timestamps();
         });
     }
+
     public function down(): void
     {
-        Schema::dropIfExists('rents');
+        Schema::dropIfExists('edited_rents');
     }
 };

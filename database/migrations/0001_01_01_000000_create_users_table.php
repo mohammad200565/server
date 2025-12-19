@@ -21,6 +21,7 @@ return new class extends Migration
             $table->date('birthdate')->nullable();
             $table->enum('verification_state', ['verified', 'pending', 'rejected'])->default('pending');
             $table->string('password');
+            $table->double('wallet_balance')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });

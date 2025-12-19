@@ -10,17 +10,14 @@
             --bg-body: #f9f8f6;
             --bg-card: #ffffff;
             --shadow-soft: 0 10px 40px -10px rgba(93, 64, 55, 0.08);
-            --shadow-hover: 0 20px 40px -5px rgba(93, 64, 55, 0.15);
             --radius-xl: 24px;
             --radius-md: 16px;
             --radius-pill: 50px;
         }
-
         body {
             background-color: var(--bg-body);
             font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
         }
-
         .department-detail-container {
             max-width: 1100px;
             margin: 0 auto;
@@ -52,27 +49,39 @@
             border-bottom: 1px solid #f0f0f0;
         }
 
-        /* Placeholder Style */
-        .department-image-placeholder-large {
-            width: 140px; height: 140px;
-            background: #fdfaf5; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 60px; flex-shrink: 0;
-            border: 2px solid var(--gold-light);
-        }
-
-        /* NEW: Image Style */
+        /* UPDATED: Medium Rectangular Image */
         .department-header-image {
-            width: 140px; height: 140px;
-            border-radius: 50%;
+            width: 240px;      /* Medium Width */
+            height: 180px;     /* Rectangular Height */
+            border-radius: 16px; /* Rounded corners (not circle) */
             object-fit: cover;
             flex-shrink: 0;
             border: 4px solid white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        /* UPDATED: Fallback for Medium Rectangle */
+        .department-fallback-rect {
+            width: 240px;
+            height: 180px;
+            border-radius: 16px;
+            background: radial-gradient(circle at center, #8d6e63 0%, #5d4037 100%);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            border: 4px solid white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            color: rgba(255,255,255,0.8);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .department-fallback-rect svg {
+            width: 60px; height: 60px;
+            opacity: 0.25;
+            color: white;
         }
 
         .department-info { flex: 1; }
-
         .department-title {
             color: var(--primary); font-size: 28px; font-weight: 800;
             margin: 0 0 10px 0; letter-spacing: -0.5px;
@@ -193,15 +202,23 @@
             <!-- Header -->
             <div class="department-header">
                 
-                <!-- 1. IMAGE DISPLAY LOGIC HERE -->
-                @if($department->image)
+                <!-- 1. UPDATED IMAGE DISPLAY -->
+                @if($department->images->isNotEmpty())
+                    <!-- Using first image from relationship, assuming 'images' relation exists -->
+                    <img src="{{ Storage::url($department->images->first()->path) }}" 
+                         alt="Department Image" 
+                         class="department-header-image">
+                @elseif($department->image)
+                    <!-- Fallback if direct image attribute is used -->
                     <img src="{{ $department->image }}" 
-                         alt="Property Image" 
+                         alt="Department Image" 
                          class="department-header-image">
                 @else
-                    <!-- Fallback if no image -->
-                    <div class="department-image-placeholder-large">
-                        🏠
+                    <!-- New Rectangular Fallback -->
+                    <div class="department-fallback-rect">
+                        <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 9.3V4h-3v2.6L12 3 2 12h3v8h5v-6h4v6h5v-8h3l-9-8.7zM10 10c0-1.1.9-2 2-2s2 .9 2 2H10z"/>
+                        </svg>
                     </div>
                 @endif
                 
@@ -214,7 +231,8 @@
                             @else bg-pending @endif">
                             {{ ucfirst($department->verification_state) }}
                         </span>
-                        <!-- Property Status -->
+
+                        <!-- Department Status -->
                         <span class="badge-pill bg-status">
                             {{ ucfirst($department->status) }}
                         </span>
@@ -259,9 +277,9 @@
 
             <!-- Description -->
             <div class="description-section">
-                <h3 class="section-heading">About this Property</h3>
+                <h3 class="section-heading">About this Department</h3>
                 <div class="description-content">
-                    {{ $department->description ?? 'No description provided for this property.' }}
+                    {{ $department->description ?? 'No description provided for this department.' }}
                 </div>
             </div>
 
@@ -272,8 +290,8 @@
                     <div class="images-grid">
                         @foreach($department->images as $image)
                             <div class="image-item" onclick="openImageModal(this.querySelector('img'))">
-                                <img src="{{ $image->path }}" 
-                                     alt="Property Image" 
+                                <img src="{{ Storage::url($image->path) }}" 
+                                     alt="Department Image" 
                                      class="department-image">
                             </div>
                         @endforeach
@@ -291,12 +309,12 @@
                     
                     <form action="{{ route('departments.verify', $department) }}" method="POST">
                         @csrf @method('PUT')
-                        <button type="submit" class="action-btn btn-verify">✓ Verify Property</button>
+                        <button type="submit" class="action-btn btn-verify">✓ Verify Department</button>
                     </form>
                 @elseif($department->verification_state === 'rejected')
                     <form action="{{ route('departments.verify', $department) }}" method="POST">
                         @csrf @method('PUT')
-                        <button type="submit" class="action-btn btn-verify">✓ Re-Verify Property</button>
+                        <button type="submit" class="action-btn btn-verify">✓ Re-Verify Department</button>
                     </form>
                 @else
                     <form action="{{ route('departments.reject', $department) }}" method="POST">
@@ -312,7 +330,6 @@
             <span class="close-modal">&times;</span>
             <img class="modal-content" id="modalImage">
         </div>
-
     </div>
 
     <script>
@@ -334,3 +351,4 @@
         });
     </script>
 </x-layout>
+`

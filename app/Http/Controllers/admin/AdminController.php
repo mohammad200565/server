@@ -53,7 +53,7 @@ class AdminController extends Controller
             $query->where('verification_state', 'pending');
         }
 
-        $users = $query->paginate(15);
+        $users = $query->paginate(16);
 
         return view('users', compact('users'));
     }
@@ -131,9 +131,10 @@ class AdminController extends Controller
 
         $query->orderBy('created_at', 'desc');
 
-        $rents = $query->paginate(10);
+        $rents = $query->paginate(9);
 
         $rents->appends($request->query());
+        logger($rents->first());
 
         return view('contracts', compact('rents'));
     }
@@ -142,13 +143,13 @@ class AdminController extends Controller
     {
         $rent->load([
             'user:id,first_name,last_name,phone,verification_state',
-            'department.user:id,first_name,last_name,phone,verification_state',
             'department:id,area,bedrooms,bathrooms,floor,status,location,description,verification_state,user_id',
-            'department.images:id,path'
+            'department.user:id,first_name,last_name,phone,verification_state',
+            'department.images:id,path',
         ]);
-
         return view('contract-details', compact('rent'));
     }
+
 
     public function verifyDepartment(Department $department)
     {

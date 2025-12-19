@@ -18,8 +18,6 @@ class StoreDepartmentRequest extends FormRequest
             'area' => 'required|numeric',
             'headDescription' => 'nullable|string',
             'rentFee' => 'required|numeric',
-            'isAvailable' => 'required|boolean',
-            'status' => 'required|in:furnished,unfurnished,partially furnished',
             'bedrooms' => 'required|integer|min:0',
             'bathrooms' => 'required|integer|min:0',
             'floor' => 'required|integer',

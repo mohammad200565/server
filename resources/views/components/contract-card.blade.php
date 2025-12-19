@@ -2,17 +2,14 @@
 
 @php
     use Carbon\Carbon;
-
     $today = now();
-    $startDate = Carbon::parse($rent->startRent);
-    $endDate = Carbon::parse($rent->endRent);
     
-    // Determine what to show in the third column
-    $thirdColumn = [
-        'label' => '',
-        'value' => '',
-        'class' => ''
-    ];
+    // Logic: Handle snake_case vs camelCase
+    $startDate = Carbon::parse($rent->start_rent ?? $rent->startRent);
+    $endDate   = Carbon::parse($rent->end_rent ?? $rent->endRent);
+    $amount    = $rent->rentFee;
+    
+    $thirdColumn = ['label' => '', 'value' => '', 'class' => ''];
     
     switch ($rent->status) {
         case 'onRent':
@@ -21,20 +18,17 @@
             $thirdColumn['value'] = $daysRemaining > 0 ? $daysRemaining : 'Expired';
             $thirdColumn['class'] = $daysRemaining < 30 ? 'warning' : '';
             break;
-            
         case 'pending':
             $daysUntilStart = round($today->diffInDays($startDate, false));
             $thirdColumn['label'] = 'Starts In';
             $thirdColumn['value'] = $daysUntilStart > 0 ? $daysUntilStart . ' days' : 'Starting Soon';
             $thirdColumn['class'] = $daysUntilStart < 7 ? 'warning' : '';
             break;
-            
         case 'completed':
             $thirdColumn['label'] = 'Completed On';
             $thirdColumn['value'] = $endDate->format('M d, Y');
             $thirdColumn['class'] = 'completed';
             break;
-            
         case 'cancelled':
             $thirdColumn['label'] = 'Cancelled';
             $thirdColumn['value'] = '❌';
@@ -56,7 +50,7 @@
             <div class="party-info">
                 <div class="party-label">Tenant</div>
                 <div class="party-name">
-                    {{ $rent->user->first_name }} {{ $rent->user->last_name }}
+                    {{ $rent->user->first_name ?? 'Unknown' }} {{ $rent->user->last_name ?? '' }}
                 </div>
             </div>
             
@@ -65,7 +59,7 @@
             <div class="party-info">
                 <div class="party-label">Owner</div>
                 <div class="party-name">
-                    {{ $rent->department->user->first_name }} {{ $rent->department->user->last_name }}
+                    {{ $rent->department->user->first_name ?? 'Unknown' }} {{ $rent->department->user->last_name ?? '' }}
                 </div>
             </div>
         </div>
@@ -81,14 +75,14 @@
             <div class="rent-period">
                 <div class="detail-label">Rental Period</div>
                 <div class="detail-value">
-                    {{ $rent->startRent }} / <br>
-                     {{ $rent->endRent }}
+                    {{ $startDate->format('Y-m-d') }} / <br>
+                    {{ $endDate->format('Y-m-d') }}
                 </div>
             </div>
             
             <div class="rent-fee">
                 <div class="detail-label">Monthly Rent</div>
-                <div class="detail-value">${{ number_format($rent->rentFee, 2) }}</div>
+                <div class="detail-value">${{ number_format($amount, 2) }}</div>
             </div>
             
             <div class="status-info">

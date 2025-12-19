@@ -332,7 +332,7 @@
                 
                 <div class="term-card">
                     <div class="term-label">Monthly Rent</div>
-                    <div class="term-value val-money">${{ number_format($rent->rentFee, 2) }}</div>
+                    <div class="term-value val-money">${{ number_format(0, 2) }}</div>
                 </div>
 
                 <div class="term-card">
@@ -374,7 +374,7 @@
 
                     <div class="timeline-status">
                         @if($today < $startDate)
-                            <span class="val-warn">Future Contract: Starts in {{ $today->diffInDays($startDate) }} days</span>
+                            <span class="val-warn">Future Contract: Starts in {{ number_format($today->diffInDays($startDate),0) }} days</span>
                         @elseif($today > $endDate)
                             <span class="val-bad">Contract Ended</span>
                         @else

@@ -58,10 +58,8 @@
         }
 
         /* --- Search Input --- */
-        .search-group {
-            position: relative;
-        }
-
+        .search-group { position: relative; }
+        
         .search-box {
             border: none;
             background: transparent;
@@ -72,7 +70,6 @@
             outline: none;
             font-weight: 500;
         }
-        
         .search-box::placeholder { color: #b0bec5; }
 
         /* --- Buttons --- */
@@ -135,7 +132,7 @@
             align-items: center;
             gap: 12px;
         }
-        
+
         .filter-tag {
             background: white;
             border: 1px solid var(--gold);
@@ -156,12 +153,21 @@
         /* --- Contracts Grid --- */
         .contracts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
             gap: 30px;
         }
 
-        /* --- Contract Card --- */
-        .contract-card {
+        /* =========================================
+           CARD COMPONENT STYLES
+           ========================================= */
+        
+        .rent-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .rent-card {
             background-color: var(--bg-card);
             border-radius: var(--radius-xl);
             padding: 24px;
@@ -172,22 +178,17 @@
             flex-direction: column;
             gap: 20px;
             position: relative;
+            height: 100%;
         }
 
-        .contract-card:hover {
+        .rent-card:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-hover);
             border-color: rgba(200, 168, 122, 0.3);
         }
 
-        .card-link-wrapper {
-            text-decoration: none;
-            color: inherit;
-            display: contents;
-        }
-
         /* Card Header */
-        .card-header {
+        .rent-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -195,7 +196,7 @@
             padding-bottom: 15px;
         }
 
-        .contract-id {
+        .rent-id {
             font-size: 16px;
             font-weight: 800;
             color: var(--primary);
@@ -203,10 +204,22 @@
             align-items: center;
             gap: 8px;
         }
-        .contract-id::before { content: '📄'; font-size: 18px; }
+        .rent-id::before { content: '📄'; font-size: 18px; }
 
-        /* Parties Section (Tenant -> Property) */
-        .parties-row {
+        .rent-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .rent-status.onRent { background: #e3f2fd; color: #1565c0; }
+        .rent-status.pending { background: #fff8e1; color: #f57f17; }
+        .rent-status.completed { background: #e8f5e9; color: #2e7d32; }
+        .rent-status.cancelled { background: #ffebee; color: #c62828; }
+
+        /* Parties Section */
+        .rent-parties {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -216,14 +229,15 @@
             border-radius: 12px;
         }
 
-        .party-block {
+        .party-info {
             display: flex;
             flex-direction: column;
             gap: 4px;
         }
+        .party-info:last-child { text-align: right; }
 
         .party-label {
-            font-size: 11px;
+            font-size: 10px;
             text-transform: uppercase;
             color: #aaa;
             font-weight: 700;
@@ -236,62 +250,43 @@
             font-size: 14px;
         }
 
-        .arrow-divider {
-            color: var(--gold);
-            font-size: 18px;
+        .rent-arrow { color: var(--gold); font-size: 18px; }
+
+        /* Department Info */
+        .department-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--primary-soft);
+            padding: 0 4px;
         }
 
         /* Details Grid */
-        .details-grid {
+        .rent-details {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .detail-item {
-            display: flex;
-            align-items: center;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 10px;
-        }
-
-        .detail-icon {
-            width: 32px;
-            height: 32px;
             background: #fcfbf9;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            color: var(--primary-soft);
+            padding: 15px;
+            border-radius: 12px;
         }
 
-        .detail-text {
-            display: flex;
-            flex-direction: column;
-        }
+        .detail-label { font-size: 10px; color: #aaa; margin-bottom: 4px; font-weight: 600;}
+        .detail-value { font-size: 13px; font-weight: 700; color: var(--primary); }
         
-        .dt-label { font-size: 11px; color: #aaa; }
-        .dt-value { font-size: 13px; font-weight: 700; color: var(--primary); }
+        .detail-value.warning { color: #f57f17; }
+        .detail-value.completed { color: #2e7d32; }
+        .detail-value.cancelled { color: #c62828; }
 
-        /* Status Pills */
-        .status-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 20px;
+        .rent-footer {
+            margin-top: auto;
+            border-top: 1px solid #f5f5f5;
+            padding-top: 15px;
             font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
+            color: #bbb;
+            text-align: right;
         }
-
-        .st-onRent { background: #e3f2fd; color: #1565c0; } .dot-onRent { background: #1565c0; }
-        .st-pending { background: #fff8e1; color: #f57f17; } .dot-pending { background: #f57f17; }
-        .st-completed { background: #e8f5e9; color: #2e7d32; } .dot-completed { background: #2e7d32; }
-        .st-cancelled { background: #ffebee; color: #c62828; } .dot-cancelled { background: #c62828; }
-
-        .dot { width: 6px; height: 6px; border-radius: 50%; }
 
         .no-data {
             grid-column: 1 / -1;
@@ -301,9 +296,7 @@
             font-style: italic;
         }
 
-        /* =========================================
-           MANUAL PAGINATION STYLES
-           ========================================= */
+        /* --- Pagination --- */
         .custom-paginator-wrapper {
             margin-top: 50px;
             display: flex;
@@ -357,7 +350,6 @@
             color: #999;
             font-size: 13px;
         }
-
     </style>
 
     <div class="contracts-container">
@@ -420,53 +412,10 @@
         <!-- Contracts Grid -->
         <div class="contracts-grid">
             @forelse($rents as $rent)
-                <a href="/contracts/{{ $rent->id }}" class="card-link-wrapper">
-                    <div class="contract-card">
-                        
-                        <!-- Header -->
-                        <div class="card-header">
-                            <div class="contract-id">
-                                #{{ $rent->id }}
-                            </div>
-                            <div class="status-pill st-{{ $rent->status }}">
-                                <span class="dot dot-{{ $rent->status }}"></span>
-                                {{ ucfirst($rent->status) }}
-                            </div>
-                        </div>
+                
+                <!-- ✅ Render the component using its exact filename: contract-card -->
+                <x-contract-card :rent="$rent" />
 
-                        <!-- Parties involved -->
-                        <div class="parties-row">
-                            <div class="party-block">
-                                <span class="party-label">Tenant</span>
-                                <span class="party-name">{{ $rent->user->first_name ?? 'Unknown' }}</span>
-                            </div>
-                            <div class="arrow-divider">→</div>
-                            <div class="party-block" style="text-align: right;">
-                                <span class="party-label">Department</span>
-                                <span class="party-name">{{ $rent->department->location['city'] ?? 'City' }}</span>
-                            </div>
-                        </div>
-
-                        <!-- Details -->
-                        <div class="details-grid">
-                            <div class="detail-item">
-                                <div class="detail-icon">💲</div>
-                                <div class="detail-text">
-                                    <span class="dt-label">Rent Fee</span>
-                                    <span class="dt-value">${{ number_format($rent->rent_fee) }}</span>
-                                </div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-icon">📅</div>
-                                <div class="detail-text">
-                                    <span class="dt-label">Started</span>
-                                    <span class="dt-value">{{ \Carbon\Carbon::parse($rent->created_at)->format('M d, Y') }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </a>
             @empty
                 <div class="no-data">
                     <div style="font-size: 40px; margin-bottom: 20px;">📄</div>
@@ -486,7 +435,6 @@
                 <div class="page-info-text">
                     Showing {{ $rents->firstItem() }} to {{ $rents->lastItem() }} of {{ $rents->total() }} contracts
                 </div>
-
                 <div class="custom-paginator-wrapper">
                     
                     {{-- Previous Button --}}
@@ -511,11 +459,9 @@
                     @else
                         <span class="page-link disabled">›</span>
                     @endif
-
                 </div>
             </div>
         @endif
 
     </div>
-
 </x-layout>
