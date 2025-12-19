@@ -164,9 +164,6 @@ class AdminController extends Controller
 
         $department->verification_state = 'rejected';
         $department->save();
-
-        logger($department->verification_state);
-
         return redirect('/departments/' . $department->id)
             ->with('success', 'Department verification has been rejected!');
     }

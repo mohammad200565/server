@@ -132,6 +132,12 @@ class DepartmentFilter
                     ->withCount('reviews')
                     ->orderBy('reviews_count', 'asc');
 
+            case 'rentcounter_desc':
+                return $this->builder->orderBy('rentCounter', 'desc');
+
+            case 'rentcounter_asc':
+                return $this->builder->orderBy('rentCounter', 'asc');
+
             default:
                 return $this->builder;
         }

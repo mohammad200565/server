@@ -24,18 +24,19 @@ class RentController extends BaseApiController
     public function store(StoreRentRequest $request)
     {
         $data = $request->validated();
-        $overlap = Rent::where('department_id', $data['department_id'])
+        $overlap = Rent::where('department_id', $data['department_id'])->where('status', 'onRent')
             ->where(function ($query) use ($data) {
                 $query->where('startRent', '<=', $data['endRent'])
                     ->where('endRent', '>=', $data['startRent']);
             })
             ->exists();
-
         if ($overlap) {
             return $this->errorResponse("This house is rented during this period, please choose another time.", 422);
         }
         $data['user_id'] = request()->user()->id;
         $rent = Rent::create($data);
+        $department = $rent->department;
+        $department->increment('rentCounter');
         $rent->load('department', 'user');
         return $this->successResponse("Rent created successfully", new RentResource($rent),);
     }

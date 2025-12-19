@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('bedrooms');
             $table->integer('bathrooms');
             $table->integer('floor');
+            $table->integer('rentCounter')->default(0);
             $table->double('rentFee');
             $table->boolean('isAvailable')->default(true);
             $table->integer('favoritesCount')->default(0);

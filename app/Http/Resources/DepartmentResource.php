@@ -27,6 +27,7 @@ class DepartmentResource extends JsonResource
             'updated_at' => $this->resource->updated_at,
             'average_rating' => $this->resource->average_rating,
             'review_count' => $this->resource->review_count,
+            'rentCounter' => $this->resource->rentCounter,
             'location' => [
                 'governorate' => $this->resource->location['governorate'] ?? null,
                 'city' => $this->resource->location['city'] ?? null,
