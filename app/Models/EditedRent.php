@@ -27,6 +27,10 @@ class EditedRent extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function rent()
+    {
+        return $this->belongsTo(Rent::class);
+    }
 
     public function department()
     {

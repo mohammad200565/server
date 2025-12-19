@@ -90,7 +90,7 @@ class RentController extends BaseApiController
             $end = Carbon::parse($rent->endRent);
             $totalDays = $start->diffInDays($end) + 1;
             $totalFee = $department->rentFee * $totalDays;
-            if ( $totalFee < $user->wallet_balance ) {
+            if ($totalFee < $user->wallet_balance) {
                 return $this->errorResponse(
                     "You don't have enough credit to make the edit.",
                     422
@@ -103,8 +103,7 @@ class RentController extends BaseApiController
                 "Rent updated successfully",
                 new RentResource($rent)
             );
-        }
-        else if ( $rent->status == 'onRent' ){
+        } else if ($rent->status == 'onRent') {
 
             $data = $request->validated();
             $department = $rent->department;
@@ -115,23 +114,23 @@ class RentController extends BaseApiController
             $totalDays = $start->diffInDays($end) + 1;
             $totalFee = $department->rentFee * $totalDays;
 
-            if ( $today->gt($start) || $today->isSameDay($start) ){
+            if ($today->gt($start) || $today->isSameDay($start)) {
                 return $this->errorResponse(
                     "You can't edit the contract after it's begining",
                     422
                 );
             }
-            if ( $totalFee < $user->wallet_balance ) {
+            if ($totalFee < $user->wallet_balance) {
                 return $this->errorResponse(
                     "You don't have enough credit to make the edit.",
                     422
                 );
             }
-            $data['user_id'] = $user->idate ;
-            $data['depratment_id'] = $department->id ;
-            $data['rent_id'] = $rent->id ;
-            $data['status'] = 'onRent' ;
-            $data['rentFee'] = $totalFee ;
+            $data['user_id'] = $user->id;
+            $data['depratment_id'] = $department->id;
+            $data['rent_id'] = $rent->id;
+            $data['status'] = 'onRent';
+            $data['rentFee'] = $totalFee;
 
             $edited_rent = DB::transaction(function () use ($data) {
                 $rent = EditedRent::create($data);
@@ -142,8 +141,7 @@ class RentController extends BaseApiController
                 "A request is sent for the owner to approve the update.",
                 new EditedRentResource($edited_rent)
             );
-        }
-        else {
+        } else {
             return $this->errorResponse(
                 "Only rents with status 'pending' or haven't started yet can be updated.",
                 422
