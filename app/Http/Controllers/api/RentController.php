@@ -6,7 +6,9 @@ use App\Filters\RentFilter;
 use App\Http\Requests\StoreRentRequest;
 use App\Http\Requests\UpdateRentRequest;
 use App\Http\Resources\RentResource;
+use App\Models\Department;
 use App\Models\Rent;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class RentController extends BaseApiController
@@ -24,21 +26,27 @@ class RentController extends BaseApiController
     public function store(StoreRentRequest $request)
     {
         $data = $request->validated();
-        $overlap = Rent::where('department_id', $data['department_id'])->where('status', 'onRent')
+        $overlap = Rent::where('department_id', $data['department_id'])
+            ->where('status', 'onRent')
             ->where(function ($query) use ($data) {
                 $query->where('startRent', '<=', $data['endRent'])
                     ->where('endRent', '>=', $data['startRent']);
             })
             ->exists();
+
         if ($overlap) {
             return $this->errorResponse("This house is rented during this period, please choose another time.", 422);
         }
         $data['user_id'] = request()->user()->id;
+        $department = Department::find($data['department_id']);
+        $start = Carbon::parse($data['startRent']);
+        $end = Carbon::parse($data['endRent']);
+        $totalDays = $start->diffInDays($end) + 1;
+        $data['rentFee'] = $department->rentFee * $totalDays;
         $rent = Rent::create($data);
-        $department = $rent->department;
         $department->increment('rentCounter');
         $rent->load('department', 'user');
-        return $this->successResponse("Rent created successfully", new RentResource($rent),);
+        return $this->successResponse("Rent created successfully", new RentResource($rent));
     }
     public function show(Request $request, Rent $rent)
     {

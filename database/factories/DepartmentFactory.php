@@ -25,21 +25,9 @@ class DepartmentFactory extends Factory
             'bathrooms' => $this->faker->numberBetween(1, 3),
             'floor' => $this->faker->numberBetween(0, 20),
             'favoritesCount' => 0,
-            'rentFee' => $this->faker->randomFloat(2, 100, 2000),
+            'rentFee' => $this->faker->randomFloat(2, 10, 100),
             'isAvailable' => $this->faker->boolean,
             'status' => $this->faker->randomElement(['furnished', 'unfurnished', 'partially furnished']),
         ];
-    }
-
-    public function configure()
-    {
-        return $this->afterCreating(function (Department $department) {
-            $imageCount = $this->faker->numberBetween(1, 5);
-            for ($i = 0; $i < $imageCount; $i++) {
-                $department->images()->create([
-                    'path' => 'departments/fake_image_' . $this->faker->unique()->numberBetween(1, 1000) . '.jpg',
-                ]);
-            }
-        });
     }
 }

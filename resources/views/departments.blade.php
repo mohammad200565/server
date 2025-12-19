@@ -193,7 +193,7 @@
 
         <!-- Header -->
         <div class="departments-header">
-            <h1 class="departments-title">Property Directory</h1>
+            <h1 class="departments-title">Department Directory</h1>
             
             <div class="controls-wrapper">
                 <form method="GET" action="/departments" style="display: inline;">
@@ -225,9 +225,9 @@
                 <div class="no-data">
                     <div style="font-size: 40px; margin-bottom: 20px;">🏠</div>
                     @if(request('filter') === 'pending')
-                        No pending properties found.
+                        No pending department found.
                     @else
-                        No properties found.
+                        No Departments found.
                     @endif
                 </div>
             @endforelse

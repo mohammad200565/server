@@ -2,12 +2,16 @@
 
 @php
     use Carbon\Carbon;
-
     $today = now();
-    $startDate = Carbon::parse($rent->startRent);
-    $endDate = Carbon::parse($rent->endRent);
     
-    // Determine what to show in the third column
+    // FIX 1: Handle snake_case (standard) vs camelCase for dates
+    $startDate = Carbon::parse($rent->start_rent ?? $rent->startRent);
+    $endDate   = Carbon::parse($rent->end_rent ?? $rent->endRent);
+    
+    // FIX 2: Handle snake_case vs camelCase for the Fee
+    // If the column in database is 'rent_fee', accessing 'rentFee' returns null (0).
+    $amount = $rent->rent_fee ?? $rent->rentFee ?? 0;
+
     $thirdColumn = [
         'label' => '',
         'value' => '',
@@ -56,7 +60,7 @@
             <div class="party-info">
                 <div class="party-label">Tenant</div>
                 <div class="party-name">
-                    {{ $rent->user->first_name }} {{ $rent->user->last_name }}
+                    {{ $rent->user->first_name ?? 'Unknown' }} {{ $rent->user->last_name ?? '' }}
                 </div>
             </div>
             
@@ -65,7 +69,7 @@
             <div class="party-info">
                 <div class="party-label">Owner</div>
                 <div class="party-name">
-                    {{ $rent->department->user->first_name }} {{ $rent->department->user->last_name }}
+                    {{ $rent->department->user->first_name ?? 'Unknown' }} {{ $rent->department->user->last_name ?? '' }}
                 </div>
             </div>
         </div>
@@ -81,14 +85,15 @@
             <div class="rent-period">
                 <div class="detail-label">Rental Period</div>
                 <div class="detail-value">
-                    {{ $rent->startRent }} / <br>
-                     {{ $rent->endRent }}
+                    {{ $startDate->format('Y-m-d') }} / <br>
+                    {{ $endDate->format('Y-m-d') }}
                 </div>
             </div>
             
             <div class="rent-fee">
                 <div class="detail-label">Monthly Rent</div>
-                <div class="detail-value">${{ number_format($rent->rentFee, 2) }}</div>
+                <!-- ✅ FIXED: Using the variable calculated above -->
+                <div class="detail-value">${{ number_format($amount, 2) }}</div>
             </div>
             
             <div class="status-info">
