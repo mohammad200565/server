@@ -21,6 +21,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('departments.comments', CommentController::class)->scoped();
         Route::post('departments/{department}/favorite/toggle', [FavoriteController::class, 'toggle']);
         Route::get('favorites/me', [FavoriteController::class, 'userFavorites']);
+        Route::get('favorites/{department}', [FavoriteController::class, 'isFavorite']);
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/rents/{rent}/approve', [RentController::class, 'approveRent']);
         Route::post('/rents/{rent}/reject', [RentController::class, 'rejectRent']);
