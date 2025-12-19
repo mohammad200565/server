@@ -73,20 +73,6 @@ class RentController extends BaseApiController
         $rent->load('department', 'user');
         return $this->successResponse("Rent cancelled successfully", new RentResource($rent));
     }
-    public function completeRent(Request $request, Rent $rent)
-    {
-        $this->authorize('completeRent', $rent);
-        if ($rent->status !== 'onRent') {
-            return $this->errorResponse("Only rents with status 'onRent' can be completed.", 422);
-        }
-        $rent->status = 'completed';
-        $department = $rent->department;
-        $department->isAvailable = true;
-        $department->save();
-        $rent->save();
-        $rent->load('department', 'user');
-        return $this->successResponse("Rent completed successfully", new RentResource($rent));
-    }
     public function approveRent(Request $request, Rent $rent)
     {
         $this->authorize('approveRent', $rent);

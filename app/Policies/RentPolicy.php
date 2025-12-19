@@ -32,11 +32,6 @@ class RentPolicy
         $department = $rent->department;
         return $user->verification_state == "verified" && ($user->id === $department->user_id || $user->id === $rent->user_id);
     }
-    public function completeRent(User $user, Rent $rent): bool
-    {
-        $department = $rent->department;
-        return $user->verification_state == "verified" && $user->id === $department->user_id;
-    }
     public function approveRent(User $user, Rent $rent): bool
     {
         $department = $rent->department;
