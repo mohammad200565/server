@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Filters\RentFilter;
 use App\Http\Requests\StoreRentRequest;
 use App\Http\Requests\UpdateRentRequest;
-use App\Http\Resources\EditedRentsResource;
+use App\Http\Resources\EditedRentResource;
 use App\Http\Resources\RentResource;
 use App\Models\Department;
+use App\Models\EditedRent;
 use App\Models\Rent;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -133,13 +134,13 @@ class RentController extends BaseApiController
             $data['rentFee'] = $totalFee ;
 
             $edited_rent = DB::transaction(function () use ($data) {
-                $rent = Rent::create($data);
+                $rent = EditedRent::create($data);
                 return $rent;
             });
-            
+
             return $this->successResponse(
                 "A request is sent for the owner to approve the update.",
-                new EditedRentsResource($edited_rent)
+                new EditedRentResource($edited_rent)
             );
         }
         else {
