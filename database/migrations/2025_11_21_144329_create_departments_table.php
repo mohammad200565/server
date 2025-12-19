@@ -23,16 +23,16 @@ return new class extends Migration
             $table->double('rentFee');
             $table->boolean('isAvailable')->default(true);
             $table->integer('favoritesCount')->default(0);
-            $table->enum('status', ['furnished', 'unfurnished', 'partially furnished']);
+            $table->enum('status', ['furnished', 'unfurnished', 'partially furnished'])->default('unfurnished');
             $table->enum('verification_state', ['verified', 'pending', 'rejected'])->default('pending');
             $table->timestamps();
             $table->json('location');
         });
 
-        Schema::create('favorits', function (Blueprint $table) {
-            $table->id();
+        Schema::create('favorites', function (Blueprint $table) {
             $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
             $table->foreignIdFor(Department::class)->constrained()->onDelete('cascade');
+            $table->primary(['user_id', 'department_id']);
             $table->timestamps();
         });
     }
