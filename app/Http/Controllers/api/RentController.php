@@ -32,6 +32,7 @@ class RentController extends BaseApiController
     {
         $data = $request->validated();
         $user = request()->user();
+
         $start = Carbon::parse($data['startRent'])->startOfDay();
         $end   = Carbon::parse($data['endRent'])->endOfDay();
 
@@ -43,37 +44,45 @@ class RentController extends BaseApiController
                     ->where('endRent', '>=', $start);
             })
             ->exists();
+
         if ($overlap) {
             return $this->errorResponse(
                 "This house is rented during this period, please choose another time.",
                 422
             );
         }
+
         $department = Department::findOrFail($data['department_id']);
-        $start = Carbon::parse($data['startRent']);
-        $end = Carbon::parse($data['endRent']);
+
         $totalDays = $start->diffInDays($end) + 1;
         $totalRentFee = $department->rentFee * $totalDays;
+
         if (!$user->wallet_balance || $user->wallet_balance < $totalRentFee) {
             return $this->errorResponse(
                 "Insufficient balance in your wallet to rent this Department.",
                 422
             );
         }
-        $data['user_id'] = $user->id;
-        $data['rentFee'] = $totalRentFee;
+
+        $data['startRent'] = $start;
+        $data['endRent']   = $end;
+        $data['user_id']   = $user->id;
+        $data['rentFee']   = $totalRentFee;
 
         $rent = DB::transaction(function () use ($department, $data) {
             $rent = Rent::create($data);
             $department->increment('rentCounter');
             return $rent;
         });
+
         $rent->load('department', 'user');
+
         return $this->successResponse(
             "Rent created successfully",
             new RentResource($rent)
         );
     }
+
 
 
     public function show(Request $request, Rent $rent)
