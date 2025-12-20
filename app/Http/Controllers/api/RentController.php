@@ -50,7 +50,7 @@ class RentController extends BaseApiController
         $end = Carbon::parse($data['endRent']);
         $totalDays = $start->diffInDays($end) + 1;
         $totalRentFee = $department->rentFee * $totalDays;
-        if (!$user->wallet_balance || $user->wallet_balance->balance < $totalRentFee) {
+        if (!$user->wallet_balance || $user->wallet_balance < $totalRentFee) {
             return $this->errorResponse(
                 "Insufficient balance in your wallet to rent this Department.",
                 422

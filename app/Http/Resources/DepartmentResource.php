@@ -70,30 +70,33 @@ class DepartmentResource extends JsonResource
                 'end_time' => null,
             ]];
         }
+        $rents = $rents->sortBy('startRent')->values();
         $freeTimes = [];
-        $firstRentStart = Carbon::parse($rents->first()->startRent);
-        if ($now->lt($firstRentStart)) {
+        $firstStart  = Carbon::parse($rents->first()->startRent)->startOfDay();
+        $previousEnd = Carbon::parse($rents->first()->endRent)->endOfDay();
+        if ($now->lt($firstStart)) {
             $freeTimes[] = [
                 'start_time' => $now->toDateTimeString(),
-                'end_time' => $firstRentStart->toDateTimeString(),
+                'end_time'   => $firstStart->toDateTimeString(),
             ];
         }
-        $previousEnd = Carbon::parse($rents->first()->endRent);
         foreach ($rents->skip(1) as $rent) {
-            $start = Carbon::parse($rent->startRent);
-            $end   = Carbon::parse($rent->endRent);
+            $start = Carbon::parse($rent->startRent)->startOfDay();
+            $end   = Carbon::parse($rent->endRent)->endOfDay();
 
-            if ($start->gt($previousEnd)) {
+            if ($start->gt($previousEnd->copy()->addSecond())) {
                 $freeTimes[] = [
-                    'start_time' => $previousEnd->toDateTimeString(),
+                    'start_time' => $previousEnd->copy()->addSecond()->toDateTimeString(),
                     'end_time'   => $start->toDateTimeString(),
                 ];
             }
-            if ($end->gt($previousEnd)) $previousEnd = $end;
+            if ($end->gt($previousEnd)) {
+                $previousEnd = $end;
+            }
         }
         $freeTimes[] = [
-            'start_time' => $previousEnd->toDateTimeString(),
-            'end_time' => null,
+            'start_time' => $previousEnd->copy()->addSecond()->toDateTimeString(),
+            'end_time'   => null,
         ];
         return $freeTimes;
     }
