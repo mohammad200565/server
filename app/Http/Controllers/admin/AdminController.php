@@ -169,6 +169,17 @@ class AdminController extends Controller
             ->with('success', 'Department verification has been rejected!');
     }
 
+    public function updateBalance(Request $request, User $user)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:0.01',
+        ]);
+
+        $user->increment('wallet_balance', $request->amount);
+
+        return redirect()->back()->with('success', 'Funds added successfully!');
+    }
+
     public function login(Request $request)
     {
         $request->validate([

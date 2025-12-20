@@ -24,6 +24,34 @@ class DatabaseSeeder extends Seeder
             'email' => 'daleel@admin.com',
             'password' => Hash::make('Daleel2025@DaleelAdmin'),
         ]);
+        User::create([
+            'first_name' => 'Mohammad',
+            'last_name' => 'Al Homsi',
+            'profileImage' => '/storage/app/public/mohammadHaboosh.jpg',
+            'personIdImage' => 'https://www.pngall.com/wp-content/uploads/5/Admin-Profile-PNG-Image.png',
+            'birthdate' => '2005-06-05',
+            'verification_state' => 'verified',
+            'phone' => '0935038135',
+            'email' => 'mmmmohammadalhomsi@admin.com',
+            'password' => Hash::make('mohammad'),
+            'location' => [
+                'city' => 'Damascus',
+            ]
+        ]);
+        User::create([
+            'first_name' => 'Mohammad',
+            'last_name' => 'Haboosh',
+            'profileImage' => '/storage/app/public/mohammadAlHomsi.jpg',
+            'personIdImage' => 'https://www.pngall.com/wp-content/uploads/5/Admin-Profile-PNG-Image.png',
+            'birthdate' => '2004-07-08',
+            'verification_state' => 'verified',
+            'phone' => '0987654321',
+            'email' => 'mohammadhaboosh@admin.com',
+            'password' => Hash::make('haboosh'),
+            'location' => [
+                'city' => 'Damascus',
+            ]
+        ]);
         User::factory(100)->create();
         $this->call(DepartmentSeeder::class);
         for ($i = 0; $i < 500; $i++) {

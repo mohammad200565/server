@@ -1,5 +1,4 @@
 <x-layout title="{{ $user->first_name }} {{ $user->last_name }} - User Details">
-
     <style>
         /* --- Shared Theme Variables --- */
         :root {
@@ -15,18 +14,15 @@
             --radius-md: 16px;
             --radius-pill: 50px;
         }
-
         body {
             background-color: var(--bg-body);
             font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
         }
-
         .user-detail-container {
             max-width: 900px;
             margin: 0 auto;
             padding: 40px;
         }
-
         /* --- Back Button --- */
         .btn-back {
             display: inline-flex;
@@ -40,7 +36,6 @@
             transition: color 0.2s ease;
         }
         .btn-back:hover { color: var(--primary); }
-
         /* --- Main Card --- */
         .user-detail-card {
             background-color: var(--bg-card);
@@ -49,7 +44,6 @@
             box-shadow: var(--shadow-soft);
             border: 1px solid rgba(255,255,255,0.6);
         }
-
         /* --- Header Section --- */
         .user-header {
             display: flex;
@@ -59,11 +53,9 @@
             padding-bottom: 30px;
             border-bottom: 1px solid #f0f0f0;
         }
-
         .user-image-wrapper {
             position: relative;
         }
-
         .user-detail-image, .user-detail-initials {
             width: 120px;
             height: 120px;
@@ -72,7 +64,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             object-fit: cover;
         }
-
         .user-detail-initials {
             background-color: var(--gold-light);
             color: var(--primary);
@@ -82,11 +73,9 @@
             font-size: 40px;
             font-weight: 800;
         }
-
         .user-info {
             flex: 1;
         }
-
         .user-name-large {
             font-size: 32px;
             font-weight: 800;
@@ -94,7 +83,6 @@
             margin: 0 0 10px 0;
             letter-spacing: -1px;
         }
-
         /* --- Status Badge --- */
         .status-badge-large {
             display: inline-flex;
@@ -107,11 +95,10 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
         .bg-verified { background: #e8f5e9; color: #2e7d32; }
         .bg-pending { background: #fff8e1; color: #f57f17; }
         .bg-rejected { background: #ffebee; color: #c62828; }
-
+        
         /* --- Details Grid --- */
         .user-details-grid {
             display: grid;
@@ -119,14 +106,12 @@
             gap: 20px;
             margin-bottom: 40px;
         }
-
         .detail-item {
             background: #fcfcfc;
             padding: 20px;
             border-radius: 12px;
             border: 1px solid #f0f0f0;
         }
-
         .detail-label {
             font-size: 11px;
             text-transform: uppercase;
@@ -135,18 +120,48 @@
             letter-spacing: 0.5px;
             margin-bottom: 6px;
         }
-
         .detail-value {
             font-size: 16px;
             font-weight: 700;
             color: var(--primary);
         }
 
+        /* --- Wallet Specific Styles (NEW) --- */
+        .wallet-card {
+            background: linear-gradient(135deg, #fffbe6 0%, #fff 100%);
+            border: 1px solid #ffe58f;
+            grid-column: span 1; /* Fits naturally in grid */
+        }
+        @media (min-width: 600px) {
+            .wallet-card { grid-column: span 2; } /* Make it wider on larger screens if desired */
+        }
+        .wallet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .wallet-amount {
+            font-size: 24px;
+            color: #d48806;
+            font-weight: 800;
+        }
+        .btn-add-funds {
+            background-color: #d48806;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-add-funds:hover { background-color: #ad6800; }
+
         /* --- ID Document Section --- */
         .id-section {
             margin-top: 40px;
         }
-
         .section-title {
             font-size: 18px;
             font-weight: 800;
@@ -163,7 +178,6 @@
             background: var(--gold);
             border-radius: 2px;
         }
-
         .id-image-wrapper {
             background: #fdfdfd;
             border: 2px dashed #e0e0e0;
@@ -171,20 +185,17 @@
             padding: 20px;
             text-align: center;
         }
-
         .id-image {
             max-width: 100%;
             max-height: 400px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-
         .no-id-placeholder {
             color: #ccc;
             font-style: italic;
             padding: 40px;
         }
-
         /* --- Action Bar (Footer) --- */
         .verification-actions {
             margin-top: 40px;
@@ -194,7 +205,6 @@
             justify-content: flex-end;
             gap: 15px;
         }
-
         .action-btn {
             padding: 12px 24px;
             border-radius: var(--radius-pill);
@@ -207,14 +217,12 @@
             align-items: center;
             gap: 8px;
         }
-
         .btn-verify {
             background-color: #2e7d32;
             color: white;
             box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
         }
         .btn-verify:hover { background-color: #1b5e20; }
-
         .btn-reject {
             background-color: white;
             color: #c62828;
@@ -222,18 +230,51 @@
         }
         .btn-reject:hover { background-color: #ffebee; }
 
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.4); 
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; 
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 400px;
+            border-radius: var(--radius-xl);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .close-modal:hover { color: #000; }
+        .modal-form-group { margin-bottom: 20px; }
+        .modal-form-group label { display: block; font-size: 12px; font-weight: 700; color: #555; margin-bottom: 8px; }
+        .modal-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
     </style>
 
     <div class="user-detail-container">
         
-        <!-- Back Link -->
         <a href="{{ route('users.index') }}" class="btn-back">
             ← Back to Users
         </a>
 
         <div class="user-detail-card">
             
-            <!-- Header -->
             <div class="user-header">
                 <div class="user-image-wrapper">
                     @if($user->profile_image)
@@ -266,7 +307,6 @@
                 </div>
             </div>
 
-            <!-- Details Grid -->
             <div class="user-details-grid">
                 <div class="detail-item">
                     <div class="detail-label">Full Name</div>
@@ -277,6 +317,7 @@
                     <div class="detail-label">Contact Number</div>
                     <div class="detail-value">{{ $user->phone ?? 'Not Provided' }}</div>
                 </div>
+
                 
                 <div class="detail-item">
                     <div class="detail-label">Joined On</div>
@@ -287,9 +328,21 @@
                     <div class="detail-label">Last Active</div>
                     <div class="detail-value">{{ $user->updated_at->diffForHumans() }}</div>
                 </div>
+                <div class="detail-item wallet-card">
+                    <div class="wallet-header">
+                        <div>
+                            <div class="detail-label" style="color: #d48806;">Wallet Balance</div>
+                            <div class="detail-value wallet-amount">
+                                ${{ number_format($user->wallet_balance ?? 0, 2) }}
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-funds" onclick="openWalletModal()">
+                            + Add Money
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <!-- ID Document Section -->
             <div class="id-section">
                 <h3 class="section-title">Identity Document</h3>
                 
@@ -308,11 +361,10 @@
                 </div>
             </div>
 
-            <!-- Verification Actions -->
             <div class="verification-actions">
                 @if($user->verification_state === 'pending')
                     <form action="{{ route('users.reject', $user) }}" method="POST">
-                        @csrf @method('PUT')
+                        @csrf @method('POST')
                         <button type="submit" class="action-btn btn-reject">✗ Reject</button>
                     </form>
                     
@@ -320,13 +372,11 @@
                         @csrf @method('PUT')
                         <button type="submit" class="action-btn btn-verify">✓ Verify User</button>
                     </form>
-
                 @elseif($user->verification_state === 'rejected')
                     <form action="{{ route('users.verify', $user) }}" method="POST">
                         @csrf @method('PUT')
                         <button type="submit" class="action-btn btn-verify">✓ Re-Verify User</button>
                     </form>
-
                 @else
                     <form action="{{ route('users.reject', $user) }}" method="POST">
                         @csrf @method('PUT')
@@ -334,8 +384,44 @@
                     </form>
                 @endif
             </div>
-
         </div>
     </div>
 
+    <div id="addFundsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeWalletModal()">&times;</span>
+            <h3 style="margin-top:0; color: var(--primary);">Add Funds</h3>
+            <p style="font-size:14px; color:#666; margin-bottom:20px;">Add balance to {{ $user->first_name }}'s wallet.</p>
+            
+            <form action="{{ route('users.update_balance', $user->id) }}" method="POST">
+                @csrf
+                @method('POST')
+                
+                <div class="modal-form-group">
+                    <label>Amount ($)</label>
+                    <input type="number" name="amount" step="0.01" min="1" class="modal-input" placeholder="0.00" required>
+                </div>
+                
+                <div style="text-align: right;">
+                    <button type="button" onclick="closeWalletModal()" style="padding: 10px 20px; background: #eee; border:none; border-radius: 50px; cursor:pointer; margin-right: 10px; font-weight:700;">Cancel</button>
+                    <button type="submit" style="padding: 10px 20px; background: #d48806; color:white; border:none; border-radius: 50px; cursor:pointer; font-weight:700;">Confirm Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openWalletModal() {
+            document.getElementById('addFundsModal').style.display = 'block';
+        }
+        function closeWalletModal() {
+            document.getElementById('addFundsModal').style.display = 'none';
+        }
+        window.onclick = function(event) {
+            var modal = document.getElementById('addFundsModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
 </x-layout>
