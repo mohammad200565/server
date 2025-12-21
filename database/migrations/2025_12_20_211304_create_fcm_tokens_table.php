@@ -12,7 +12,8 @@ return new class extends Migration
         Schema::create('fcm_tokens', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
-            $table->string('token')->unique();
+            $table->string('token');
+            $table->unique(['user_id', 'token']);
             $table->timestamps();
         });
     }

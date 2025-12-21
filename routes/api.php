@@ -29,4 +29,5 @@ Route::prefix('v1')->group(function () {
         Route::post('/rents/{rent}/cancel', [RentController::class, 'cancelRent']);
         Route::post('/save-fcm-token', [FcmTokenController::class, 'store']);
     });
+    Route::post('/send', [FavoriteController::class, 'sendNot']);
 });

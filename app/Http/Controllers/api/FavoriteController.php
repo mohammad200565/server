@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Resources\DepartmentResource;
 use App\Models\Department;
+use Kreait\Firebase\Messaging\Notification;
 use Illuminate\Support\Facades\Request;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Laravel\Firebase\Facades\Firebase;
 
 class FavoriteController extends BaseApiController
 {
@@ -38,5 +41,32 @@ class FavoriteController extends BaseApiController
         $user = request()->user();
         $isFavorite = $user->favorites()->where('department_id', $department['id'])->exists();
         return $this->successResponse('Favorite status retrieved', ['is_favorite' => $isFavorite]);
+    }
+    public function sendNot()
+    {
+        $this->sendNotification('cSCmihlsTL2VYp2wusTWtk:APA91bHr-aGDYD3Pk6P0z3OprqbUxKL1aBOBxREM7NPVXwKEpmzie3Ds3EcbBF9JMt2GVKDcNWtuznGtRz0YrxXyHLF96ax5Qty7X7cSjZI8Bp9eZ01_T98');
+    }
+
+    public function sendNotification($token)
+    {
+        $messaging = Firebase::messaging();
+
+        $message = CloudMessage::withTarget('token', $token)
+            ->withNotification(Notification::create(
+                'Homsi Notification',
+                'Zain Noob'
+            ))
+            ->withData([
+                'type' => 'chat',
+                'id' => '123'
+            ]);
+
+        try {
+            $messaging->send($message);
+        } catch (\Throwable $e) {
+            logger('Notification failed: ' . $e->getMessage());
+        }
+
+        return response()->json(['status' => 'sent']);
     }
 }
