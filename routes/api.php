@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\EditedRentController;
 use App\Http\Controllers\Api\FavoriteController;
+use App\Http\Controllers\Api\FcmTokenController;
 use App\Http\Controllers\Api\RentController;
 use App\Http\Controllers\Api\ReviewController;
 use Illuminate\Support\Facades\Route;
@@ -33,5 +34,7 @@ Route::prefix('v1')->group(function () {
             Route::post('{edited_rent}/approve', [EditedRentController::class, 'approve']);
             Route::post('{edited_rent}/reject', [EditedRentController::class, 'reject']);
         });
+        Route::post('/save-fcm-token', [FcmTokenController::class, 'store']);
     });
+    Route::post('/send', [FavoriteController::class, 'sendNot']);
 });

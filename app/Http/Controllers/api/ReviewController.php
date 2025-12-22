@@ -20,6 +20,7 @@ class ReviewController extends BaseApiController
         $reviews = $this->loadRelations($request, $query, $this->relations)->filter($filter)->paginate(20);
         return $this->successResponse('Reviews retrieved successfully', ReviewResource::collection($reviews));
     }
+
     public function store(StoreReviewRequest $request, Department $department)
     {
         $data = $request->validated();
