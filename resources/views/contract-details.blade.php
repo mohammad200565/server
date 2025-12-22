@@ -332,7 +332,7 @@
                 
                 <div class="term-card">
                     <div class="term-label">Monthly Rent</div>
-                    <div class="term-value val-money">${{ number_format(0, 2) }}</div>
+                    <div class="term-value val-money">${{ number_format($rent->rentFee, 2) }}</div>
                 </div>
 
                 <div class="term-card">

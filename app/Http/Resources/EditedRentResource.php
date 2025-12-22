@@ -19,7 +19,7 @@ class EditedRentResource extends JsonResource
             'updated_at' => $this->resource->updated_at,
         ];
 
-        if ($this->resource->relationLsoaded('rent')) {
+        if ($this->resource->relationLoaded('rent')) {
             $data['rent'] = new RentResource($this->resource->rent);
         }
 

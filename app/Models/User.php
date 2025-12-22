@@ -52,4 +52,8 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Department::class, 'favorites')->withTimestamps();
     }
+    public function fcmTokens()
+    {
+        return $this->hasMany(FcmToken::class);
+    }
 }

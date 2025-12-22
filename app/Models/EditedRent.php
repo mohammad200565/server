@@ -18,7 +18,7 @@ class EditedRent extends Model
         'status' => 'pending',
     ];
 
-    public function original_Rent()
+    public function original_rent()
     {
         return $this->belongsTo(Rent::class);
     }
@@ -27,11 +27,7 @@ class EditedRent extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function rent()
-    {
-        return $this->belongsTo(Rent::class);
-    }
-
+    
     public function department()
     {
         return $this->belongsTo(Department::class);

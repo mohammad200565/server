@@ -1,7 +1,6 @@
 <x-layout title="Users">
 
     <style>
-        /* --- Shared Theme Variables --- */
         :root {
             --primary: #5d4037;
             --primary-soft: #8d6e63;
@@ -26,7 +25,6 @@
             margin: 0 auto;
         }
 
-        /* --- Header & Controls (Kept same as before) --- */
         .users-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; flex-wrap: wrap; gap: 24px; }
         .users-title { font-size: 32px; font-weight: 800; color: var(--primary); margin: 0; letter-spacing: -1px; }
         .controls-wrapper { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; background: white; padding: 8px; border-radius: var(--radius-pill); box-shadow: var(--shadow-soft); border: 1px solid rgba(0,0,0,0.03); }
@@ -41,28 +39,22 @@
         .btn-filter:hover { background-color: var(--bg-body); color: var(--primary); }
         .btn-filter.active { background-color: var(--gold-light); color: var(--primary); }
         
-        /* Active Filters */
         .active-filters-bar { margin-bottom: 30px; display: flex; align-items: center; gap: 12px; }
         .filter-tag { background: white; border: 1px solid var(--gold); color: var(--primary); padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         .clear-link { font-size: 12px; color: #999; text-decoration: underline; cursor: pointer; }
 
-        /* --- User Grid --- */
         .users-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 30px;
         }
 
-        /* --- COMPONENT STYLES (UPDATED) --- */
-        
-        /* 1. Link Wrapper */
         .user-card-link {
             text-decoration: none;
             color: inherit;
             display: block;
         }
 
-        /* 2. Card Base */
         .user-card {
             background-color: var(--bg-card);
             border-radius: var(--radius-xl);
@@ -74,10 +66,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100%; /* Ensure full height in grid */
+            height: 100%;
         }
 
-        /* 3. Hover Effect on the Wrapper */
         .user-card-link:hover .user-card {
             transform: translateY(-8px);
             box-shadow: var(--shadow-hover);
@@ -97,7 +88,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        /* 4. New Initials Style (Matches Image Size) */
         .user-initials {
             width: 90px;
             height: 90px;
@@ -130,7 +120,6 @@
             margin-bottom: 16px;
         }
 
-        /* --- Status Pills --- */
         .status-pill {
             display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
             border-radius: 20px; font-size: 11px; font-weight: 700;
@@ -147,23 +136,20 @@
 
         .no-users { grid-column: 1 / -1; text-align: center; padding: 80px; color: #b0bec5; font-style: italic; }
 
-        /* Pagination Styles (Hidden for brevity, keep your original ones) */
         .custom-paginator-wrapper { margin-top: 50px; display: flex; justify-content: center; gap: 8px; }
         .page-link { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: white; color: var(--primary); text-decoration: none; border: 1px solid #eee; transition: all 0.2s; }
         .page-link:hover:not(.disabled) { background: var(--gold); color: white; border-color: var(--gold); }
         .page-link.active { background: var(--primary); color: white; }
         .page-link.disabled { opacity: 0.5; background: #fcfcfc; }
         .page-info-text { text-align: center; margin-bottom: 10px; color: #999; font-size: 13px; }
-    </style>
+</style>
 
     <div class="users-container">
         
-        <!-- Header & Controls -->
         <div class="users-header">
             <h1 class="users-title">Users Directory</h1>
             
             <div class="controls-wrapper">
-                <!-- Search Form -->
                 <form method="GET" action="{{ route('users.index') }}" style="display: flex; align-items: center;">
                     @if(request('filter') === 'pending')
                         <input type="hidden" name="filter" value="pending">
@@ -177,7 +163,6 @@
 
                 <div class="divider-vertical"></div>
 
-                <!-- Filter Toggle -->
                 <form method="GET" action="{{ route('users.index') }}" style="display: inline;">
                     @if(request('search'))
                         <input type="hidden" name="search" value="{{ request('search') }}">
@@ -190,7 +175,6 @@
             </div>
         </div>
 
-        <!-- Active Filters Indicator -->
         @if(request('search') || request('filter') === 'pending')
             <div class="active-filters-bar">
                 <span style="font-size:13px; font-weight:600; color:var(--primary-soft);">Active Filters:</span>
@@ -204,11 +188,9 @@
             </div>
         @endif
 
-        <!-- Users Grid using the Component -->
         <div class="users-grid">
             @forelse($users as $user)
                 
-                <!-- HERE IS THE FIX: Using the component -->
                 <x-user-card :user="$user" />
 
             @empty
@@ -223,35 +205,14 @@
             @endforelse
         </div>
 
-        <!-- Pagination -->
-        @if($users->hasPages())
-            <div style="margin-top: 50px;">
-                <div class="page-info-text">
-                    Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of {{ $users->total() }} results
-                </div>
-                <div class="custom-paginator-wrapper">
-                    @if ($users->onFirstPage())
-                        <span class="page-link disabled">‹</span>
-                    @else
-                        <a href="{{ $users->previousPageUrl() }}" class="page-link">‹</a>
-                    @endif
-
-                    @foreach ($users->getUrlRange(max(1, $users->currentPage() - 2), min($users->lastPage(), $users->currentPage() + 2)) as $page => $url)
-                        @if ($page == $users->currentPage())
-                            <span class="page-link active">{{ $page }}</span>
-                        @else
-                            <a href="{{ $url }}" class="page-link">{{ $page }}</a>
-                        @endif
-                    @endforeach
-
-                    @if ($users->hasMorePages())
-                        <a href="{{ $users->nextPageUrl() }}" class="page-link">›</a>
-                    @else
-                        <span class="page-link disabled">›</span>
-                    @endif
-                </div>
+        <div style="margin-top: 50px;">
+            <div class="page-info-text">
+                Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of {{ $users->total() }} results
             </div>
-        @endif
 
+            {{ $users->links() }}
+        </div>
+
+        
     </div>
 </x-layout>

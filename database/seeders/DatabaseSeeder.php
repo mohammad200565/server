@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'first_name' => 'Mohammad',
             'last_name' => 'Al Homsi',
-            'profileImage' => '/storage/app/public/mohammadHaboosh.jpg',
+            'profileImage' => '/storage/app/public/mohammadAlHomsi.jpg',
             'personIdImage' => 'https://www.pngall.com/wp-content/uploads/5/Admin-Profile-PNG-Image.png',
             'birthdate' => '2005-06-05',
             'verification_state' => 'verified',
@@ -41,13 +41,27 @@ class DatabaseSeeder extends Seeder
         User::create([
             'first_name' => 'Mohammad',
             'last_name' => 'Haboosh',
-            'profileImage' => '/storage/app/public/mohammadAlHomsi.jpg',
+            'profileImage' => '/storage/app/public/mohammadHaboosh.jpg',
             'personIdImage' => 'https://www.pngall.com/wp-content/uploads/5/Admin-Profile-PNG-Image.png',
             'birthdate' => '2004-07-08',
             'verification_state' => 'verified',
             'phone' => '0987654321',
             'email' => 'mohammadhaboosh@admin.com',
             'password' => Hash::make('haboosh'),
+            'location' => [
+                'city' => 'Damascus',
+            ]
+        ]);
+        User::create([
+            'first_name' => 'Yazan',
+            'last_name' => 'Mahfooz',
+            'profileImage' => '/storage/app/public/yazanMahfooz.jpg',
+            'personIdImage' => 'https://www.pngall.com/wp-content/uploads/5/Admin-Profile-PNG-Image.png',
+            'birthdate' => '2005-12-26',
+            'verification_state' => 'verified',
+            'phone' => '0933803688',
+            'email' => 'yazanmahfooz8@admin.com',
+            'password' => Hash::make('password'),
             'location' => [
                 'city' => 'Damascus',
             ]

@@ -233,35 +233,13 @@
             @endforelse
         </div>
 
-        <!-- Manual Pagination -->
-        @if($departments->hasPages())
-            <div style="margin-top: 50px;">
-                <div class="page-info-text">
-                    Showing {{ $departments->firstItem() }} to {{ $departments->lastItem() }} of {{ $departments->total() }} results
-                </div>
-                <div class="custom-paginator-wrapper">
-                    @if ($departments->onFirstPage())
-                        <span class="page-link disabled">‹</span>
-                    @else
-                        <a href="{{ $departments->previousPageUrl() }}" class="page-link">‹</a>
-                    @endif
-
-                    @foreach ($departments->getUrlRange(max(1, $departments->currentPage() - 2), min($departments->lastPage(), $departments->currentPage() + 2)) as $page => $url)
-                        @if ($page == $departments->currentPage())
-                            <span class="page-link active">{{ $page }}</span>
-                        @else
-                            <a href="{{ $url }}" class="page-link">{{ $page }}</a>
-                        @endif
-                    @endforeach
-
-                    @if ($departments->hasMorePages())
-                        <a href="{{ $departments->nextPageUrl() }}" class="page-link">›</a>
-                    @else
-                        <span class="page-link disabled">›</span>
-                    @endif
-                </div>
+        <div style="margin-top: 50px;">
+            <div class="page-info-text">
+                Showing {{ $departments->firstItem() }} to {{ $departments->lastItem() }} of {{ $departments->total() }} results
             </div>
-        @endif
+
+            {{ $departments->links() }}
+        </div>
 
     </div>
 </x-layout>

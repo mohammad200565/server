@@ -6,6 +6,7 @@ use App\Http\Resources\DepartmentResource;
 use App\Models\Department;
 use Illuminate\Support\Facades\Request;
 
+
 class FavoriteController extends BaseApiController
 {
 

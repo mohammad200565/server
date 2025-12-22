@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Traits\NotificationTrait;
 use App\Models\Rent;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
@@ -12,7 +13,7 @@ class CheckContracts extends Command
     protected $signature = 'app:check-contracts';
 
     protected $description = 'Check expired contracts and mark them as complete';
-
+    use NotificationTrait;
     public function handle()
     {
         $rents = Rent::where('status', '!=', 'completed')
@@ -30,6 +31,11 @@ class CheckContracts extends Command
             $rent->update([
                 'status' => 'completed'
             ]);
+            $this->sendNotification(
+                $rent->department->user,
+                'Contract Completed',
+                "The rental contract for Department ID: {$rent->department->id} has been completed."
+            );
         }
 
         $this->info('Total contracts updated: ' . $rents->count());

@@ -11,6 +11,7 @@ class DepartmentResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $user = request()->user();
         $data = [
             'id' => $this->resource->id,
             'description' => $this->resource->description,
@@ -28,6 +29,7 @@ class DepartmentResource extends JsonResource
             'average_rating' => $this->resource->average_rating,
             'review_count' => $this->resource->review_count,
             'rentCounter' => $this->resource->rentCounter,
+            'is_favorited' => $user ? $user->favorites()->where('department_id', $this->id)->exists() : false,
             'location' => [
                 'governorate' => $this->resource->location['governorate'] ?? null,
                 'city' => $this->resource->location['city'] ?? null,

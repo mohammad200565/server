@@ -11,9 +11,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('edited_rent', function (Blueprint $table) {
+        Schema::create('edited_rents', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Rent::class);
+            $table->foreignIdFor(Rent::class)->constrained()->onDelete('cascade');
             $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
             $table->foreignIdFor(Department::class)->constrained()->onDelete('cascade');
             $table->date('startRent');
@@ -26,6 +26,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('edited_rent');
+        Schema::dropIfExists('edited_rents');
     }
 };

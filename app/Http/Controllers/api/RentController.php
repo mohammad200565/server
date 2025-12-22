@@ -49,7 +49,7 @@ class RentController extends BaseApiController
 
         $department = Department::findOrFail($data['department_id']);
 
-        $totalDays = $start->diffInDays($end) + 1;
+        $totalDays = $start->diffInDays($end);
         $totalRentFee = $department->rentFee * $totalDays;
 
         if (!$user->wallet_balance || $user->wallet_balance < $totalRentFee) {
@@ -92,17 +92,20 @@ class RentController extends BaseApiController
         if ($rent->status == 'pending') {
             $data = $request->validated();
             $department = $rent->department;
-            $user = $request->user();
-            $start = Carbon::parse($rent->startRent);
-            $end = Carbon::parse($rent->endRent);
+            $user = request()->user();
+            $start = Carbon::parse($data['startRent']);
+            $end = Carbon::parse($data['endRent']);
             $totalDays = $start->diffInDays($end) + 1;
             $totalFee = $department->rentFee * $totalDays;
-            if ($totalFee < $user->wallet_balance) {
+            $oldFee = $rent->rentFee;
+
+            if ($totalFee > $user->wallet_balance) {
                 return $this->errorResponse(
                     "You don't have enough credit to make the edit.",
-                    422
+                    403
                 );
             }
+
             $data['rentFee'] = $department->rentFee * $totalDays;
             $rent->update($data);
             $rent->load('department', 'user');
@@ -115,22 +118,23 @@ class RentController extends BaseApiController
             $data = $request->validated();
             $department = $rent->department;
             $user = request()->user();
-            $start = Carbon::parse($rent->startRent);
-            $end = Carbon::parse($rent->endRent);
+            $start = Carbon::parse($data['startRent']);
+            $end = Carbon::parse($data['endRent']);
             $today = Carbon::today();
             $totalDays = $start->diffInDays($end) + 1;
             $totalFee = $department->rentFee * $totalDays;
+            $oldFee = $rent->rentFee;
 
             if ($today->gt($start) || $today->isSameDay($start)) {
                 return $this->errorResponse(
                     "You can't edit the contract after it's begining",
-                    422
+                    403
                 );
             }
-            if ($totalFee < $user->wallet_balance) {
+            if ($totalFee > $user->wallet_balance+$oldFee) {
                 return $this->errorResponse(
                     "You don't have enough credit to make the edit.",
-                    422
+                    403
                 );
             }
             $data['user_id'] = $user->id;
@@ -140,8 +144,8 @@ class RentController extends BaseApiController
             $data['rentFee'] = $totalFee;
 
             $edited_rent = DB::transaction(function () use ($data) {
-                $rent = EditedRent::create($data);
-                return $rent;
+                $edited_rent = EditedRent::create($data);
+                return $edited_rent;
             });
 
             return $this->successResponse(

@@ -374,7 +374,6 @@
             </div>
         </div>
 
-        <!-- Status Filter Tabs -->
         <div class="status-filters">
             <form method="GET" action="{{ route('contracts.index') }}" style="display: contents;">
                 @if(request('search'))
@@ -399,7 +398,6 @@
             </form>
         </div>
 
-        <!-- Active Search Indicator -->
         @if(request('search'))
             <div class="active-filters-bar">
                 <div class="filter-tag">
@@ -409,11 +407,9 @@
             </div>
         @endif
 
-        <!-- Contracts Grid -->
         <div class="contracts-grid">
             @forelse($rents as $rent)
                 
-                <!-- ✅ Render the component using its exact filename: contract-card -->
                 <x-contract-card :rent="$rent" />
 
             @empty
@@ -428,40 +424,13 @@
             @endforelse
         </div>
 
-        <!-- MANUAL PAGINATION -->
-        @if($rents->hasPages())
-            <div style="margin-top: 50px;">
-                
-                <div class="page-info-text">
-                    Showing {{ $rents->firstItem() }} to {{ $rents->lastItem() }} of {{ $rents->total() }} contracts
-                </div>
-                <div class="custom-paginator-wrapper">
-                    
-                    {{-- Previous Button --}}
-                    @if ($rents->onFirstPage())
-                        <span class="page-link disabled">‹</span>
-                    @else
-                        <a href="{{ $rents->previousPageUrl() }}" class="page-link">‹</a>
-                    @endif
-
-                    {{-- Number Links --}}
-                    @foreach ($rents->getUrlRange(max(1, $rents->currentPage() - 2), min($rents->lastPage(), $rents->currentPage() + 2)) as $page => $url)
-                        @if ($page == $rents->currentPage())
-                            <span class="page-link active">{{ $page }}</span>
-                        @else
-                            <a href="{{ $url }}" class="page-link">{{ $page }}</a>
-                        @endif
-                    @endforeach
-
-                    {{-- Next Button --}}
-                    @if ($rents->hasMorePages())
-                        <a href="{{ $rents->nextPageUrl() }}" class="page-link">›</a>
-                    @else
-                        <span class="page-link disabled">›</span>
-                    @endif
-                </div>
+        <div style="margin-top: 50px;">
+            <div class="page-info-text">
+                Showing {{ $rents->firstItem() }} to {{ $rents->lastItem() }} of {{ $rents->total() }} results
             </div>
-        @endif
+
+            {{ $rents->links() }}
+        </div>
 
     </div>
 </x-layout>

@@ -269,7 +269,7 @@
         
         <div class="dashboard-header">
             <h1 class="dashboard-title">Dashboard</h1>
-            <div class="dashboard-subtitle">Welcome back, here's what's happening today.</div>
+            <div class="dashboard-subtitle">Welcome back, here's what happened recently.</div>
         </div>
 
         <!-- Hero Stats -->
