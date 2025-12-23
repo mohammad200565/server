@@ -119,8 +119,8 @@ class RentController extends BaseApiController
                 "Rent updated successfully",
                 new RentResource($rent)
             );
-        } else if ($rent->status == 'onRent') {
-
+        } 
+        else if ($rent->status == 'onRent') {
             $data = $request->validated();
             $department = $rent->department;
             $user = request()->user();
@@ -130,7 +130,7 @@ class RentController extends BaseApiController
             $totalDays = $start->diffInDays($end) + 1;
             $totalFee = $department->rentFee * $totalDays;
             $oldFee = $rent->rentFee;
-
+            
             if ($today->gt($start) || $today->isSameDay($start)) {
                 return $this->errorResponse(
                     "You can't edit the contract after it's begining",
@@ -144,16 +144,17 @@ class RentController extends BaseApiController
                 );
             }
             $data['user_id'] = $user->id;
-            $data['depratment_id'] = $department->id;
+            $data['department_id'] = $department->id;
             $data['rent_id'] = $rent->id;
             $data['status'] = 'onRent';
             $data['rentFee'] = $totalFee;
-
-            $edited_rent = DB::transaction(function () use ($data) {
+            
+            $edited_rent = DB::transaction(function () use ($data, $rent) {
+                EditedRent::where('rent_id', $rent->id)->delete();
                 $edited_rent = EditedRent::create($data);
                 return $edited_rent;
             });
-
+            
             return $this->successResponse(
                 "A request is sent for the owner to approve the update.",
                 new EditedRentResource($edited_rent)

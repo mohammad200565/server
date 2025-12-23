@@ -8,6 +8,7 @@ class EditedRent extends Model
 {
     protected $fillable = [
         'user_id',
+        'rent_id',
         'department_id',
         'startRent',
         'endRent',
@@ -20,7 +21,7 @@ class EditedRent extends Model
 
     public function original_rent()
     {
-        return $this->belongsTo(Rent::class);
+        return $this->belongsTo(Rent::class, 'rent_id');
     }
 
     public function user()
