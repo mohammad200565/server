@@ -62,6 +62,14 @@ class EditedRentController extends BaseApiController
             $owner->wallet_balance -= $oldFee;
             $owner->save();
 
+            foreach ($tenant->fcmTokens as $token){
+                $this->sendNotification(
+                    $token,
+                    'Rent update verification',
+                    "The owner approved your request, rent updated successfully."
+                );
+            }
+
             $rent->update($attributesToUpdate);
 
             $edited_rent->delete();
@@ -82,6 +90,15 @@ class EditedRentController extends BaseApiController
         }
 
         $edited_rent->delete();
+        $tenant = $edited_rent->user;
+
+        foreach ($tenant->fcmTokens as $token){
+            $this->sendNotification(
+                $token,
+                'Rent update verification',
+                "The owner rejected your request to update the rent."
+            );
+        }
 
         return $this->successResponse(
             "Rejected successfully",

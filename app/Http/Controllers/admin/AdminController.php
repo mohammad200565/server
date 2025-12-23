@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Department;
 use App\Models\Rent;
 use App\Models\User;
+use Carbon\Traits\ToStringFormat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -66,7 +67,13 @@ class AdminController extends BaseApiController
     public function verifyUser(User $user)
     {
         $user->update(['verification_state' => 'verified']);
-
+        foreach ($user->fcmTokens as $token){
+            $this->sendNotification(
+                $token,
+                'Account verificationn',
+                'Your account has been verified successfully'
+            );
+        }
         return redirect()->route('users.show', $user)
             ->with('success', 'User has been verified successfully!');
     }
@@ -74,7 +81,13 @@ class AdminController extends BaseApiController
     public function rejectUser(User $user)
     {
         $user->update(['verification_state' => 'rejected']);
-
+        foreach ($user->fcmTokens as $token){
+            $this->sendNotification(
+                $token,
+                'Account verificationn',
+                'Your account has been rejected, please contact the support if you believe there something wrong.'
+            );
+        }
         return redirect()->route('users.show', $user)
             ->with('success', 'User verification has been rejected!');
     }
@@ -95,6 +108,38 @@ class AdminController extends BaseApiController
     public function showDepartment(Department $department)
     {
         return view('department-details', compact('department'));
+    }
+
+    public function verifyDepartment(Department $department)
+    {
+
+        $department->verification_state = 'verified';
+        $department->save();
+        foreach ($department->user->fcmTokens as $token){
+            $this->sendNotification(
+                $token,
+                'Department verificationn',
+                "Your department has been verified successfully, now it's available for renting."
+            );
+        }
+        return redirect('/departments/' . $department->id)
+            ->with('success', 'Department has been verified successfully!');
+    }
+
+    public function rejectDepartment(Department $department)
+    {
+
+        $department->verification_state = 'rejected';
+        $department->save();
+        foreach ($department->user->fcmTokens as $token){
+            $this->sendNotification(
+                $token,
+                'Department verificationn',
+                "Your department has been rejected, please contact the support if you believe there something wrong."
+            );
+        }
+        return redirect('/departments/' . $department->id)
+            ->with('success', 'Department verification has been rejected!');
     }
 
     public function indexContract(Request $request)
@@ -135,7 +180,7 @@ class AdminController extends BaseApiController
 
         $rents->appends($request->query());
         logger($rents->first());
-
+        
         return view('contracts', compact('rents'));
     }
 
@@ -151,23 +196,6 @@ class AdminController extends BaseApiController
     }
 
 
-    public function verifyDepartment(Department $department)
-    {
-
-        $department->verification_state = 'verified';
-        $department->save();
-        return redirect('/departments/' . $department->id)
-            ->with('success', 'Department has been verified successfully!');
-    }
-
-    public function rejectDepartment(Department $department)
-    {
-
-        $department->verification_state = 'rejected';
-        $department->save();
-        return redirect('/departments/' . $department->id)
-            ->with('success', 'Department verification has been rejected!');
-    }
 
     public function updateBalance(Request $request, User $user)
     {
@@ -176,6 +204,14 @@ class AdminController extends BaseApiController
         ]);
 
         $user->increment('wallet_balance', $request->amount);
+
+        foreach ($user->fcmTokens as $token){
+            $this->sendNotification(
+                $token,
+                'Account balance',
+                (string)$request->amount . " has been added to your account wallet"
+            );
+        }
 
         return redirect()->back()->with('success', 'Funds added successfully!');
     }
