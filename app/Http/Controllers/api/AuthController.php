@@ -6,6 +6,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -36,7 +37,13 @@ class AuthController extends BaseApiController
                 'phone' => ['The provided credentials are incorrect.']
             ]);
         }
-        $token = $user->createToken('api-token')->plainTextToken;
+        $user->tokens()->delete();
+        $tokenResult = $user->createToken('api-token');
+        $token = $tokenResult->plainTextToken;
+        $tokenModel = $user->tokens()->latest()->first();
+        $tokenModel->expires_at = now()->addHours(24);
+        $tokenModel->save();
+
         RateLimiter::clear($key);
         return $this->successResponse("Login successful", [
             'user'  => new UserResource($user),
@@ -60,20 +67,16 @@ class AuthController extends BaseApiController
             $personIdPath = $request->file('personIdImage')->store('users/personId', 'public');
         }
 
-        $user = User::create([
-            'first_name'     => $data['first_name'],
-            'last_name'      => $data['last_name'],
-            'profileImage'   => $profilePath,
-            'personIdImage'  => $personIdPath,
-            'birthdate'      => $data['birthdate'],
-            'location'       => $data['location'],
-            'phone'          => $data['phone'],
-            'password'       => Hash::make($data['password']),
-        ]);
+        $data['password'] = Hash::make($data['password']);
+        $user = User::create($data);
 
         RateLimiter::clear($key);
-
-        $token = $user->createToken('api-token')->plainTextToken;
+        $user->tokens()->delete();
+        $tokenResult = $user->createToken('api-token');
+        $token = $tokenResult->plainTextToken;
+        $tokenModel = $user->tokens()->latest()->first();
+        $tokenModel->expires_at = now()->addHours(24);
+        $tokenModel->save();
 
         return $this->successResponse("Register successful", [
             'user'  => new UserResource($user),
