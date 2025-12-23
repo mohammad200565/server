@@ -21,7 +21,11 @@ class RentController extends BaseApiController
     {
         $filters = new RentFilter($request);
         $user = request()->user();
-        $query = $user->rents()->getQuery();
+        $query = Rent::query()
+            ->where('user_id', $user->id)
+            ->orWhereHas('department', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
         $rents = $this->loadRelations($request, $query, $this->relations)
             ->filter($filters)->paginate(15);
         return $this->successResponse("Rents fetched successfully", RentResource::collection($rents),);
@@ -114,9 +118,9 @@ class RentController extends BaseApiController
                 new RentResource($rent)
             );
         } else if ($rent->status == 'onRent') {
-
             $data = $request->validated();
             $department = $rent->department;
+            $owner = $department->user;
             $user = request()->user();
             $start = Carbon::parse($data['startRent']);
             $end = Carbon::parse($data['endRent']);
@@ -131,22 +135,29 @@ class RentController extends BaseApiController
                     403
                 );
             }
-            if ($totalFee > $user->wallet_balance+$oldFee) {
+            if ($totalFee > $user->wallet_balance + $oldFee) {
                 return $this->errorResponse(
                     "You don't have enough credit to make the edit.",
                     403
                 );
             }
             $data['user_id'] = $user->id;
-            $data['depratment_id'] = $department->id;
+            $data['department_id'] = $department->id;
             $data['rent_id'] = $rent->id;
             $data['status'] = 'onRent';
             $data['rentFee'] = $totalFee;
 
-            $edited_rent = DB::transaction(function () use ($data) {
+            $edited_rent = DB::transaction(function () use ($data, $rent) {
+                EditedRent::where('rent_id', $rent->id)->delete();
                 $edited_rent = EditedRent::create($data);
                 return $edited_rent;
             });
+
+            $this->sendNotification(
+                $owner,
+                'Rent update verification',
+                "The tenant requested to update the rent terms, please read the new terms and approve or reject the tenant request."
+            );
 
             return $this->successResponse(
                 "A request is sent for the owner to approve the update.",
@@ -169,8 +180,8 @@ class RentController extends BaseApiController
     public function cancelRent(Request $request, Rent $rent)
     {
         $this->authorize('cancelRent', $rent);
-        if ($rent->status !== 'onRent') {
-            return $this->errorResponse("Only rents with status 'onRent' can be cancelled.", 422);
+        if ($rent->status !== 'onRent' && $rent->status !== 'pending') {
+            return $this->errorResponse("Only rents with status 'onRent, pending' can be cancelled.", 422);
         }
         $rent->status = 'cancelled';
         $department = $rent->department;
@@ -196,10 +207,29 @@ class RentController extends BaseApiController
         if ($overlap) {
             return $this->errorResponse("This house is rented during this period", 422);
         }
-        $rent->status = 'onRent';
-        $department->isAvailable = false;
-        $department->save();
-        $rent->save();
+        $user = $rent->user;
+        if ($user->wallet_balance < $rent->rentFee) {
+            return $this->errorResponse(
+                "User has insufficient balance in their wallet to approve this rent.",
+                422
+            );
+        }
+
+        DB::transaction(function () use ($rent, $department, $user) {
+            $user->decrement('wallet_balance', $rent->rentFee);
+            $rent->status = 'onRent';
+            $department->isAvailable = false;
+
+            $department->save();
+            $rent->save();
+        });
+
+        $this->sendNotification(
+            $user,
+            'Rent request status.',
+            "The owner approved your request to rent the appartment."
+        );
+
         $rent->load('department', 'user');
         return $this->successResponse("Rent approved successfully", new RentResource($rent));
     }
@@ -211,9 +241,15 @@ class RentController extends BaseApiController
         }
         $rent->status = 'cancelled';
         $department = $rent->department;
+        $user = $rent->user;
         $department->isAvailable = true;
         $department->save();
         $rent->save();
+        $this->sendNotification(
+            $user,
+            'Rent request status.',
+            "The owner rejected your request to rent the appartment."
+        );
         $rent->load('department', 'user');
         return $this->successResponse("Rent rejected successfully", new RentResource($rent));
     }

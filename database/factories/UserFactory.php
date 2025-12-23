@@ -21,14 +21,11 @@ class UserFactory extends Factory
                 'district' => $this->faker->word,
                 'street' => $this->faker->streetName,
             ],
-            'profileImage' => fake()->imageUrl(200, 200, 'people'),
-            'personIdImage' => fake()->imageUrl(200, 200, 'Id'),
             'birthdate' => fake()->dateTimeBetween('-60 years', '-18 years')->format('Y-m-d'),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
     }
-
     public function unverified(): static
     {
         return $this->state(fn(array $attributes) => [

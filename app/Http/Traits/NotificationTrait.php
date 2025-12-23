@@ -2,30 +2,31 @@
 
 namespace App\Http\Traits;
 
-use Kreait\Firebase\Messaging\Notification;
 use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
 use Kreait\Laravel\Firebase\Facades\Firebase;
+use Illuminate\Support\Facades\Log;
+use Kreait\Firebase\Messaging\AndroidConfig;
 
 trait NotificationTrait
 {
-    public function sendNotification($token, $title, $body)
+    public function sendNotification($user, string $title, string $body): void
     {
         $messaging = Firebase::messaging();
-
-        $message = CloudMessage::withTarget('token', $token)
-            ->withNotification(Notification::create(
-                $title,
-                $body
-            ))
-            ->withData([
-                'type' => 'chat',
-                'id' => '123'
-            ]);
-
+        $tokens = $user->fcmTokens->pluck('token')->toArray();
+        if (empty($tokens))
+            return;
+        $message = CloudMessage::new()
+            ->withNotification(Notification::create($title, $body))->withAndroidConfig(AndroidConfig::fromArray([
+                'priority' => 'high',
+                'notification' => [
+                    'sound' => 'default',
+                ],
+            ]));
         try {
-            $messaging->send($message);
+            $report = $messaging->sendMulticast($message, $tokens);
         } catch (\Throwable $e) {
-            logger('Notification failed: ' . $e->getMessage());
+            Log::error("Notification failed for user {$user->id}: " . $e->getMessage());
         }
     }
 }
