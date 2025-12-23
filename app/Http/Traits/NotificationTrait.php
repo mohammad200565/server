@@ -18,14 +18,11 @@ trait NotificationTrait
             return;
         $message = CloudMessage::new()
             ->withNotification(Notification::create($title, $body))->withAndroidConfig(AndroidConfig::fromArray([
+                'priority' => 'high',
                 'notification' => [
                     'sound' => 'default',
                 ],
-            ]))
-            ->withData([
-                'type' => 'chat',
-                'id' => '123',
-            ]);
+            ]));
         try {
             $report = $messaging->sendMulticast($message, $tokens);
         } catch (\Throwable $e) {
