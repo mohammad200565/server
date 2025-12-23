@@ -25,11 +25,6 @@ class RentResource extends JsonResource
         }
         if ($this->relationLoaded('department')) {
             $department = $this->department;
-
-            if ($department->relationLoaded('rents')) {
-                $department->free_times =
-                    $this->calculateFreeTimes($department->rents);
-            }
             $data['department'] = new DepartmentResource($department);
         }
         return $data;
@@ -56,7 +51,6 @@ class RentResource extends JsonResource
         foreach ($rents->skip(1) as $rent) {
             $start = Carbon::parse($rent->startRent)->startOfDay();
             $end   = Carbon::parse($rent->endRent)->endOfDay();
-
             if ($start->gt($previousEnd->copy()->addSecond())) {
                 $freeTimes[] = [
                     'start_time' => $previousEnd->copy()->addSecond()->toDateTimeString(),
