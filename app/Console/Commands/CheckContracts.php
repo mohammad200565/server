@@ -31,11 +31,14 @@ class CheckContracts extends Command
             $rent->update([
                 'status' => 'completed'
             ]);
-            $this->sendNotification(
-                $rent->department->user,
-                'Contract Completed',
-                "The rental contract for Department ID: {$rent->department->id} has been completed."
-            );
+            foreach ($rent->user->fcmTokens as $fcmToken) {
+                logger($fcmToken->token);
+                $this->sendNotification(
+                    $fcmToken->token,
+                    'Contract Completed',
+                    "The rental contract for Department ID: {$rent->department->id} has been completed."
+                );
+            }
         }
 
         $this->info('Total contracts updated: ' . $rents->count());

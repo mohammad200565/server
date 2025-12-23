@@ -137,7 +137,7 @@ class RentController extends BaseApiController
                     403
                 );
             }
-            if ($totalFee > $user->wallet_balance+$oldFee) {
+            if ($totalFee > $user->wallet_balance + $oldFee) {
                 return $this->errorResponse(
                     "You don't have enough credit to make the edit.",
                     403
@@ -175,8 +175,8 @@ class RentController extends BaseApiController
     public function cancelRent(Request $request, Rent $rent)
     {
         $this->authorize('cancelRent', $rent);
-        if ($rent->status !== 'onRent') {
-            return $this->errorResponse("Only rents with status 'onRent' can be cancelled.", 422);
+        if ($rent->status !== 'onRent' && $rent->status !== 'pending') {
+            return $this->errorResponse("Only rents with status 'onRent pending' can be cancelled.", 422);
         }
         $rent->status = 'cancelled';
         $department = $rent->department;
