@@ -21,7 +21,11 @@ class RentController extends BaseApiController
     {
         $filters = new RentFilter($request);
         $user = request()->user();
-        $query = $user->rents()->getQuery();
+        $query = Rent::query()
+            ->where('user_id', $user->id)
+            ->orWhereHas('department', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
         $rents = $this->loadRelations($request, $query, $this->relations)
             ->filter($filters)->paginate(15);
         return $this->successResponse("Rents fetched successfully", RentResource::collection($rents),);
@@ -119,8 +123,7 @@ class RentController extends BaseApiController
                 "Rent updated successfully",
                 new RentResource($rent)
             );
-        } 
-        else if ($rent->status == 'onRent') {
+        } else if ($rent->status == 'onRent') {
             $data = $request->validated();
             $department = $rent->department;
             $owner = $department->user;
@@ -131,7 +134,7 @@ class RentController extends BaseApiController
             $totalDays = $start->diffInDays($end) + 1;
             $totalFee = $department->rentFee * $totalDays;
             $oldFee = $rent->rentFee;
-            
+
             if ($today->gt($start) || $today->isSameDay($start)) {
                 return $this->errorResponse(
                     "You can't edit the contract after it's begining",
@@ -149,7 +152,7 @@ class RentController extends BaseApiController
             $data['rent_id'] = $rent->id;
             $data['status'] = 'onRent';
             $data['rentFee'] = $totalFee;
-            
+
             $edited_rent = DB::transaction(function () use ($data, $rent) {
                 EditedRent::where('rent_id', $rent->id)->delete();
                 $edited_rent = EditedRent::create($data);
@@ -161,7 +164,7 @@ class RentController extends BaseApiController
                 'Rent update verification',
                 "The tenant requested to update the rent terms, please read the new terms and approve or reject the tenant request."
             );
-            
+
             return $this->successResponse(
                 "A request is sent for the owner to approve the update.",
                 new EditedRentResource($edited_rent)
