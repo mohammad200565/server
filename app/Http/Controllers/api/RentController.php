@@ -16,12 +16,16 @@ use Illuminate\Support\Facades\DB;
 
 class RentController extends BaseApiController
 {
-    private $relations = ['user', 'department', 'department.user'];
+    private $relations = ['user', 'department', 'department.user', 'department.rents'];
     public function index(Request $request)
     {
         $filters = new RentFilter($request);
         $user = request()->user();
-        $query = $user->rents()->getQuery();
+        $query = Rent::query()
+            ->where('user_id', $user->id)
+            ->orWhereHas('department', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
         $rents = $this->loadRelations($request, $query, $this->relations)
             ->filter($filters)->paginate(15);
         return $this->successResponse("Rents fetched successfully", RentResource::collection($rents),);
@@ -87,7 +91,7 @@ class RentController extends BaseApiController
 
     public function show(Request $request, Rent $rent)
     {
-        $this->authorize('view', $rent);
+        // $this->authorize('view', $rent);
         $this->loadRelations($request, $rent, $this->relations);
         return $this->successResponse("Rent fetched successfully", new RentResource($rent));
     }
@@ -119,10 +123,10 @@ class RentController extends BaseApiController
                 "Rent updated successfully",
                 new RentResource($rent)
             );
-        } 
-        else if ($rent->status == 'onRent') {
+        } else if ($rent->status == 'onRent') {
             $data = $request->validated();
             $department = $rent->department;
+            $owner = $department->user;
             $user = request()->user();
             $start = Carbon::parse($data['startRent']);
             $end = Carbon::parse($data['endRent']);
@@ -130,7 +134,7 @@ class RentController extends BaseApiController
             $totalDays = $start->diffInDays($end) + 1;
             $totalFee = $department->rentFee * $totalDays;
             $oldFee = $rent->rentFee;
-            
+
             if ($today->gt($start) || $today->isSameDay($start)) {
                 return $this->errorResponse(
                     "You can't edit the contract after it's begining",
@@ -148,13 +152,19 @@ class RentController extends BaseApiController
             $data['rent_id'] = $rent->id;
             $data['status'] = 'onRent';
             $data['rentFee'] = $totalFee;
-            
+
             $edited_rent = DB::transaction(function () use ($data, $rent) {
                 EditedRent::where('rent_id', $rent->id)->delete();
                 $edited_rent = EditedRent::create($data);
                 return $edited_rent;
             });
-            
+
+            $this->sendNotification(
+                $owner,
+                'Rent update verification',
+                "The tenant requested to update the rent terms, please read the new terms and approve or reject the tenant request."
+            );
+
             return $this->successResponse(
                 "A request is sent for the owner to approve the update.",
                 new EditedRentResource($edited_rent)
@@ -177,7 +187,7 @@ class RentController extends BaseApiController
     {
         $this->authorize('cancelRent', $rent);
         if ($rent->status !== 'onRent' && $rent->status !== 'pending') {
-            return $this->errorResponse("Only rents with status 'onRent pending' can be cancelled.", 422);
+            return $this->errorResponse("Only rents with status 'onRent, pending' can be cancelled.", 422);
         }
         $rent->status = 'cancelled';
         $department = $rent->department;
@@ -199,13 +209,17 @@ class RentController extends BaseApiController
         }
 
         $department = $rent->department;
+        $start = Carbon::parse($rent->startRent)->startOfDay();
+        $end   = Carbon::parse($rent->endRent)->endOfDay();
         $overlap = Rent::where('department_id', $department->id)
             ->where('status', 'onRent')
-            ->where(function ($query) use ($rent) {
-                $query->where('startRent', '<=', $rent->endRent)
-                    ->where('endRent', '>=', $rent->startRent);
+            ->where(function ($query) use ($start, $end) {
+                $query
+                    ->where('startRent', '<=', $end)
+                    ->where('endRent', '>=', $start);
             })
             ->exists();
+
 
         if ($overlap) {
             return $this->errorResponse("This house is rented during this period", 422);
@@ -227,6 +241,12 @@ class RentController extends BaseApiController
             $rent->save();
         });
 
+        $this->sendNotification(
+            $user,
+            'Rent request status.',
+            "The owner approved your request to rent the appartment."
+        );
+
         $rent->load('department', 'user');
         return $this->successResponse(
             "Rent approved successfully",
@@ -241,9 +261,15 @@ class RentController extends BaseApiController
         }
         $rent->status = 'cancelled';
         $department = $rent->department;
+        $user = $rent->user;
         $department->isAvailable = true;
         $department->save();
         $rent->save();
+        $this->sendNotification(
+            $user,
+            'Rent request status.',
+            "The owner rejected your request to rent the appartment."
+        );
         $rent->load('department', 'user');
         return $this->successResponse("Rent rejected successfully", new RentResource($rent));
     }

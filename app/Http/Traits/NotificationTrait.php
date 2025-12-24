@@ -6,6 +6,7 @@ use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
 use Kreait\Laravel\Firebase\Facades\Firebase;
 use Illuminate\Support\Facades\Log;
+use Kreait\Firebase\Messaging\AndroidConfig;
 
 trait NotificationTrait
 {
@@ -16,11 +17,12 @@ trait NotificationTrait
         if (empty($tokens))
             return;
         $message = CloudMessage::new()
-            ->withNotification(Notification::create($title, $body))
-            ->withData([
-                'type' => 'chat',
-                'id' => '123',
-            ]);
+            ->withNotification(Notification::create($title, $body))->withAndroidConfig(AndroidConfig::fromArray([
+                'priority' => 'high',
+                'notification' => [
+                    'sound' => 'default',
+                ],
+            ]));
         try {
             $report = $messaging->sendMulticast($message, $tokens);
         } catch (\Throwable $e) {

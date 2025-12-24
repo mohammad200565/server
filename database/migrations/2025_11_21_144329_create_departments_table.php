@@ -22,7 +22,6 @@ return new class extends Migration
             $table->integer('rentCounter')->default(0);
             $table->double('rentFee');
             $table->boolean('isAvailable')->default(true);
-            $table->integer('favoritesCount')->default(0);
             $table->enum('status', ['furnished', 'unfurnished', 'partially furnished'])->default('unfurnished');
             $table->enum('verification_state', ['verified', 'pending', 'rejected'])->default('pending');
             $table->timestamps();

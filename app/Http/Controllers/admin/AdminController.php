@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Department;
 use App\Models\Rent;
 use App\Models\User;
+use Carbon\Traits\ToStringFormat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -66,7 +67,11 @@ class AdminController extends BaseApiController
     public function verifyUser(User $user)
     {
         $user->update(['verification_state' => 'verified']);
-
+        $this->sendNotification(
+            $user,
+            'Account verification',
+            'Your account has been verified successfully'
+        );
         return redirect()->route('users.show', $user)
             ->with('success', 'User has been verified successfully!');
     }
@@ -74,7 +79,11 @@ class AdminController extends BaseApiController
     public function rejectUser(User $user)
     {
         $user->update(['verification_state' => 'rejected']);
-
+        $this->sendNotification(
+            $user,
+            'Account verification',
+            'Your account has been rejected, please contact the support if you believe there something wrong.'
+        );
         return redirect()->route('users.show', $user)
             ->with('success', 'User verification has been rejected!');
     }
@@ -95,6 +104,34 @@ class AdminController extends BaseApiController
     public function showDepartment(Department $department)
     {
         return view('department-details', compact('department'));
+    }
+
+    public function verifyDepartment(Department $department)
+    {
+
+        $department->verification_state = 'verified';
+        $department->save();
+        $this->sendNotification(
+            $department->user,
+            'Department verification',
+            "Your department has been verified successfully, now it's available for renting."
+        );
+        return redirect('/departments/' . $department->id)
+            ->with('success', 'Department has been verified successfully!');
+    }
+
+    public function rejectDepartment(Department $department)
+    {
+
+        $department->verification_state = 'rejected';
+        $department->save();
+        $this->sendNotification(
+            $department->user,
+            'Department verification',
+            "Your department has been rejected, please contact the support if you believe there something wrong."
+        );
+        return redirect('/departments/' . $department->id)
+            ->with('success', 'Department verification has been rejected!');
     }
 
     public function indexContract(Request $request)
@@ -151,23 +188,6 @@ class AdminController extends BaseApiController
     }
 
 
-    public function verifyDepartment(Department $department)
-    {
-
-        $department->verification_state = 'verified';
-        $department->save();
-        return redirect('/departments/' . $department->id)
-            ->with('success', 'Department has been verified successfully!');
-    }
-
-    public function rejectDepartment(Department $department)
-    {
-
-        $department->verification_state = 'rejected';
-        $department->save();
-        return redirect('/departments/' . $department->id)
-            ->with('success', 'Department verification has been rejected!');
-    }
 
     public function updateBalance(Request $request, User $user)
     {
@@ -176,6 +196,12 @@ class AdminController extends BaseApiController
         ]);
 
         $user->increment('wallet_balance', $request->amount);
+
+        $this->sendNotification(
+            $user,
+            'Account balance',
+            (string)$request->amount . " has been added to your account wallet"
+        );
 
         return redirect()->back()->with('success', 'Funds added successfully!');
     }

@@ -24,7 +24,6 @@ class DepartmentFactory extends Factory
             'bedrooms' => $this->faker->numberBetween(1, 5),
             'bathrooms' => $this->faker->numberBetween(1, 3),
             'floor' => $this->faker->numberBetween(0, 20),
-            'favoritesCount' => 0,
             'rentFee' => $this->faker->randomFloat(2, 10, 100),
             'isAvailable' => $this->faker->boolean,
             'status' => $this->faker->randomElement(['furnished', 'unfurnished', 'partially furnished']),

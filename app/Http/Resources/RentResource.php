@@ -28,4 +28,42 @@ class RentResource extends JsonResource
         }
         return $data;
     }
+    protected function calculateFreeTimes($rents)
+    {
+        $now = now();
+        if ($rents->isEmpty()) {
+            return [[
+                'start_time' => $now->toDateTimeString(),
+                'end_time' => null,
+            ]];
+        }
+        $rents = $rents->sortBy('startRent')->values();
+        $freeTimes = [];
+        $firstStart  = Carbon::parse($rents->first()->startRent)->startOfDay();
+        $previousEnd = Carbon::parse($rents->first()->endRent)->endOfDay();
+        if ($now->lt($firstStart)) {
+            $freeTimes[] = [
+                'start_time' => $now->toDateTimeString(),
+                'end_time'   => $firstStart->toDateTimeString(),
+            ];
+        }
+        foreach ($rents->skip(1) as $rent) {
+            $start = Carbon::parse($rent->startRent)->startOfDay();
+            $end   = Carbon::parse($rent->endRent)->endOfDay();
+            if ($start->gt($previousEnd->copy()->addSecond())) {
+                $freeTimes[] = [
+                    'start_time' => $previousEnd->copy()->addSecond()->toDateTimeString(),
+                    'end_time'   => $start->toDateTimeString(),
+                ];
+            }
+            if ($end->gt($previousEnd)) {
+                $previousEnd = $end;
+            }
+        }
+        $freeTimes[] = [
+            'start_time' => $previousEnd->copy()->addSecond()->toDateTimeString(),
+            'end_time'   => null,
+        ];
+        return $freeTimes;
+    }
 }

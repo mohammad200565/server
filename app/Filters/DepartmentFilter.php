@@ -2,6 +2,8 @@
 
 namespace App\Filters;
 
+use App\Http\Resources\DepartmentResource;
+use App\Models\Department;
 use Illuminate\Http\Request;
 
 class DepartmentFilter
@@ -22,7 +24,8 @@ class DepartmentFilter
         'floor',
         'min_area',
         'max_area',
-        'user'
+        'user',
+        'search'
     ];
 
     public function __construct(Request $request)
@@ -96,6 +99,13 @@ class DepartmentFilter
     private function filterMax_price($value)
     {
         return $this->builder->where('rentFee', '<=', $value);
+    }
+    public function filterSearch($value)
+    {
+        return $this->builder->where(function ($q) use ($value) {
+            $q->where('headDescription', 'LIKE', "%{$value}%")
+                ->orWhere('description', 'LIKE', "%{$value}%");
+        });
     }
     private function filterSort($value)
     {

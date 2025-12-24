@@ -17,7 +17,7 @@ class DepartmentController extends BaseApiController
     {
         $filters = new DepartmentFilter($request);
         $query = Department::query();
-        $departments = $this->loadRelations($request, $query, $this->relations)
+        $departments = $this->loadRelations($request, $query, $this->relations)->where('verification_state', 'verified')
             ->filter($filters)
             ->paginate(20);
         return $this->successResponse('Departments retrieved successfully', DepartmentResource::collection($departments));
@@ -32,7 +32,7 @@ class DepartmentController extends BaseApiController
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $path = $image->store('departments/images', 'public');
+                $path = $image->store('departments', 'public');
 
                 $department->images()->create([
                     'path' => $path,
@@ -61,7 +61,7 @@ class DepartmentController extends BaseApiController
         if ($request->hasFile('images')) {
             $department->images()->delete();
             foreach ($request->file('images') as $image) {
-                $path = $image->store('departments/images', 'public');
+                $path = $image->store('departments', 'public');
                 $department->images()->create([
                     'path' => $path,
                 ]);

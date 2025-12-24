@@ -62,11 +62,18 @@ class EditedRentController extends BaseApiController
             $owner->wallet_balance -= $oldFee;
             $owner->save();
 
+            
             $rent->update($attributesToUpdate);
-
+            
             $edited_rent->delete();
         });
-
+        
+        $this->sendNotification(
+            $tenant,
+            'Rent update verification',
+            "The owner approved your request, rent updated successfully."
+        );
+        
         return $this->successResponse(
             "Approved successfully.",
             new RentResource($rent)
@@ -82,7 +89,14 @@ class EditedRentController extends BaseApiController
         }
 
         $edited_rent->delete();
+        $tenant = $edited_rent->user;
 
+        $this->sendNotification(
+            $tenant,
+            'Rent update verification',
+            "The owner rejected your request to update the rent."
+        );
+        
         return $this->successResponse(
             "Rejected successfully",
             200
