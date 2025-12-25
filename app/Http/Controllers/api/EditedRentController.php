@@ -31,13 +31,20 @@ class EditedRentController extends BaseApiController
     }
 
 
-    public function show(Request $request, EditedRent $edited_rent)
+    public function show(Request $request, $id)
     {
-        $this->authorize('view', $edited_rent);
-        $user = request()->user();
-        $this->loadRelations($request, $edited_rent, $this->relations);
-        return $this->successResponse("Edited rent fetched successfully", new EditedRentResource($edited_rent));
+        $editedRent = EditedRent::find($id);
+        if (!$editedRent) {
+            return $this->errorResponse('Edited rent not found', 404);
+        }
+        $this->authorize('view', $editedRent);
+
+        return $this->successResponse(
+            'Edited rent fetched successfully',
+            new EditedRentResource($editedRent)
+        );
     }
+
 
     public function approve(EditedRent $edited_rent)
     {
