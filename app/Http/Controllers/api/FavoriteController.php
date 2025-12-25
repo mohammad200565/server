@@ -15,7 +15,7 @@ class FavoriteController extends BaseApiController
         $user = Request()->user();
         $favorites = $user->favorites()
             ->with('images', 'user')
-            ->paginate(20);
+            ->paginate(7);
         return $this->successResponse('Favorite list loaded', DepartmentResource::collection($favorites));
     }
 

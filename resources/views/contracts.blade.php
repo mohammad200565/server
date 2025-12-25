@@ -1,30 +1,63 @@
 <x-layout title="Contracts">
 
     <style>
-        /* --- Shared Theme Variables --- */
-        :root {
-            --primary: #5d4037;
-            --primary-soft: #8d6e63;
-            --gold: #c8a87a;
-            --gold-light: #f0e6d2;
-            --bg-body: #f9f8f6;
-            --bg-card: #ffffff;
-            --shadow-soft: 0 10px 40px -10px rgba(93, 64, 55, 0.08);
-            --shadow-hover: 0 20px 40px -5px rgba(93, 64, 55, 0.15);
-            --radius-xl: 24px;
-            --radius-md: 16px;
-            --radius-pill: 50px;
+        /* --- BACKGROUND SHAPE ANIMATION --- */
+        @keyframes floatShape {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(50px, 80px) rotate(10deg); }
+            66% { transform: translate(-30px, 40px) rotate(-5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
         }
 
-        body {
-            background-color: var(--bg-body);
-            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        .bg-animation-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .anim-shape {
+            position: absolute;
+            filter: blur(70px);
+            opacity: 0.4;
+            z-index: -1;
+            animation: floatShape 20s infinite ease-in-out alternate;
+        }
+
+        .shape-1 {
+            top: -10%; left: -10%;
+            width: 50vw; height: 50vw;
+            background: rgba(124, 77, 255, 0.2);
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+        }
+
+        .shape-2 {
+            bottom: -10%; right: -10%;
+            width: 45vw; height: 45vw;
+            background: rgba(33, 150, 243, 0.2);
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            animation-duration: 25s;
+            animation-direction: alternate-reverse;
+        }
+
+        /* --- PAGE SPECIFIC STYLES --- */
+        :root {
+            --radius-xl: 24px;
+            --radius-pill: 50px;
+        }
+        
+        /* Animation for page load */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .contracts-container {
             padding: 40px;
             max-width: 1400px;
             margin: 0 auto;
+            animation: slideUpFade 0.6s ease-out;
         }
 
         /* --- Header & Controls --- */
@@ -40,7 +73,7 @@
         .contracts-title {
             font-size: 32px;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--text-main);
             margin: 0;
             letter-spacing: -1px;
         }
@@ -50,27 +83,28 @@
             align-items: center;
             gap: 16px;
             flex-wrap: wrap;
-            background: white;
+            background: var(--bg-card);
             padding: 8px;
             border-radius: var(--radius-pill);
             box-shadow: var(--shadow-soft);
-            border: 1px solid rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
         }
 
         /* --- Search Input --- */
         .search-group { position: relative; }
-        
+
         .search-box {
             border: none;
             background: transparent;
             padding: 12px 20px;
             font-size: 14px;
-            color: var(--primary);
+            color: var(--text-main);
             width: 260px;
             outline: none;
             font-weight: 500;
         }
-        .search-box::placeholder { color: #b0bec5; }
+
+        .search-box::placeholder { color: var(--text-sub); opacity: 0.6; }
 
         /* --- Buttons --- */
         .btn-action {
@@ -89,9 +123,13 @@
 
         .btn-search {
             background-color: var(--primary);
-            color: white;
+            color: var(--bg-card); /* Inverted text for contrast */
         }
-        .btn-search:hover { background-color: #4a332a; }
+
+        .btn-search:hover { 
+            background-color: var(--primary-hover);
+            color: var(--text-main);
+        }
 
         /* --- Status Filter Bar --- */
         .status-filters {
@@ -102,9 +140,9 @@
         }
 
         .status-btn {
-            background: white;
-            border: 1px solid #eee;
-            color: var(--primary-soft);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-sub);
             padding: 8px 18px;
             border-radius: var(--radius-pill);
             font-size: 13px;
@@ -120,9 +158,9 @@
 
         .status-btn.active {
             background: var(--primary);
-            color: white;
+            color: var(--bg-card);
             border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(93, 64, 55, 0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         /* --- Active Filters --- */
@@ -134,7 +172,7 @@
         }
 
         .filter-tag {
-            background: white;
+            background: var(--bg-card);
             border: 1px solid var(--gold);
             color: var(--primary);
             padding: 6px 16px;
@@ -145,7 +183,7 @@
 
         .clear-link {
             font-size: 12px;
-            color: #999;
+            color: var(--text-sub);
             text-decoration: underline;
             cursor: pointer;
         }
@@ -160,7 +198,7 @@
         /* =========================================
            CARD COMPONENT STYLES
            ========================================= */
-        
+
         .rent-card-link {
             text-decoration: none;
             color: inherit;
@@ -171,9 +209,9 @@
             background-color: var(--bg-card);
             border-radius: var(--radius-xl);
             padding: 24px;
-            box-shadow: var(--shadow-soft);
+            box-shadow: var(--shadow-card);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(255,255,255,0.5);
+            border: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -183,8 +221,7 @@
 
         .rent-card:hover {
             transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
-            border-color: rgba(200, 168, 122, 0.3);
+            border-color: var(--gold);
         }
 
         /* Card Header */
@@ -192,39 +229,54 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #f5f5f5;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
         }
 
         .rent-id {
             font-size: 16px;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--text-main);
             display: flex;
             align-items: center;
             gap: 8px;
         }
+
         .rent-id::before { content: '📄'; font-size: 18px; }
 
+        /* --- UNIFORM STATUS BADGES --- */
         .rent-status {
-            padding: 4px 12px;
+            /* Fix Width & Alignment */
+            min-width: 90px;
+            height: 26px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            
+            padding: 0 10px;
             border-radius: 20px;
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
         }
-        .rent-status.onRent { background: #e3f2fd; color: #1565c0; }
-        .rent-status.pending { background: #fff8e1; color: #f57f17; }
-        .rent-status.completed { background: #e8f5e9; color: #2e7d32; }
-        .rent-status.cancelled { background: #ffebee; color: #c62828; }
+
+        .rent-status.onRent { background: rgba(21, 101, 192, 0.1); color: #1565c0; }
+        .rent-status.pending { background: rgba(245, 127, 23, 0.1); color: #f57f17; }
+        .rent-status.completed { background: rgba(46, 125, 50, 0.1); color: #2e7d32; }
+        .rent-status.cancelled { background: rgba(198, 40, 40, 0.1); color: #c62828; }
+
+        :root.dark .rent-status.onRent { color: #64b5f6; }
+        :root.dark .rent-status.pending { color: #ffb74d; }
+        :root.dark .rent-status.completed { color: #81c784; }
+        :root.dark .rent-status.cancelled { color: #e57373; }
 
         /* Parties Section */
         .rent-parties {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #fdfdfc;
-            border: 1px solid #f0f0f0;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
             padding: 15px;
             border-radius: 12px;
         }
@@ -234,19 +286,20 @@
             flex-direction: column;
             gap: 4px;
         }
+
         .party-info:last-child { text-align: right; }
 
         .party-label {
             font-size: 10px;
             text-transform: uppercase;
-            color: #aaa;
+            color: var(--text-sub);
             font-weight: 700;
             letter-spacing: 0.5px;
         }
 
         .party-name {
             font-weight: 700;
-            color: var(--primary);
+            color: var(--text-main);
             font-size: 14px;
         }
 
@@ -258,7 +311,7 @@
             align-items: center;
             gap: 8px;
             font-size: 13px;
-            color: var(--primary-soft);
+            color: var(--text-sub);
             padding: 0 4px;
         }
 
@@ -267,13 +320,14 @@
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 10px;
-            background: #fcfbf9;
+            background: var(--bg-body);
             padding: 15px;
             border-radius: 12px;
+            border: 1px solid var(--border-color);
         }
 
-        .detail-label { font-size: 10px; color: #aaa; margin-bottom: 4px; font-weight: 600;}
-        .detail-value { font-size: 13px; font-weight: 700; color: var(--primary); }
+        .detail-label { font-size: 10px; color: var(--text-sub); margin-bottom: 4px; font-weight: 600;}
+        .detail-value { font-size: 13px; font-weight: 700; color: var(--text-main); }
         
         .detail-value.warning { color: #f57f17; }
         .detail-value.completed { color: #2e7d32; }
@@ -281,10 +335,10 @@
 
         .rent-footer {
             margin-top: auto;
-            border-top: 1px solid #f5f5f5;
+            border-top: 1px solid var(--border-color);
             padding-top: 15px;
             font-size: 11px;
-            color: #bbb;
+            color: var(--text-sub);
             text-align: right;
         }
 
@@ -292,7 +346,7 @@
             grid-column: 1 / -1;
             text-align: center;
             padding: 80px;
-            color: #b0bec5;
+            color: var(--text-sub);
             font-style: italic;
         }
 
@@ -313,47 +367,52 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: white;
-            color: var(--primary);
+            background: var(--bg-card);
+            color: var(--text-main);
             font-weight: 700;
             font-size: 14px;
             text-decoration: none;
-            border: 1px solid #eee;
+            border: 1px solid var(--border-color);
             transition: all 0.2s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .page-link:hover:not(.disabled) {
             background: var(--gold);
-            color: white;
+            color: var(--bg-card);
             border-color: var(--gold);
             transform: translateY(-2px);
         }
 
         .page-link.active {
             background: var(--primary);
-            color: white;
+            color: var(--bg-card);
             border-color: var(--primary);
-            box-shadow: 0 4px 10px rgba(93, 64, 55, 0.3);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
         .page-link.disabled {
             opacity: 0.5;
             cursor: default;
-            background: #fcfcfc;
+            background: var(--bg-body);
         }
 
         .page-info-text {
             width: 100%;
             text-align: center;
             margin-bottom: 10px;
-            color: #999;
+            color: var(--text-sub);
             font-size: 13px;
         }
     </style>
 
-    <div class="contracts-container">
+    <!-- Animation Layer -->
+    <div class="bg-animation-layer">
+        <div class="anim-shape shape-1"></div>
+        <div class="anim-shape shape-2"></div>
+    </div>
 
+    <div class="contracts-container">
         <!-- Header -->
         <div class="contracts-header">
             <h1 class="contracts-title">Rental Contracts</h1>
@@ -409,9 +468,7 @@
 
         <div class="contracts-grid">
             @forelse($rents as $rent)
-                
                 <x-contract-card :rent="$rent" />
-
             @empty
                 <div class="no-data">
                     <div style="font-size: 40px; margin-bottom: 20px;">📄</div>
@@ -428,9 +485,8 @@
             <div class="page-info-text">
                 Showing {{ $rents->firstItem() }} to {{ $rents->lastItem() }} of {{ $rents->total() }} results
             </div>
-
             {{ $rents->links() }}
         </div>
-
     </div>
+
 </x-layout>

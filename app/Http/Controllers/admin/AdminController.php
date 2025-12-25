@@ -22,7 +22,7 @@ class AdminController extends BaseApiController
 
         $recentDepartments = Department::with('user:id,first_name,last_name')
             ->latest()
-            ->take(5)
+            ->take(6)
             ->get();
 
         $recentContracts = Rent::with([

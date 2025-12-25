@@ -1,148 +1,258 @@
 <x-layout title="Users">
 
     <style>
-        :root {
-            --primary: #5d4037;
-            --primary-soft: #8d6e63;
-            --gold: #c8a87a;
-            --gold-light: #f0e6d2;
-            --bg-body: #f9f8f6;
-            --bg-card: #ffffff;
-            --shadow-soft: 0 10px 40px -10px rgba(93, 64, 55, 0.08);
-            --shadow-hover: 0 20px 40px -5px rgba(93, 64, 55, 0.15);
-            --radius-xl: 24px;
-            --radius-pill: 50px;
+        /* --- ANIMATIONS (Shared with Dashboard) --- */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        body {
-            background-color: var(--bg-body);
-            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        /* --- BACKGROUND SHAPE ANIMATION --- */
+        @keyframes floatShape {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(50px, 80px) rotate(10deg); }
+            66% { transform: translate(-30px, 40px) rotate(-5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
         }
 
+        .bg-animation-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .anim-shape {
+            position: absolute;
+            filter: blur(70px);
+            opacity: 0.4;
+            z-index: -1;
+            animation: floatShape 20s infinite ease-in-out alternate;
+        }
+
+        /* Shape 1: Subtle Purple */
+        .shape-1 {
+            top: -10%; left: -10%;
+            width: 50vw; height: 50vw;
+            background: rgba(124, 77, 255, 0.2);
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+        }
+
+        /* Shape 2: Subtle Blue/Teal */
+        .shape-2 {
+            bottom: -10%; right: -10%;
+            width: 45vw; height: 45vw;
+            background: rgba(33, 150, 243, 0.2);
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            animation-duration: 25s;
+            animation-direction: alternate-reverse;
+        }
+
+        /* --- PAGE SPECIFIC STYLES --- */
+        
+        /* Container Animation */
         .users-container {
             padding: 40px;
             max-width: 1400px;
             margin: 0 auto;
+            animation: slideUpFade 0.6s ease-out; /* Updated to match dashboard */
         }
 
-        .users-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; flex-wrap: wrap; gap: 24px; }
-        .users-title { font-size: 32px; font-weight: 800; color: var(--primary); margin: 0; letter-spacing: -1px; }
-        .controls-wrapper { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; background: white; padding: 8px; border-radius: var(--radius-pill); box-shadow: var(--shadow-soft); border: 1px solid rgba(0,0,0,0.03); }
-        .search-group { position: relative; }
-        .search-box { border: none; background: transparent; padding: 12px 20px; font-size: 14px; color: var(--primary); width: 280px; outline: none; font-weight: 500; }
-        .search-box::placeholder { color: #b0bec5; }
-        .divider-vertical { width: 1px; height: 24px; background-color: #eee; }
-        .btn-action { padding: 10px 24px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 700; cursor: pointer; border: none; transition: all 0.3s ease; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
-        .btn-search { background-color: var(--primary); color: white; }
-        .btn-search:hover { background-color: #4a332a; }
-        .btn-filter { background-color: transparent; color: var(--primary-soft); }
-        .btn-filter:hover { background-color: var(--bg-body); color: var(--primary); }
-        .btn-filter.active { background-color: var(--gold-light); color: var(--primary); }
-        
-        .active-filters-bar { margin-bottom: 30px; display: flex; align-items: center; gap: 12px; }
-        .filter-tag { background: white; border: 1px solid var(--gold); color: var(--primary); padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-        .clear-link { font-size: 12px; color: #999; text-decoration: underline; cursor: pointer; }
+        /* --- Header & Title --- */
+        .users-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
 
+        .users-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        /* --- Modern Control Bar (Search + Filter) --- */
+        .controls-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: var(--bg-card); /* Adaptive background */
+            padding: 8px 12px;
+            border-radius: 100px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .controls-wrapper:focus-within {
+            border-color: var(--gold);
+            box-shadow: 0 8px 20px rgba(200, 168, 122, 0.15);
+        }
+
+        .search-group { position: relative; display: flex; align-items: center; }
+
+        .search-icon {
+            color: var(--text-sub);
+            margin-left: 12px;
+            pointer-events: none;
+        }
+
+        .search-box {
+            border: none;
+            background: transparent;
+            padding: 12px 16px;
+            font-size: 14px;
+            color: var(--text-main);
+            width: 260px;
+            outline: none;
+            font-weight: 600;
+        }
+
+        .search-box::placeholder { color: var(--text-sub); opacity: 0.7; }
+
+        .divider-vertical {
+            width: 1px;
+            height: 24px;
+            background-color: var(--border-color);
+            margin: 0 8px;
+        }
+
+        /* --- Buttons --- */
+        .btn-action {
+            padding: 10px 24px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .btn-search {
+            background-color: var(--primary);
+            color: #fff; /* Always white */
+        }
+
+        .btn-search:hover {
+            background-color: var(--gold);
+            transform: translateY(-1px);
+        }
+
+        /* Dark mode overrides for search btn */
+        :root.dark .btn-search { color: var(--bg-body); }
+
+        .btn-filter {
+            background-color: transparent;
+            color: var(--text-sub);
+        }
+
+        .btn-filter:hover {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+        }
+
+        .btn-filter.active {
+            background-color: var(--gold-light);
+            color: var(--gold);
+        }
+
+        /* --- Active Filters --- */
+        .active-filters-bar {
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 13px; font-weight: 700; color: var(--text-sub);
+        }
+
+        .filter-tag {
+            background: var(--bg-card);
+            border: 1px solid var(--gold);
+            color: var(--text-main);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .clear-link {
+            font-size: 12px;
+            color: var(--text-sub);
+            text-decoration: underline;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .clear-link:hover { color: var(--gold); }
+
+        /* --- Grid Layout --- */
         .users-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 30px;
         }
 
-        .user-card-link {
-            text-decoration: none;
-            color: inherit;
-            display: block;
+        /* --- Empty State --- */
+        .no-users {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px;
+            color: var(--text-sub);
+            background: var(--bg-card);
+            border-radius: 24px;
+            border: 2px dashed var(--border-color);
         }
 
-        .user-card {
-            background-color: var(--bg-card);
-            border-radius: var(--radius-xl);
-            padding: 30px 20px;
-            text-align: center;
-            box-shadow: var(--shadow-soft);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(255,255,255,0.5);
+        /* --- Pagination Styling --- */
+        .pagination-container {
+            margin-top: 60px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100%;
+            gap: 10px;
         }
 
-        .user-card-link:hover .user-card {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .user-image-wrapper {
-            position: relative;
-            margin-bottom: 18px;
-        }
-
-        .user-image {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .user-initials {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background-color: var(--gold);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: 700;
-            border: 4px solid white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .user-info { width: 100%; }
-        
-        .user-name {
-            color: var(--primary);
-            font-size: 18px;
-            font-weight: 800;
-            margin: 0 0 6px 0;
-            display: block;
-        }
-
-        .user-contact {
-            color: #999;
+        .page-info-text {
+            text-align: center;
+            color: var(--text-sub);
             font-size: 13px;
             font-weight: 500;
-            margin-bottom: 16px;
         }
 
-        .status-pill {
-            display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
-            border-radius: 20px; font-size: 11px; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.5px; margin-top: auto;
+        /* Overriding Laravel Default Pagination SVG/Link styles if necessary */
+        .pagination-container nav {
+            background: var(--bg-card);
+            padding: 10px;
+            border-radius: 100px;
+            box-shadow: var(--shadow-card);
         }
-        .st-verified { background: #e8f5e9; color: #2e7d32; }
-        .st-pending { background: #fff8e1; color: #f57f17; }
-        .st-rejected { background: #ffebee; color: #c62828; }
-        
-        .dot { width: 6px; height: 6px; border-radius: 50%; }
-        .st-verified .dot { background: #2e7d32; }
-        .st-pending .dot { background: #f57f17; }
-        .st-rejected .dot { background: #c62828; }
+    </style>
 
-        .no-users { grid-column: 1 / -1; text-align: center; padding: 80px; color: #b0bec5; font-style: italic; }
-
-        .custom-paginator-wrapper { margin-top: 50px; display: flex; justify-content: center; gap: 8px; }
-        .page-link { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: white; color: var(--primary); text-decoration: none; border: 1px solid #eee; transition: all 0.2s; }
-        .page-link:hover:not(.disabled) { background: var(--gold); color: white; border-color: var(--gold); }
-        .page-link.active { background: var(--primary); color: white; }
-        .page-link.disabled { opacity: 0.5; background: #fcfcfc; }
-        .page-info-text { text-align: center; margin-bottom: 10px; color: #999; font-size: 13px; }
-</style>
+    <!-- Animation Layer (Behind Content) -->
+    <div class="bg-animation-layer">
+        <div class="anim-shape shape-1"></div>
+        <div class="anim-shape shape-2"></div>
+    </div>
 
     <div class="users-container">
         
@@ -150,23 +260,31 @@
             <h1 class="users-title">Users Directory</h1>
             
             <div class="controls-wrapper">
+                <!-- Search Form -->
                 <form method="GET" action="{{ route('users.index') }}" style="display: flex; align-items: center;">
                     @if(request('filter') === 'pending')
                         <input type="hidden" name="filter" value="pending">
                     @endif
                     
                     <div class="search-group">
+                        <!-- Search Icon -->
+                        <svg class="search-icon" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
                         <input type="text" name="search" class="search-box" placeholder="Find user by name..." value="{{ request('search') }}">
                     </div>
+                    
                     <button type="submit" class="btn-action btn-search">Search</button>
                 </form>
 
                 <div class="divider-vertical"></div>
 
+                <!-- Filter Toggle -->
                 <form method="GET" action="{{ route('users.index') }}" style="display: inline;">
                     @if(request('search'))
                         <input type="hidden" name="search" value="{{ request('search') }}">
                     @endif
+                    
                     <button type="submit" name="filter" value="{{ request('filter') === 'pending' ? '' : 'pending' }}" 
                         class="btn-action btn-filter {{ request('filter') === 'pending' ? 'active' : '' }}">
                         {{ request('filter') === 'pending' ? 'Show All' : 'Pending Only' }}
@@ -175,44 +293,56 @@
             </div>
         </div>
 
+        <!-- Active Filters Display -->
         @if(request('search') || request('filter') === 'pending')
             <div class="active-filters-bar">
-                <span style="font-size:13px; font-weight:600; color:var(--primary-soft);">Active Filters:</span>
+                <span class="filter-label">Active Filters:</span>
+                
                 @if(request('search'))
-                    <div class="filter-tag">🔍 "{{ request('search') }}"</div>
+                    <div class="filter-tag">
+                        <span>🔍 "{{ request('search') }}"</span>
+                    </div>
                 @endif
+                
                 @if(request('filter') === 'pending')
-                    <div class="filter-tag">⚠️ Pending Users</div>
+                    <div class="filter-tag" style="border-color: #f57f17; color: #f57f17;">
+                        <span>⚠️ Pending Users</span>
+                    </div>
                 @endif
+                
                 <a href="{{ route('users.index') }}" class="clear-link">Clear All</a>
             </div>
         @endif
 
+        <!-- Users Grid -->
         <div class="users-grid">
             @forelse($users as $user)
-                
+                <!-- Using the modernized Vertical Card Component -->
                 <x-user-card :user="$user" />
-
             @empty
                 <div class="no-users">
-                    <div style="font-size: 40px; margin-bottom: 20px;">🕵️‍♂️</div>
-                    @if(request('search') || request('filter') === 'pending')
-                        No users found matching your search.
-                    @else
-                        No users found in the database.
-                    @endif
+                    <div style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;">🕵️‍♂️</div>
+                    <h3 style="color: var(--text-main); font-weight: 700; margin-bottom: 8px;">No users found</h3>
+                    <p>
+                        @if(request('search') || request('filter') === 'pending')
+                            We couldn't find any users matching your criteria.
+                        @else
+                            The database is currently empty.
+                        @endif
+                    </p>
                 </div>
             @endforelse
         </div>
 
-        <div style="margin-top: 50px;">
+        <!-- Pagination -->
+        <div class="pagination-container">
             <div class="page-info-text">
                 Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of {{ $users->total() }} results
             </div>
-
+            <!-- Laravel default pagination links -->
             {{ $users->links() }}
         </div>
-
         
     </div>
+
 </x-layout>

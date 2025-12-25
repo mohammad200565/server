@@ -1,201 +1,259 @@
 <x-layout title="Departments">
 
     <style>
-        /* --- Shared Theme Variables --- */
-        :root {
-            --primary: #5d4037;
-            --primary-soft: #8d6e63;
-            --gold: #c8a87a;
-            --gold-light: #f0e6d2;
-            --bg-body: #f9f8f6;
-            --bg-card: #ffffff;
-            --shadow-soft: 0 10px 40px -10px rgba(93, 64, 55, 0.08);
-            --shadow-hover: 0 20px 40px -5px rgba(93, 64, 55, 0.15);
-            --radius-xl: 24px;
-            --radius-pill: 50px;
+        /* --- BACKGROUND SHAPE ANIMATION --- */
+        @keyframes floatShape {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(50px, 80px) rotate(10deg); }
+            66% { transform: translate(-30px, 40px) rotate(-5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
         }
 
-        body {
-            background-color: var(--bg-body);
-            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        .bg-animation-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .anim-shape {
+            position: absolute;
+            filter: blur(70px);
+            opacity: 0.4;
+            z-index: -1;
+            animation: floatShape 20s infinite ease-in-out alternate;
+        }
+
+        .shape-1 {
+            top: -10%; left: -10%;
+            width: 50vw; height: 50vw;
+            background: rgba(124, 77, 255, 0.2);
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+        }
+
+        .shape-2 {
+            bottom: -10%; right: -10%;
+            width: 45vw; height: 45vw;
+            background: rgba(33, 150, 243, 0.2);
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            animation-duration: 25s;
+            animation-direction: alternate-reverse;
+        }
+
+        /* --- PAGE ANIMATION --- */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .departments-container {
             padding: 40px;
             max-width: 1400px;
             margin: 0 auto;
+            animation: slideUpFade 0.6s ease-out;
         }
 
-        /* --- Header & Controls --- */
-        .departments-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 24px; }
-        .departments-title { font-size: 32px; font-weight: 800; color: var(--primary); margin: 0; letter-spacing: -1px; }
-        .controls-wrapper { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; background: white; padding: 8px; border-radius: var(--radius-pill); box-shadow: var(--shadow-soft); border: 1px solid rgba(0,0,0,0.03); }
-        
-        /* Search */
-        .search-group { position: relative; }
-        .search-box { border: none; background: transparent; padding: 12px 20px; font-size: 14px; color: var(--primary); width: 250px; outline: none; font-weight: 500; }
-        .search-box::placeholder { color: #b0bec5; }
-        
-        /* Buttons */
-        .btn-action { padding: 10px 24px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 700; cursor: pointer; border: none; transition: all 0.3s ease; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
-        .btn-search { background-color: var(--primary); color: white; }
-        .btn-search:hover { background-color: #4a332a; }
-        .btn-filter { background-color: transparent; color: var(--primary-soft); }
-        .btn-filter:hover { background-color: var(--bg-body); color: var(--primary); }
-        .btn-filter.active { background-color: var(--gold-light); color: var(--primary); }
-
-        /* Filters */
-        .active-filters-bar { margin-bottom: 30px; display: flex; align-items: center; gap: 12px; }
-        .filter-tag { background: white; border: 1px solid var(--gold); color: var(--primary); padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; }
-        .clear-link { font-size: 12px; color: #999; text-decoration: underline; cursor: pointer; }
-
-        /* Grid */
-        .departments-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 30px;
-        }
-
-        /* =========================================
-           NEW MODERN CARD STYLES
-           ========================================= */
-        
-        .department-card-link {
-            text-decoration: none;
-            display: block;
-            color: inherit;
-        }
-
-        .department-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            overflow: hidden;
-            box-shadow: var(--shadow-soft);
-            border: 1px solid rgba(255,255,255,0.5);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        /* --- HEADER & TITLE --- */
+        .departments-header {
             display: flex;
-            flex-direction: column;
-            height: 100%;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
-        .department-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-hover);
+        .departments-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 0;
+            letter-spacing: -1px;
         }
 
-        /* Image Wrapper */
-        .dept-image-wrapper {
-            height: 180px;
-            position: relative;
-            background-color: var(--gold-light);
-        }
-
-        .dept-placeholder-pattern {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #5d4037 0%, #8d6e63 100%);
+        /* --- CONTROLS (Search + Filter) --- */
+        .controls-wrapper {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 10px;
+            background: var(--bg-card);
+            padding: 6px 12px;
+            border-radius: 100px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
 
-        .dept-icon-circle {
-            width: 60px; height: 60px;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(4px);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 30px;
-            border: 1px solid rgba(255,255,255,0.3);
+        .controls-wrapper:focus-within {
+            border-color: var(--gold);
+            box-shadow: 0 8px 20px rgba(200, 168, 122, 0.15);
         }
 
-        /* Badges */
-        .floating-badge {
-            position: absolute; top: 16px; right: 16px;
-            padding: 6px 12px; border-radius: 20px;
-            font-size: 11px; font-weight: 700; text-transform: uppercase;
-            background: white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            display: flex; align-items: center; gap: 4px;
-            z-index: 2;
+        .search-group {
+            display: flex;
+            align-items: center;
+            position: relative;
         }
-        .floating-badge.verified { color: #2e7d32; }
-        .floating-badge.rejected { color: #c62828; }
-        .floating-badge.pending  { color: #f57f17; }
 
-        /* Card Body */
-        .dept-body {
-            padding: 24px;
+        .search-icon {
+            color: var(--text-sub);
+            margin-left: 8px;
+        }
+
+        .search-box {
+            border: none;
+            background: transparent;
+            padding: 10px 14px;
+            font-size: 14px;
+            color: var(--text-main);
+            width: 220px; /* Slightly compact */
+            outline: none;
+            font-weight: 600;
+        }
+
+        .search-box::placeholder { color: var(--text-sub); opacity: 0.7; }
+
+        .divider-vertical {
+            width: 1px; height: 24px; background: var(--border-color); margin: 0 6px;
+        }
+
+        /* --- BUTTONS --- */
+        .btn-action {
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+
+        .btn-search {
+            background-color: var(--primary);
+            color: #fff;
+        }
+
+        .btn-search:hover {
+            background-color: var(--gold);
+            transform: translateY(-1px);
+        }
+
+        :root.dark .btn-search { color: var(--bg-body); }
+
+        .btn-filter {
+            background-color: transparent;
+            color: var(--text-sub);
+        }
+
+        .btn-filter:hover {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+        }
+
+        .btn-filter.active {
+            background-color: var(--gold-light);
+            color: var(--gold);
+        }
+
+        /* --- ACTIVE FILTERS --- */
+        .active-filters-bar {
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .filter-tag {
+            background: var(--bg-card);
+            border: 1px solid var(--gold);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .clear-link {
+            font-size: 12px; color: var(--text-sub);
+            text-decoration: underline; cursor: pointer;
+        }
+
+        .clear-link:hover { color: var(--gold); }
+
+        /* --- GRID LAYOUT --- */
+        .departments-grid {
+            display: grid;
+            /* Reduced min-width to 270px to make cards smaller */
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 24px;
+        }
+
+        /* --- EMPTY STATE --- */
+        .no-data {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px;
+            color: var(--text-sub);
+            background: var(--bg-card);
+            border-radius: 24px;
+            border: 2px dashed var(--border-color);
+        }
+
+        /* --- PAGINATION --- */
+        .pagination-container {
+            margin-top: 50px;
             display: flex;
             flex-direction: column;
-            flex-grow: 1;
+            align-items: center;
+            gap: 10px;
         }
 
-        .dept-header-row {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 8px;
+        .page-info-text {
+            color: var(--text-sub);
+            font-size: 13px;
+            font-weight: 500;
         }
 
-        .dept-price {
-            font-size: 22px; font-weight: 800; color: var(--gold);
+        /* Style Laravel Pagination */
+        .pagination-container nav {
+            background: var(--bg-card);
+            padding: 8px;
+            border-radius: 100px;
+            box-shadow: var(--shadow-card);
         }
-        .dept-price .period {
-            font-size: 13px; font-weight: 500; color: #999;
-        }
-
-        .status-pill-small {
-            font-size: 10px; font-weight: 700; padding: 4px 10px;
-            border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px;
-            background: #f0f0f0; color: #666;
-        }
-        /* Status Colors */
-        .status-pill-small.available { background: #e8f5e9; color: #2e7d32; }
-        .status-pill-small.occupied  { background: #ffebee; color: #c62828; }
-
-        .dept-location {
-            font-size: 16px; font-weight: 700; color: var(--primary);
-            margin: 0 0 16px 0; line-height: 1.4; text-align: left;
-        }
-        .dept-location .district {
-            font-weight: 500; color: var(--primary-soft);
-        }
-
-        .dept-divider {
-            height: 1px; background: #f0f0f0; margin-bottom: 16px;
-        }
-
-        /* Specs Grid */
-        .dept-specs-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 8px; margin-top: auto;
-        }
-        .spec-box {
-            text-align: center; display: flex; flex-direction: column; align-items: center;
-        }
-        .spec-icon { font-size: 14px; margin-bottom: 4px; opacity: 0.7; }
-        .spec-info { display: flex; flex-direction: column; line-height: 1; }
-        .spec-val { font-weight: 700; font-size: 14px; color: var(--primary); }
-        .spec-label { font-size: 10px; color: #aaa; margin-top: 2px; }
-
-        .no-data { grid-column: 1 / -1; text-align: center; padding: 80px; color: #b0bec5; font-style: italic; }
-
-        /* Pagination (Kept original) */
-        .custom-paginator-wrapper { margin-top: 50px; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .page-link { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: white; color: var(--primary); font-weight: 700; font-size: 14px; text-decoration: none; border: 1px solid #eee; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .page-link:hover:not(.disabled) { background: var(--gold); color: white; border-color: var(--gold); transform: translateY(-2px); }
-        .page-link.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(93, 64, 55, 0.3); }
-        .page-link.disabled { opacity: 0.5; cursor: default; background: #fcfcfc; }
-        .page-info-text { width: 100%; text-align: center; margin-bottom: 10px; color: #999; font-size: 13px; }
-
     </style>
 
-    <div class="departments-container">
+    <!-- Animation Layer -->
+    <div class="bg-animation-layer">
+        <div class="anim-shape shape-1"></div>
+        <div class="anim-shape shape-2"></div>
+    </div>
 
+    <div class="departments-container">
         <!-- Header -->
         <div class="departments-header">
             <h1 class="departments-title">Department Directory</h1>
             
             <div class="controls-wrapper">
+                <!-- Search Form -->
+                <form method="GET" action="/departments" style="display: flex; align-items: center;">
+                    @if(request('filter') === 'pending')
+                        <input type="hidden" name="filter" value="pending">
+                    @endif
+                    <div class="search-group">
+                        <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" name="search" class="search-box" placeholder="Search city..." value="{{ request('search') }}">
+                    </div>
+                    <button type="submit" class="btn-action btn-search">Search</button>
+                </form>
+                <div class="divider-vertical"></div>
+                <!-- Filter Toggle -->
                 <form method="GET" action="/departments" style="display: inline;">
                     @if(request('search'))
                         <input type="hidden" name="search" value="{{ request('search') }}">
@@ -203,17 +261,26 @@
                     
                     <button type="submit" name="filter" value="{{ request('filter') === 'pending' ? '' : 'pending' }}" 
                         class="btn-action btn-filter {{ request('filter') === 'pending' ? 'active' : '' }}">
-                        {{ request('filter') === 'pending' ? 'Show All' : 'Pending Review Only' }}
+                        {{ request('filter') === 'pending' ? 'Show All' : 'Pending Only' }}
                     </button>
                 </form>
             </div>
         </div>
 
         <!-- Active Filters -->
-        @if(request('filter') === 'pending')
+        @if(request('filter') === 'pending' || request('search'))
             <div class="active-filters-bar">
-                <div class="filter-tag">⚠️ Pending Approval</div>
-                <a href="/departments" class="clear-link">Clear Filter</a>
+                @if(request('filter') === 'pending')
+                    <div class="filter-tag" style="border-color: #f57f17; color: #f57f17;">
+                        <span>⚠️ Pending Approval</span>
+                    </div>
+                @endif
+                @if(request('search'))
+                     <div class="filter-tag">
+                        <span>🔍 "{{ request('search') }}"</span>
+                    </div>
+                @endif
+                <a href="/departments" class="clear-link">Clear Filters</a>
             </div>
         @endif
 
@@ -223,23 +290,26 @@
                 <x-department-card :department="$department" />
             @empty
                 <div class="no-data">
-                    <div style="font-size: 40px; margin-bottom: 20px;">🏠</div>
-                    @if(request('filter') === 'pending')
-                        No pending department found.
-                    @else
-                        No Departments found.
-                    @endif
+                    <div style="font-size: 40px; margin-bottom: 20px; opacity: 0.5;">🏠</div>
+                    <h3 style="color: var(--text-main); margin-bottom: 8px;">No Departments Found</h3>
+                    <p>
+                        @if(request('filter') === 'pending')
+                            No pending departments found.
+                        @else
+                            The database is empty or no results match your search.
+                        @endif
+                    </p>
                 </div>
             @endforelse
         </div>
 
-        <div style="margin-top: 50px;">
+        <!-- Pagination -->
+        <div class="pagination-container">
             <div class="page-info-text">
                 Showing {{ $departments->firstItem() }} to {{ $departments->lastItem() }} of {{ $departments->total() }} results
             </div>
-
             {{ $departments->links() }}
         </div>
-
     </div>
+
 </x-layout>
