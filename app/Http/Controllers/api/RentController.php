@@ -30,7 +30,9 @@ class RentController extends BaseApiController
             })
             ->whereIn('status', ['pending', 'onRent']);
         $rents = $this->loadRelations($request, $query, $this->relations)
-            ->filter($filters)->paginate(15);
+            ->filter($filters)->paginate(
+                15
+            );
         return $this->successResponse("Rents fetched successfully", RentResource::collection($rents),);
     }
     public function indexHistory(Request $request)

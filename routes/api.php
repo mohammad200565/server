@@ -32,7 +32,7 @@ Route::prefix('v1')->group(function () {
         Route::get('favorites/{department}', [FavoriteController::class, 'isFavorite']);
 
         Route::apiResource('rents', RentController::class);
-        Route::get('rent-history', [RentController::class, 'indexHistory']);
+        Route::get('rents-history', [RentController::class, 'indexHistory']);
 
         Route::post('/rents/{rent}/approve', [RentController::class, 'approveRent']);
         Route::post('/rents/{rent}/reject', [RentController::class, 'rejectRent']);
