@@ -4,7 +4,6 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
 class EditedRentResource extends JsonResource
 {
     public function toArray(Request $request): array
@@ -19,16 +18,18 @@ class EditedRentResource extends JsonResource
             'updated_at' => $this->resource->updated_at,
         ];
 
-        if ($this->resource->relationLoaded('rent')) {
-            $data['rent'] = new RentResource($this->resource->rent);
+        if (isset($this->resource->original_rent)) {
+            $data['original_rent'] = new RentResource($this->resource->original_rent);
         }
 
-        if ($this->resource->relationLoaded('user')) {
+        if (isset($this->resource->user)) {
             $data['user'] = new UserResource($this->resource->user);
         }
-        if ($this->resource->relationLoaded('department')) {
+        
+        if (isset($this->resource->department)) {
             $data['department'] = new DepartmentResource($this->resource->department);
         }
+        
         return $data;
     }
 }

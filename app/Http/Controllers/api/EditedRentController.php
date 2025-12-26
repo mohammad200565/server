@@ -19,33 +19,26 @@ class EditedRentController extends BaseApiController
         $this->authorize('viewAny', EditedRent::class);
         $user = $request->user();
         $query = EditedRent::query()
-            ->whereHas('department', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
+        ->whereHas('department', function ($q) use ($user) {
+            $q->where('user_id', $user->id);
             });
         $editedRents = $this->loadRelations($request, $query, $this->relations)
-            ->paginate(15);
+        ->paginate(15);
         return $this->successResponse(
             "Edited rents fetched successfully",
             EditedRentResource::collection($editedRents)
         );
     }
 
-
-    public function show(Request $request, $id)
+    public function show(Request $request, EditedRent $editedRent)
     {
-        $editedRent = EditedRent::find($id);
-        if (!$editedRent) {
-            return $this->errorResponse('Edited rent not found', 404);
-        }
         $this->authorize('view', $editedRent);
-
-        return $this->successResponse(
-            'Edited rent fetched successfully',
-            new EditedRentResource($editedRent)
-        );
+        
+        $editedRent->load($this->relations);
+        
+        return $this->successResponse("Edited rent fetched successfully", new EditedRentResource($editedRent));
     }
-
-
+    
     public function approve(EditedRent $edited_rent)
     {
         $this->authorize('approveRent', $edited_rent);
