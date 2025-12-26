@@ -23,7 +23,6 @@ return new class extends Migration
 
             $table->tinyInteger('rating');
             $table->timestamps();
-            $table->unique(['user_id', 'department_id']);
         });
     }
 

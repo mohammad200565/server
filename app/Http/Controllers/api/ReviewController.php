@@ -24,13 +24,23 @@ class ReviewController extends BaseApiController
     public function store(StoreReviewRequest $request, Department $department)
     {
         $data = $request->validated();
-        $data['user_id'] = request()->user()->id;
+        $userId = $request->user()->id;
+        $review = Review::where('user_id', $userId)
+            ->where('department_id', $department->id)
+            ->first();
+        if ($review) {
+            $review->update($data);
+            $review->load('user');
+            return $this->successResponse('Review updated successfully', new ReviewResource($review), 200);
+        }
+        $data['user_id'] = $userId;
         $review = new Review($data);
         $review->department()->associate($department);
         $review->load('user');
         $review->save();
         return $this->successResponse('Review created successfully', new ReviewResource($review), 201);
     }
+
     public function show(Request $request, Department $department, Review $review)
     {
         $this->loadRelations($request, $review, $this->relations);

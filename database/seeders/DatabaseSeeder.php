@@ -168,8 +168,6 @@ class DatabaseSeeder extends Seeder
         for ($i = 0; $i < 500; $i++) {
             User::inRandomOrder()->first()?->favorites()->toggle(Department::inRandomOrder()->first()?->id);
         }
-        $this->call(ReviewSeeder::class);
-        $this->call(NotificationSeeder::class);
         $this->call(RentSeeder::class);
         $this->call(CommentSeeder::class);
     }

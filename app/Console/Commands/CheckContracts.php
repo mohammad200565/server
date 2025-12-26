@@ -27,16 +27,17 @@ class CheckContracts extends Command
 
         foreach ($rents as $rent) {
             $this->info("Completing Rent ID: {$rent->id} | End: {$rent->endRent}");
-
             $rent->update([
                 'status' => 'completed'
             ]);
+            $user = $rent->user;
+            $this->sendNotification(
+                $user,
+                'Contract Completed',
+                "The rental contract for Department ID: {$rent->department->id} has been completed."
+            );
+            $this->sendRateDepartmentNotification($user, $rent->id);
         }
-        $this->sendNotification(
-            $rent->user,
-            'Contract Completed',
-            "The rental contract for Department ID: {$rent->department->id} has been completed."
-        );
 
         $this->info('Total contracts updated: ' . $rents->count());
 

@@ -78,12 +78,11 @@ class AdminController extends BaseApiController
     public function rejectUser(User $user)
     {
         $user->update(['verification_state' => 'rejected']);
-        $this->sendRateDepartmentNotification($user, 11);
-        // $this->sendNotification(
-        //     $user,
-        //     'Account verification',
-        //     'Your account has been rejected, please contact the support if you believe there something wrong.'
-        // );
+        $this->sendNotification(
+            $user,
+            'Account verification',
+            'Your account has been rejected, please contact the support if you believe there something wrong.'
+        );
         return redirect()->route('users.show', $user)
             ->with('success', 'User verification has been rejected!');
     }

@@ -42,13 +42,12 @@ trait NotificationTrait
             ))->withData([
                 'type' => 'rate_department',
                 'rent_id' => (string) $rentId,
-                'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                'department_id' => (string) $user->rents()->where('id', $rentId)->first()->department_id,
 
             ])->withAndroidConfig(AndroidConfig::fromArray([
                 'priority' => 'high',
                 'notification' => [
                     'sound' => 'default',
-                    'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
                 ],
             ]));
         try {
