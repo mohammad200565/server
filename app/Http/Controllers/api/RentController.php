@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 
 class RentController extends BaseApiController
 {
-    private $relations = ['user', 'department', 'department.user'];
+    private $relations = ['user', 'department', 'department.user', 'department.rents'];
     public function index(Request $request)
     {
         $filters = new RentFilter($request);
@@ -86,7 +86,7 @@ class RentController extends BaseApiController
 
     public function show(Request $request, Rent $rent)
     {
-        $this->authorize('view', $rent);
+        // $this->authorize('view', $rent);
         $this->loadRelations($request, $rent, $this->relations);
         return $this->successResponse("Rent fetched successfully", new RentResource($rent));
     }
@@ -198,12 +198,18 @@ class RentController extends BaseApiController
             return $this->errorResponse("Only rents with status 'pending' can be approved.", 422);
         }
         $department = $rent->department;
-        $overlap = Rent::where('department_id', $department->id)->where('status', 'onRent')
-            ->where(function ($query) use ($rent) {
-                $query->where('startRent', '<=', $rent->endRent)
-                    ->where('endRent', '>=', $rent->startRent);
+        $start = Carbon::parse($rent->startRent)->startOfDay();
+        $end   = Carbon::parse($rent->endRent)->endOfDay();
+        $overlap = Rent::where('department_id', $department->id)
+            ->where('status', 'onRent')
+            ->where(function ($query) use ($start, $end) {
+                $query
+                    ->where('startRent', '<=', $end)
+                    ->where('endRent', '>=', $start);
             })
             ->exists();
+
+
         if ($overlap) {
             return $this->errorResponse("This house is rented during this period", 422);
         }
