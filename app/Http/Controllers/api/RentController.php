@@ -94,7 +94,11 @@ class RentController extends BaseApiController
             $department->increment('rentCounter');
             return $rent;
         });
-
+        $this->sendNotification(
+            $department->user,
+            'Rent verification',
+            "The tenant requested to rent your house, please read the new terms and approve or reject the tenant request."
+        );
         $rent->load('department', 'user');
 
         return $this->successResponse(
@@ -174,11 +178,11 @@ class RentController extends BaseApiController
                 return $edited_rent;
             });
 
-            // $this->sendNotification(
-            //     $owner,
-            //     'Rent update verification',
-            //     "The tenant requested to update the rent terms, please read the new terms and approve or reject the tenant request."
-            // );
+            $this->sendNotification(
+                $owner,
+                'Rent update verification',
+                "The tenant requested to update the rent terms, please read the new terms and approve or reject the tenant request."
+            );
 
             return $this->successResponse(
                 "A request is sent for the owner to approve the update.",

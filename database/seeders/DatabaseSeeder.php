@@ -164,11 +164,5 @@ class DatabaseSeeder extends Seeder
                 'path' => $image,
             ]);
         }
-
-        for ($i = 0; $i < 500; $i++) {
-            User::inRandomOrder()->first()?->favorites()->toggle(Department::inRandomOrder()->first()?->id);
-        }
-        $this->call(RentSeeder::class);
-        $this->call(CommentSeeder::class);
     }
 }
