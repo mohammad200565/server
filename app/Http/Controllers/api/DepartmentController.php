@@ -58,6 +58,7 @@ class DepartmentController extends BaseApiController
 
         $validated = $request->validated();
         $department->update($validated);
+        $department['verification_state'] = 'pending';
         if ($request->hasFile('images')) {
             $department->images()->delete();
             foreach ($request->file('images') as $image) {
