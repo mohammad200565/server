@@ -269,9 +269,7 @@ class RentController extends BaseApiController
         DB::transaction(function () use ($rent, $department, $user) {
             $user->decrement('wallet_balance', $rent->rentFee);
             $rent->status = 'onRent';
-            $department->isAvailable = false;
 
-            $department->save();
             $rent->save();
         });
 
