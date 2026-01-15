@@ -23,8 +23,8 @@ class RegisterRequest extends FormRequest
             'location.street' => 'nullable|string',
             'phone'          => 'required|string|unique:users,phone',
             'password'       => 'required|string|min:8|confirmed',
-            'profileImage'   => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'personIdImage'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'profileImage'   => 'nullable|image|mimes:jpeg,png,jpg',
+            'personIdImage'  => 'nullable|image|mimes:jpeg,png,jpg',
         ];
     }
 }

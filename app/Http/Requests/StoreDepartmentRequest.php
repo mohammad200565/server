@@ -27,7 +27,7 @@ class StoreDepartmentRequest extends FormRequest
             'location.district' => 'nullable|string',
             'location.street' => 'nullable|string',
             'images' => 'sometimes|array',
-            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'images.*' => 'image|mimes:jpg,jpeg,png',
         ];
     }
 }

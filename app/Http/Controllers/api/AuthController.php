@@ -55,19 +55,19 @@ class AuthController extends BaseApiController
     {
         $key = $this->hitRateLimiter($request);
         RateLimiter::hit($key, 60);
-
+        
         $profilePath = null;
         $personIdPath = null;
-       if ($request->hasFile('profileImage')) {
-        $profilePath = $request->file('profileImage')
+        if ($request->hasFile('profileImage')) {
+            $profilePath = $request->file('profileImage')
             ->store('users/profile', 'public');
-        }
-
+            }
+            
         if ($request->hasFile('personIdImage')) {
             $personIdPath = $request->file('personIdImage')
-                ->store('users/personId', 'public');
+            ->store('users/personId', 'public');
         }
-
+                
         $data = $request->validated();
 
         $data['profileImage'] = $profilePath;
@@ -83,7 +83,6 @@ class AuthController extends BaseApiController
         $tokenModel = $user->tokens()->latest()->first();
         $tokenModel->expires_at = now()->addHours(24);
         $tokenModel->save();
-
         return $this->successResponse("Register successful", [
             'user'  => new UserResource($user),
             'token' => $token,

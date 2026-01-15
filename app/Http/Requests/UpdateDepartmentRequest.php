@@ -28,7 +28,7 @@ class UpdateDepartmentRequest extends FormRequest
             'location.district' => 'sometimes|nullable|string',
             'location.street' => 'sometimes|nullable|string',
             'images' => 'sometimes|array',
-            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'images.*' => 'image|mimes:jpg,jpeg,png',
         ];
     }
 }
