@@ -19,6 +19,7 @@ class UserResource extends JsonResource
             'profileImage' => $this->resource->profileImage ? Storage::url($this->resource->profileImage) : null,
             'birthdate' => $this->resource->birthdate,
             'verification_state' => $this->resource->verification_state,
+            'wallet_balance' => $this->resource->wallet_balance,
             'location' => [
                 'governorate' => $this->resource->location['governorate'] ?? null,
                 'city' => $this->resource->location['city'] ?? null,
