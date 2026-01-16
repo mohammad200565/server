@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\EditedRentController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\FcmTokenController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\RentController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Middleware\CheckTokenExpiration;
@@ -48,5 +49,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
 
         Route::post('/save-fcm-token', [FcmTokenController::class, 'store']);
+
+        Route::post('/chat/notify-message/{user}', [NotificationController::class, 'messageNotification']);
     });
 });
