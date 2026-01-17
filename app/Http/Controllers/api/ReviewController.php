@@ -9,6 +9,8 @@ use App\Http\Resources\ReviewResource;
 use App\Models\Department;
 use App\Models\Review;
 use Illuminate\Http\Request;
+use App\Models\Rent;
+
 
 class ReviewController extends BaseApiController
 {
@@ -25,6 +27,21 @@ class ReviewController extends BaseApiController
     {
         $data = $request->validated();
         $userId = $request->user()->id;
+
+//////////
+        $hasCompletedRent = Rent::where('user_id', $userId)
+        ->where('department_id', $department->id)
+        ->where('status', 'completed')
+        ->exists();
+
+    if (!$hasCompletedRent) {
+        return $this->errorResponse(
+            'You can only review this apartment after completing a rent.',
+            403
+        );
+    }
+//////////
+
         $review = Review::where('user_id', $userId)
             ->where('department_id', $department->id)
             ->first();
